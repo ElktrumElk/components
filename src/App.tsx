@@ -1,5 +1,5 @@
 import { Layout} from "./icons";
-import Button from "./lib/components/button/Button";
+
 import Center from "./lib/components/center/Center";
 import Container from "./lib/components/container/Container";
 
@@ -8,6 +8,7 @@ import Page from "./lib/components/page/Page";
 
 import Text from "./lib/components/text/Text";
 import { createStore, useStore } from "./hooks";
+import { Button } from "./components";
 
 const store = createStore<{ count: number }>({ count: 0 });
 
@@ -15,6 +16,7 @@ function Counter() {
   const { count } = useStore(store);
 
   return (
+    
     <Button
       padding=".5rem 1rem"
       borderRadius="1rem"
@@ -58,6 +60,7 @@ export default function App() {
                         />
                       </>
                     )}
+                    
                   />
 
                   <Text

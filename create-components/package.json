@@ -1,0 +1,31 @@
+{
+  "name": "create-components",
+  "version": "1.0.0",
+  "description": "Scaffold a new Components framework project",
+  "type": "module",
+  "bin": {
+    "create-components": "./index.js"
+  },
+  "files": [
+    "index.js",
+    "templates/"
+  ],
+  "keywords": [
+    "react",
+    "components",
+    "scaffold",
+    "cli",
+    "create",
+    "vite",
+    "typescript"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/components.git",
+    "directory": "create-components"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

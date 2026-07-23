@@ -1,15 +1,43 @@
 {
   "name": "components",
-  "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "A lightweight React component framework with class-based architecture, render props, and 205+ icons",
   "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/components.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/components.d.ts"
+    },
+    "./hooks": {
+      "import": "./dist/hooks/index.js",
+      "types": "./dist/hooks/index.d.ts"
+    },
+    "./icons": {
+      "import": "./dist/icons/index.js",
+      "types": "./dist/icons/index.d.ts"
+    },
+    "./plugin": {
+      "import": "./dist/plugin.js",
+      "types": "./dist/plugin.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "vite build && tsc -p tsconfig.build.json --emitDeclarationOnly --declaration --outDir dist",
     "lint": "oxlint",
     "test": "vitest run",
     "test:watch": "vitest",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "prepare": "npm run build"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0"
   },
   "dependencies": {
     "react": "^19.2.7",
@@ -27,6 +55,18 @@
     "oxlint": "^1.71.0",
     "typescript": "~6.0.2",
     "vite": "^8.1.1",
+    "vite-plugin-dts": "^4.5.4",
     "vitest": "^4.1.10"
-  }
+  },
+  "keywords": [
+    "react",
+    "components",
+    "ui",
+    "framework",
+    "class-based",
+    "render-props",
+    "auto-import",
+    "vite-plugin"
+  ],
+  "license": "MIT"
 }
