@@ -39,7 +39,8 @@ export class _Button  {
             width: a.width,
             padding: a.padding,
             border: a.border,
-            borderRadius: a.borderRadius
+            borderRadius: a.borderRadius,
+            ...this.style
           }}
           {...a.gest}
         >
