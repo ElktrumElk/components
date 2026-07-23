@@ -1,0 +1,14 @@
+
+.icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4rem;
+    border: none;
+    background: transparent;
+    transition: background .4s ease;
+}
+
+.icon-btn:active {
+
+}
