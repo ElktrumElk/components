@@ -36,9 +36,11 @@ describe('IconButton', () => {
     expect(screen.getByRole('button')).toHaveStyle({ color: 'rgb(0, 0, 255)' })
   })
 
-  it('applies default background none', () => {
-    render(<IconButton icon={() => <MockIcon />} />)
-    expect(screen.getByRole('button')).toHaveStyle({ background: 'none' })
+  it('applies gest props', async () => {
+    const onClick = vi.fn()
+    render(<IconButton gest={{ onClick }} icon={() => <MockIcon />} />)
+    await userEvent.click(screen.getByRole('button'))
+    expect(onClick).toHaveBeenCalledOnce()
   })
 
   it('handles onClick via gest', async () => {

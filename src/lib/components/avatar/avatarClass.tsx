@@ -13,6 +13,7 @@ const SIZE_MAP: Record<AvatarSize, string> = {
 export interface AvatarProp {
   src?: string
   alt?: string
+  icon?: React.JSX.ElementType
   size?: AvatarSize
   borderRadius?: string
   backgroundColor?: string
@@ -28,10 +29,12 @@ export interface AvatarProp {
 
 export class _Avatar {
   fallback!: ElementType
+  icon!: ElementType
   private _hasError = false
 
   build? = ({ ...a }: AvatarProp): React.JSX.Element => {
     this.fallback = a.fallback as ElementType
+    this.icon = a.icon as ElementType
     const dim = SIZE_MAP[a.size || 'md']
     const rad = a.borderRadius || '50%'
 
@@ -66,6 +69,8 @@ export class _Avatar {
               }}
               onError={() => { this._hasError = true }}
             />
+          ) : this.icon ? (
+            <this.icon />
           ) : this.fallback ? (
             <this.fallback />
           ) : null}

@@ -3,6 +3,7 @@ import type { ElementType } from "react";
 type Direction = 'column' | 'row' | 'row-reverse' | 'column-reverse'
 type Align = 'stretch' | 'flex-start' | 'flex-end' | 'center' | 'baseline'
 type Justify = 'flex-start' | 'flex-end' | 'center' | 'space-between' | 'space-around' | 'space-evenly'
+type Position = 'static' | 'relative' | 'absolute' | 'fixed' | 'sticky'
 
 export interface StackProp {
   child?: React.JSX.ElementType
@@ -15,6 +16,12 @@ export interface StackProp {
   height?: string
   padding?: string
   margin?: string
+  position?: Position
+  top?: string
+  right?: string
+  bottom?: string
+  left?: string
+  zIndex?: number
   style?: React.CSSProperties
   className?: string
   gest?: React.DetailedHTMLProps<
@@ -45,6 +52,12 @@ export class _Stack {
             height: a.height,
             padding: a.padding,
             margin: a.margin,
+            position: a.position,
+            top: a.top,
+            right: a.right,
+            bottom: a.bottom,
+            left: a.left,
+            zIndex: a.zIndex,
             ...a.style,
           }}
           {...a.gest}

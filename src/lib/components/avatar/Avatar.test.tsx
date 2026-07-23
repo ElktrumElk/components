@@ -3,6 +3,12 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import Avatar from './Avatar'
 
+const MockIcon = () => (
+  <svg data-testid="mock-icon">
+    <circle cx="12" cy="12" r="10" />
+  </svg>
+)
+
 describe('Avatar', () => {
   it('renders img when src is provided', () => {
     render(<Avatar src="/user.jpg" alt="User" />)
@@ -62,13 +68,48 @@ describe('Avatar', () => {
     expect(avatar).toHaveStyle({ background: 'rgb(0, 0, 255)' })
   })
 
-  it('shows fallback when no src', () => {
+  it('shows icon when no src', () => {
+    render(<Avatar icon={() => <MockIcon />} />)
+    expect(screen.getByTestId('mock-icon')).toBeInTheDocument()
+  })
+
+  it('does not show icon when src is provided', () => {
+    render(<Avatar src="/pic.jpg" icon={() => <MockIcon />} />)
+    expect(screen.queryByTestId('mock-icon')).not.toBeInTheDocument()
+  })
+
+  it('shows fallback when no src and no icon', () => {
     render(<Avatar fallback={() => <span>JD</span>} />)
     expect(screen.getByText('JD')).toBeInTheDocument()
   })
 
+  it('does not show fallback when icon is provided', () => {
+    render(<Avatar icon={() => <MockIcon />} fallback={() => <span>FB</span>} />)
+    expect(screen.queryByText('FB')).not.toBeInTheDocument()
+    expect(screen.getByTestId('mock-icon')).toBeInTheDocument()
+  })
+
   it('does not show fallback when src is provided', () => {
     render(<Avatar src="/pic.jpg" fallback={() => <span>FB</span>} />)
+    expect(screen.queryByText('FB')).not.toBeInTheDocument()
+  })
+
+  it('does not show icon when src is provided', () => {
+    render(<Avatar src="/pic.jpg" icon={() => <MockIcon />} />)
+    expect(screen.queryByTestId('mock-icon')).not.toBeInTheDocument()
+  })
+
+  it('prioritizes src over icon', () => {
+    render(
+      <Avatar
+        src="/photo.jpg"
+        alt="User"
+        icon={() => <MockIcon />}
+        fallback={() => <span>FB</span>}
+      />
+    )
+    expect(screen.getByRole('img')).toBeInTheDocument()
+    expect(screen.queryByTestId('mock-icon')).not.toBeInTheDocument()
     expect(screen.queryByText('FB')).not.toBeInTheDocument()
   })
 

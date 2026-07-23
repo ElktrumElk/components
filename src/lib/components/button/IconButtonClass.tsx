@@ -1,5 +1,5 @@
 import { _Button, type ButtonProp } from "./_buttonClass";
-
+import './buttons.css'
 export interface IconButtonProp extends ButtonProp {
   icon?: React.JSX.ElementType;
 }
@@ -18,8 +18,7 @@ export class _IconButton extends _Button {
             color: a.color,
             border: a?.border || 'none',
             borderRadius: a?.borderRadius,
-            background: 'none',
-            
+            padding: a.padding || '.3rem',
             ...a?.style,
           }}
           {...a?.gest}
