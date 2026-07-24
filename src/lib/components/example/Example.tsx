@@ -14,10 +14,5 @@ const InitializeExample = () => {
 export default function Example({ ...a }: ExampleProp) {
   const { _example } = InitializeExample();
   a?.onFunc?.(_example?.current as _Example);
-  return _example?.current?.build?.({ ...a }, (self) =>
-    setTimeout(() => {
-      if (!self) return;
-      self!.current.innerHTML = a.text as string;
-    }, 100),
-  );
+  return _example?.current?.build?.({ ...a });
 }
