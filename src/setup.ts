@@ -1,4 +1,4 @@
-import type { ComponentType } from 'react';
+import type { ComponentType } from "react";
 
 declare global {
   namespace JSX {
@@ -12,13 +12,13 @@ declare global {
       divider: any;
       panel: any;
       span: any;
-      'scroll-view': any;
+      "scroll-view": any;
       section: any;
       article: any;
       navigator: any;
       button: any;
-      'icon-button': any;
-      'text-button': any;
+      "icon-button": any;
+      "text-button": any;
       card: any;
       badge: any;
       avatar: any;
@@ -26,16 +26,19 @@ declare global {
       input: any;
       tiles: any;
       list: any;
-      'list-view': any;
-      'list-menu': any;
-      'bottom-modal': any;
-      'side-panel': any;
+      "list-view": any;
+      "list-menu": any;
+      "bottom-modal": any;
+      "side-panel": any;
       reabon: any;
       tab: any;
-      'tab-view': any;
+      "tab-view": any;
       icon: any;
-      'icon-network': any;
-      'page-scroll-view': any;
+      "icon-network": any;
+      "page-scroll-view": any;
+      icons: React.SVGProps<SVGSVGElement>;
+      gap: React.JSX.Element;
+      example: React.JSX.Element;
     }
   }
 }
@@ -51,6 +54,7 @@ export function getRegistered(name: string): ComponentType<any> | undefined {
 }
 
 export function setup() {
+  
   // This file provides global type declarations
   // Components are auto-imported via the Vite plugin
   // No manual registration needed

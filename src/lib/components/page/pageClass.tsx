@@ -6,6 +6,7 @@ export interface PageProp {
     header?: React.JSX.ElementType
     body: React.JSX.ElementType 
     footer?: React.JSX.ElementType
+    background?: string
     className?: string
     style?: React.CSSProperties
     atrib?: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
@@ -20,7 +21,7 @@ export class _Page {
     style?: React.CSSProperties = {}
     
 
-    build? = ({header, body, footer, className = 'page', style, atrib}: PageProp): React.JSX.Element => {
+    build? = ({header, body, footer, background, className = 'page', style, atrib}: PageProp): React.JSX.Element => {
 
         this.Header = header || null
         this.Body = body 
@@ -28,7 +29,7 @@ export class _Page {
         this.style = style || {}
         return (
             <>
-                <section className={className} style={style} {...atrib}>
+                <section className={className} style={{background: background, ...this.style}} {...atrib}>
 
                     {this.Header && <this.Header />}
                     {this.Body && <this.Body />}

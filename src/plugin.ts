@@ -7,7 +7,8 @@ const COMPONENTS = [
   'Card', 'Badge', 'Avatar', 'Image', 'Input', 'Tiles',
   'List', 'ListView', 'ListMenu',
   'BottomModal', 'SidePanel', 'Reabon',
-  'Tab', 'TabView', 'Icon', 'IconNetwork', 'PageScrollView',
+  'Tab', 'TabView', 'Icon', 'IconNetwork', 'PageScrollView', 'Icons',
+  'Gap', 'Example'
 ];
 
 const HOOKS = [
@@ -18,6 +19,7 @@ const HOOKS = [
   'useEffect', 'useMountEffect', 'useUpdateEffect',
   'useCallback', 'useMemo', 'useMemoOnce', 'useStableCallback',
 ];
+
 
 function findUsed(source: string, names: string[]): string[] {
   const used: string[] = [];
@@ -36,8 +38,8 @@ interface AutoImportOptions {
 }
 
 export function componentAutoImport(options: AutoImportOptions = {}): Plugin {
-  const compSource = options.componentsFrom ?? 'components';
-  const hooksSource = options.hooksFrom ?? 'components/hooks';
+  const compSource = options.componentsFrom ?? '@elk/components';
+  const hooksSource = options.hooksFrom ?? '@elk/components/hooks';
 
   return {
     name: 'component-auto-import',

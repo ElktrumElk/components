@@ -1,5 +1,5 @@
 {
-  "name": "components",
+  "name": "@elk/components",
   "version": "1.0.0",
   "description": "A lightweight React component framework with class-based architecture, render props, and 205+ icons",
   "type": "module",
@@ -15,7 +15,7 @@
       "types": "./dist/hooks/index.d.ts"
     },
     "./icons": {
-      "import": "./dist/icons/index.js",
+      "import": "./dist/icons.js",
       "types": "./dist/icons/index.d.ts"
     },
     "./plugin": {

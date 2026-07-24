@@ -1,6 +1,6 @@
 import { useRef } from "react"
 import { _Page, type PageProp } from "./pageClass"
-
+import './__page.css'
 
 const InitializePage = () => {
     const __page = useRef<_Page>(null)

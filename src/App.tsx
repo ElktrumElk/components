@@ -1,37 +1,49 @@
-import { Layout} from "./icons";
+import {  ArrowRight, Layout, MapPin } from "./icons";
 
 import Center from "./lib/components/center/Center";
 import Container from "./lib/components/container/Container";
-
-import Icon from "./lib/components/icon/Icon";
 import Page from "./lib/components/page/Page";
-
 import Text from "./lib/components/text/Text";
-import { createStore, useStore } from "./hooks";
-import { Button } from "./components";
 
-const store = createStore<{ count: number }>({ count: 0 });
+//import { createStore, } from "./hooks";
+import {
+  createStore,
+  
+  Icons,
+  
+  Icon,
+  IconButton,
+  ListView,
+  Tiles,
+  useStore,
+  
+} from "./components";
 
-function Counter() {
-  const { count } = useStore(store);
+//const store = createStore<{ count: number }>({ count: 0 });
 
-  return (
-    
-    <Button
-      padding=".5rem 1rem"
-      borderRadius="1rem"
-      border="1px solid #0a6e7d"
-      color="#d5f6fb"
-      style={{ background: "#0f77775a" }}
-      gest={{
-        onClick: () => store.setState(prev => ({ count: (prev.count ?? 0) + 1 }))
-      }}
-      child={() => <Text text={`counter: ${count ?? 0}`} type="p" />}
-    />
-  );
-}
+const tiles = createStore({
+  datas: [
+    {
+      id: 1,
+      title: "Location",
+      subtitle: "Know Your location",
+      leadinicon: <MapPin size={30} color="blue" />,
+      trailingIcon: <ArrowRight color="#3a5971" size={30} />,
+    },
+
+    {
+      id: 2,
+      title: "Layouts",
+      subtitle: "Align Items Properly",
+      leadinicon: <Layout size={30} color="orange" />,
+      trailingIcon: Icons.icon.ArrowRight({}),
+    },
+  ],
+});
 
 export default function App() {
+  const { datas } = useStore(tiles);
+  
   return (
     <Page
       body={() => (
@@ -42,36 +54,44 @@ export default function App() {
             <Center
               child={() => (
                 <>
-                  <Container
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: ".5rem",
+                  <IconButton
+                    icon={Icons.icon.Layout}
+                    gest={{
+                      onClick: () => tiles.setState({datas: [...datas.filter(x => x.id != 2)]}),
                     }}
-                    child={() => (
-                      <>
-                        <Icon icon={Layout} color="#0275c7" size={30} />
-                        <Text
-                          text="Component"
-                          type="h1"
-                          size="1.4rem"
-                          color="white"
-                          style={{ fontFamily: "sans-serif" }}
+                  />
+
+                  <ListView
+                    style={{ display: "flex", gap: "1rem" }}
+                    child={() =>
+                      datas?.map((data, key) => (
+                        <Tiles
+                          key={key}
+                          leading={() => <Icon icon={data?.leadinicon} />}
+                          title={() => (
+                            <Text text={data.title} type="h3" color="white" />
+                          )}
+                          subtitle={() => (
+                            <Text
+                              text={data.subtitle}
+                              color="#3a5971"
+                              type="p"
+                            />
+                          )}
+                          borderBottom="1px solid #3a5971"
+                          trailing={() => (
+                            <IconButton
+                              icon={() => data.trailingIcon}
+                              gest={{
+                                onClick: () => alert(data.title),
+                              }}
+                            />
+                          )}
+                          style={{ minWidth: "300px" }}
                         />
-                      </>
-                    )}
-                    
+                      ))
+                    }
                   />
-
-                  <Text
-                    text="React Class Base Control"
-                    color="white"
-                    type="h2"
-                    size="4rem"
-                    style={{ fontFamily: "sans-serif" }}
-                  />
-
-                  <Counter />
                 </>
               )}
             />

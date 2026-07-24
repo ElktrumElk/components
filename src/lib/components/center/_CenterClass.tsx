@@ -14,7 +14,7 @@ export class _Center {
         justifyContent: 'center',
         width: '100%',
         height: '100%',
-        flex: 1
+        flex: '1',
     }
 
     child!: React.JSX.ElementType

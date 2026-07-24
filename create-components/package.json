@@ -1,15 +1,7 @@
 {
-  "name": "create-components",
+  "name": "first-component-project",
   "version": "1.0.0",
   "description": "Scaffold a new Components framework project",
-  "type": "module",
-  "bin": {
-    "create-components": "./index.js"
-  },
-  "files": [
-    "index.js",
-    "templates/"
-  ],
   "keywords": [
     "react",
     "components",
@@ -19,12 +11,29 @@
     "vite",
     "typescript"
   ],
+  "homepage": "https://github.com/your-username/components#readme",
+  "bugs": {
+    "url": "https://github.com/your-username/components/issues"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-username/components.git",
+    "url": "git+https://github.com/your-username/components.git",
     "directory": "create-components"
   },
   "license": "MIT",
+  "author": "elktrumelk",
+  "type": "module",
+  "main": "index.js",
+  "bin": {
+    "create-components": "index.js"
+  },
+  "files": [
+    "index.js",
+    "templates/"
+  ],
+  "scripts": {
+    "test": "npm run test"
+  },
   "engines": {
     "node": ">=18.0.0"
   }
