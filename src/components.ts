@@ -34,6 +34,7 @@ export { default as PageScrollView } from "./lib/components/pageScrollView/PageS
 export { default as Gap } from "./lib/components/gap/Gap";
 export {default as Example} from './lib/components/example/Example';
 export {default as Animation} from './lib/components/animation/Animation';
+export {default as Transition} from './lib/components/transition/Transition';
 // icon
 export { default as Icons } from "./lib/utility/icon";
 

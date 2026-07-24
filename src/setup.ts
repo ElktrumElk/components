@@ -40,6 +40,7 @@ declare global {
       gap: React.JSX.Element;
       example: React.JSX.Element;
       animation: React.JSX.Element;
+      transition: React.JSX.Element;
     }
   }
 }
