@@ -11,7 +11,11 @@ type TransitionEffect =
   | "zoom"
   | "flip"
   | "liquid"
-  | "smooth";
+  | "smooth"
+  | "morph"
+  | "glide"
+  | "reveal"
+  | "pop";
 
 export interface TransitionProp {
   from?: React.JSX.ElementType;
@@ -33,42 +37,65 @@ export interface TransitionProp {
   onTransitionEnd?: () => void;
 }
 
+const LAYER_BASE: React.CSSProperties = {
+  position: "absolute",
+  inset: 0,
+  willChange: "opacity, transform, filter",
+  backfaceVisibility: "hidden",
+};
+
 const EFFECTS: Record<TransitionEffect, { enter: React.CSSProperties; exit: React.CSSProperties }> = {
   fade: {
     enter: { opacity: "1" },
     exit: { opacity: "0" },
   },
   "slide-left": {
-    enter: { transform: "translateX(0)", opacity: "1" },
-    exit: { transform: "translateX(-100%)", opacity: "0" },
+    enter: { transform: "translate3d(0,0,0)", opacity: "1" },
+    exit: { transform: "translate3d(-100%,0,0)", opacity: "0" },
   },
   "slide-right": {
-    enter: { transform: "translateX(0)", opacity: "1" },
-    exit: { transform: "translateX(100%)", opacity: "0" },
+    enter: { transform: "translate3d(0,0,0)", opacity: "1" },
+    exit: { transform: "translate3d(100%,0,0)", opacity: "0" },
   },
   "slide-up": {
-    enter: { transform: "translateY(0)", opacity: "1" },
-    exit: { transform: "translateY(-100%)", opacity: "0" },
+    enter: { transform: "translate3d(0,0,0)", opacity: "1" },
+    exit: { transform: "translate3d(0,-100%,0)", opacity: "0" },
   },
   "slide-down": {
-    enter: { transform: "translateY(0)", opacity: "1" },
-    exit: { transform: "translateY(100%)", opacity: "0" },
+    enter: { transform: "translate3d(0,0,0)", opacity: "1" },
+    exit: { transform: "translate3d(0,100%,0)", opacity: "0" },
   },
   zoom: {
-    enter: { transform: "scale(1)", opacity: "1" },
-    exit: { transform: "scale(0.8)", opacity: "0" },
+    enter: { transform: "translate3d(0,0,0) scale(1)", opacity: "1" },
+    exit: { transform: "translate3d(0,0,0) scale(0.85)", opacity: "0" },
   },
   flip: {
-    enter: { transform: "perspective(800px) rotateY(0deg)", opacity: "1" },
-    exit: { transform: "perspective(800px) rotateY(90deg)", opacity: "0" },
+    enter: { transform: "perspective(600px) rotateY(0deg)", opacity: "1" },
+    exit: { transform: "perspective(600px) rotateY(-90deg)", opacity: "0" },
   },
   liquid: {
-    enter: { filter: "blur(0px)", opacity: "1", transform: "scale(1)" },
-    exit: { filter: "blur(12px)", opacity: "0", transform: "scale(1.05)" },
+    enter: { filter: "blur(0px) saturate(1)", opacity: "1", transform: "scale(1)" },
+    exit: { filter: "blur(16px) saturate(1.5)", opacity: "0", transform: "scale(1.08)" },
   },
   smooth: {
-    enter: { transform: "translateY(0) scale(1)", opacity: "1" },
-    exit: { transform: "translateY(12px) scale(0.97)", opacity: "0" },
+    enter: { transform: "translate3d(0,0,0) scale(1)", opacity: "1" },
+    exit: { transform: "translate3d(0,16px,0) scale(0.96)", opacity: "0" },
+  },
+  morph: {
+    enter: { transform: "scale(1) rotate(0deg)", opacity: "1", borderRadius: "0" },
+    exit: { transform: "scale(0.6) rotate(8deg)", opacity: "0", borderRadius: "24px" },
+  },
+  glide: {
+    enter: { transform: "translate3d(0,0,0) skewX(0deg)", opacity: "1" },
+    exit: { transform: "translate3d(-60%,0,0) skewX(-4deg)", opacity: "0" },
+  },
+  reveal: {
+    enter: { clipPath: "inset(0 0 0 0)", opacity: "1" },
+    exit: { clipPath: "inset(0 0 100% 0)", opacity: "0.5" },
+  },
+  pop: {
+    enter: { transform: "translate3d(0,0,0) scale(1)", opacity: "1" },
+    exit: { transform: "translate3d(0,0,0) scale(0.5)", opacity: "0" },
   },
 };
 
@@ -144,16 +171,12 @@ export class _Transition {
     const duration = a.duration ?? 300;
     const easing = a.easing ?? "cubic-bezier(0.4, 0, 0.2, 1)";
 
-    const transition = `opacity ${duration}ms ${easing}, transform ${duration}ms ${easing}, filter ${duration}ms ${easing}`;
+    const transition = `opacity ${duration}ms ${easing}, transform ${duration}ms ${easing}, filter ${duration}ms ${easing}, clip-path ${duration}ms ${easing}, border-radius ${duration}ms ${easing}`;
 
     const showTo = this.switched;
 
     const fromStyle: React.CSSProperties = {
-      position: "absolute",
-      top: 0,
-      left: 0,
-      width: "100%",
-      height: "100%",
+      ...LAYER_BASE,
       transition,
       ...(showTo ? effect.exit : effect.enter),
       zIndex: showTo ? 0 : 1,
@@ -162,11 +185,7 @@ export class _Transition {
     };
 
     const toStyle: React.CSSProperties = {
-      position: "absolute",
-      top: 0,
-      left: 0,
-      width: "100%",
-      height: "100%",
+      ...LAYER_BASE,
       transition,
       ...(showTo ? effect.enter : effect.exit),
       zIndex: showTo ? 1 : 0,

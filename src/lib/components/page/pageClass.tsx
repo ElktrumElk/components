@@ -29,7 +29,7 @@ export class _Page {
         this.style = style || {}
         return (
             <>
-                <section className={className} style={{background: background, ...this.style}} {...atrib}>
+                <section className={className} style={{background: background, height: '100%', display: 'flex', flexDirection: 'column', ...this.style}} {...atrib}>
 
                     {this.Header && <this.Header />}
                     {this.Body && <this.Body />}

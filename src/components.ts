@@ -35,6 +35,7 @@ export { default as Gap } from "./lib/components/gap/Gap";
 export {default as Example} from './lib/components/example/Example';
 export {default as Animation} from './lib/components/animation/Animation';
 export {default as Transition} from './lib/components/transition/Transition';
+export {default as SectionDivider} from './lib/components/sectionDivider/SectionDivider';
 // icon
 export { default as Icons } from "./lib/utility/icon";
 

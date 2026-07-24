@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@elk/components": "^1.0.0",
+    "@elktrumelk/components": "^1.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },

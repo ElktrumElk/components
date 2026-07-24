@@ -27,7 +27,7 @@ function detectComponentsVersion() {
   const frameworkPkg = join(frameworkPath, 'package.json');
   if (existsSync(frameworkPkg)) {
     const pkg = JSON.parse(readFileSync(frameworkPkg, 'utf-8'));
-    if (pkg.name === '@elk/components') {
+    if (pkg.name === '@elktrumelk/components') {
       return `file:${frameworkPath}`;
     }
   }
@@ -37,8 +37,8 @@ function detectComponentsVersion() {
 async function main() {
   console.log('');
   console.log('  ┌─────────────────────────────────────────┐');
-  console.log('  │         Components Framework             │');
-  console.log('  │    Scaffold a new project                 │');
+  console.log('  │         Elk Components                  │');
+  console.log('  │    Scaffold a new project                │');
   console.log('  └─────────────────────────────────────────┘');
   console.log('');
 
@@ -71,7 +71,7 @@ async function main() {
   const pkgPath = join(targetDir, 'package.json');
   const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8'));
   pkg.name = projectName;
-  pkg.dependencies['@elk/components'] = componentsVersion;
+  pkg.dependencies['@elktrumelk/components'] = componentsVersion;
   writeFileSync(pkgPath, JSON.stringify(pkg, null, 2));
 
   console.log('  Installing dependencies...\n');

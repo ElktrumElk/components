@@ -1,5 +1,4 @@
-import { render, screen, act } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { render, screen, act, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import Transition from "./Transition";
 import { _Transition } from "./TransitionClass";
@@ -121,9 +120,7 @@ describe("Transition", () => {
     vi.useRealTimers();
   });
 
-  it("transitions on gesture click", async () => {
-    vi.useFakeTimers();
-    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+  it("transitions on gesture click via fireEvent", () => {
     const { container } = render(
       <Transition
         from={() => <div>From</div>}
@@ -136,15 +133,14 @@ describe("Transition", () => {
 
     expect(toLayer.style.visibility).toBe("hidden");
 
-    await user.click(wrapper);
+    act(() => {
+      fireEvent.click(wrapper);
+    });
 
     expect(toLayer.style.visibility).toBe("visible");
-    vi.useRealTimers();
   });
 
-  it("transitions on gesture hover", async () => {
-    vi.useFakeTimers();
-    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+  it("transitions on gesture hover via fireEvent", () => {
     const { container } = render(
       <Transition
         from={() => <div>From</div>}
@@ -157,10 +153,11 @@ describe("Transition", () => {
 
     expect(toLayer.style.visibility).toBe("hidden");
 
-    await user.hover(wrapper);
+    act(() => {
+      fireEvent.mouseEnter(wrapper);
+    });
 
     expect(toLayer.style.visibility).toBe("visible");
-    vi.useRealTimers();
   });
 
   it("applies fade effect exit on from layer when active", () => {
@@ -208,7 +205,7 @@ describe("Transition", () => {
       vi.advanceTimersByTime(100);
     });
 
-    expect(toLayer.style.transform).toBe("translateX(0)");
+    expect(toLayer.style.transform).toContain("0,0,0");
     vi.useRealTimers();
   });
 
@@ -230,8 +227,8 @@ describe("Transition", () => {
       vi.advanceTimersByTime(100);
     });
 
-    expect(toLayer.style.filter).toBe("blur(0px)");
-    expect(toLayer.style.transform).toBe("scale(1)");
+    expect(toLayer.style.filter).toContain("blur(0px)");
+    expect(toLayer.style.transform).toContain("scale(1)");
     vi.useRealTimers();
   });
 

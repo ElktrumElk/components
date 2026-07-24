@@ -11,7 +11,7 @@ const SIZE_MAP: Record<IconSize, number> = {
 }
 
 export interface IconProp {
-  icon: React.SVGProps<SVGSVGElement>
+  icon: React.ComponentType<{ size?: number; color?: string }> | ElementType
   size?: IconSize | number
   color?: string
   className?: string

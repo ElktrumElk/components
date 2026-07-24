@@ -1,7 +1,7 @@
 {
-  "name": "first-component-project",
-  "version": "1.0.0",
-  "description": "Scaffold a new Components framework project",
+  "name": "@elktrumelk/create-component",
+  "version": "1.0.3",
+  "description": "Scaffold a new Elk Components project",
   "keywords": [
     "react",
     "components",
@@ -9,15 +9,16 @@
     "cli",
     "create",
     "vite",
-    "typescript"
+    "typescript",
+    "elk"
   ],
-  "homepage": "https://github.com/your-username/components#readme",
+  "homepage": "https://github.com/elktrumelk/elk-components#readme",
   "bugs": {
-    "url": "https://github.com/your-username/components/issues"
+    "url": "https://github.com/elktrumelk/elk-components/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/your-username/components.git",
+    "url": "git+https://github.com/elktrumelk/elk-components.git",
     "directory": "create-components"
   },
   "license": "MIT",
@@ -25,14 +26,14 @@
   "type": "module",
   "main": "index.js",
   "bin": {
-    "create-components": "index.js"
+    "create-elk-component": "index.js"
   },
   "files": [
     "index.js",
     "templates/"
   ],
   "scripts": {
-    "test": "npm run test"
+    "test": "echo \"no tests\""
   },
   "engines": {
     "node": ">=18.0.0"
