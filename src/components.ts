@@ -33,6 +33,7 @@ export { default as IconNetwork } from "./lib/components/iconNetwork/IconNetwork
 export { default as PageScrollView } from "./lib/components/pageScrollView/PageScrollView";
 export { default as Gap } from "./lib/components/gap/Gap";
 export {default as Example} from './lib/components/example/Example';
+export {default as Animation} from './lib/components/animation/Animation';
 // icon
 export { default as Icons } from "./lib/utility/icon";
 

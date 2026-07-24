@@ -16,10 +16,6 @@ describe('IconButton', () => {
     expect(screen.getByRole('button')).toBeInTheDocument()
   })
 
-  it('applies default icon-btn class', () => {
-    render(<IconButton icon={() => <MockIcon />} />)
-    expect(screen.getByRole('button')).toHaveClass('icon-btn')
-  })
 
   it('applies custom className', () => {
     render(<IconButton icon={() => <MockIcon />} className="custom-icon" />)

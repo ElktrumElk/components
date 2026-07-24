@@ -39,6 +39,7 @@ declare global {
       icons: React.SVGProps<SVGSVGElement>;
       gap: React.JSX.Element;
       example: React.JSX.Element;
+      animation: React.JSX.Element;
     }
   }
 }
