@@ -1,6 +1,7 @@
 import React from "react";
 
 type AnimationType = "letters" | "words";
+type TextType = "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "p" | "pre";
 
 export interface WordSegment {
   text: string;
@@ -26,6 +27,10 @@ export interface LetterAnimationProp {
   letterKeyframes?: Keyframe[][];
   /** Word segments with optional per-word keyframe overrides (used in `"words"` mode). */
   words?: WordSegment[];
+  /** Font size applied to the rendered text (e.g. `"2rem"`, `"32px"`). */
+  size?: string;
+  /** HTML element used to render the text. Accepts `"h1"` through `"h6"`, `"p"`, or `"pre"`. Defaults to `"div"`. */
+  textType?: TextType;
   /** Duration of each animation in milliseconds. Defaults to `300`. */
   duration?: number;
   /** Base delay before the first token starts animating, in milliseconds. Defaults to `0`. */
@@ -182,7 +187,7 @@ export function getPresetKeyframes(name: AnimationPreset): Keyframe[] {
 const DEFAULT_KEYFRAMES: Keyframe[] = PRESETS.fadeUp;
 
 export class _LetterAnimation {
-  containerRef = React.createRef<HTMLDivElement>();
+  containerRef = React.createRef<any>();
   animations: Animation[] = [];
 
   play = () => this.animations.forEach((a) => a.play());
@@ -221,10 +226,10 @@ export class _LetterAnimation {
     const fill = props.fill ?? "forwards";
     const easing = props.easing ?? "ease";
 
-    const spans = el.querySelectorAll<HTMLSpanElement>("[data-letter]");
+    const spans = el.querySelectorAll("[data-letter]");
 
     let animIndex = 0;
-    spans.forEach((span) => {
+    spans.forEach((span: any) => {
       let keyframes: Keyframe[];
       if (mode === "words" && props.words?.[animIndex]?.keyframes) {
         keyframes = props.words[animIndex].keyframes!;
@@ -251,6 +256,23 @@ export class _LetterAnimation {
 
   build? = ({ ...a }: LetterAnimationProp): React.JSX.Element => {
     const mode = a.type ?? "letters";
+
+    const containerStyle: React.CSSProperties = {
+      display: "inline-flex",
+      flexWrap: "wrap",
+      fontSize: a.size,
+      margin: 0,
+      ...a.style,
+    };
+
+    const { ref: _ignored, ...gestRest } = a.gest ?? {};
+
+    const containerProps = {
+      ref: this.containerRef,
+      className: a.className,
+      style: containerStyle,
+      ...gestRest,
+    } as any;
 
     const renderTokens = () => {
       if (mode === "words" && a.words) {
@@ -313,19 +335,27 @@ export class _LetterAnimation {
       });
     };
 
-    return (
-      <div
-        ref={this.containerRef}
-        className={a.className}
-        style={{
-          display: "inline-flex",
-          flexWrap: "wrap",
-          ...a.style,
-        }}
-        {...a.gest}
-      >
-        {renderTokens()}
-      </div>
-    );
+    const content = renderTokens();
+
+    switch (a.textType) {
+      case "h1":
+        return <h1 {...containerProps}>{content}</h1>;
+      case "h2":
+        return <h2 {...containerProps}>{content}</h2>;
+      case "h3":
+        return <h3 {...containerProps}>{content}</h3>;
+      case "h4":
+        return <h4 {...containerProps}>{content}</h4>;
+      case "h5":
+        return <h5 {...containerProps}>{content}</h5>;
+      case "h6":
+        return <h6 {...containerProps}>{content}</h6>;
+      case "p":
+        return <p {...containerProps}>{content}</p>;
+      case "pre":
+        return <pre {...containerProps}>{content}</pre>;
+      default:
+        return <div {...containerProps}>{content}</div>;
+    }
   };
 }

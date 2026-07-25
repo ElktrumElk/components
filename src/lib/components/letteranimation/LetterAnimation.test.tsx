@@ -254,6 +254,61 @@ describe("LetterAnimation", () => {
       const wrapper = container.firstElementChild as HTMLElement;
       expect(wrapper).toHaveStyle({ fontSize: "2rem" });
     });
+
+    it("applies size prop as fontSize", () => {
+      const { container } = render(
+        <LetterAnimation text="Hi" size="3rem" />,
+      );
+      const wrapper = container.firstElementChild as HTMLElement;
+      expect(wrapper).toHaveStyle({ fontSize: "3rem" });
+    });
+
+    it("renders as div by default", () => {
+      const { container } = render(<LetterAnimation text="Hi" />);
+      const wrapper = container.firstElementChild;
+      expect(wrapper!.tagName).toBe("DIV");
+    });
+
+    it("renders as h1 when textType is h1", () => {
+      const { container } = render(
+        <LetterAnimation text="Hi" textType="h1" />,
+      );
+      const wrapper = container.firstElementChild;
+      expect(wrapper!.tagName).toBe("H1");
+    });
+
+    it("renders as h2 when textType is h2", () => {
+      const { container } = render(
+        <LetterAnimation text="Hi" textType="h2" />,
+      );
+      const wrapper = container.firstElementChild;
+      expect(wrapper!.tagName).toBe("H2");
+    });
+
+    it("renders as p when textType is p", () => {
+      const { container } = render(
+        <LetterAnimation text="Hi" textType="p" />,
+      );
+      const wrapper = container.firstElementChild;
+      expect(wrapper!.tagName).toBe("P");
+    });
+
+    it("renders as pre when textType is pre", () => {
+      const { container } = render(
+        <LetterAnimation text="Hi" textType="pre" />,
+      );
+      const wrapper = container.firstElementChild;
+      expect(wrapper!.tagName).toBe("PRE");
+    });
+
+    it("renders as h3 with size together", () => {
+      const { container } = render(
+        <LetterAnimation text="Title" textType="h3" size="48px" animation="bounceIn" />,
+      );
+      const wrapper = container.firstElementChild as HTMLElement;
+      expect(wrapper.tagName).toBe("H3");
+      expect(wrapper).toHaveStyle({ fontSize: "48px" });
+    });
   });
 
   describe("instance API", () => {
