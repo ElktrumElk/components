@@ -8,7 +8,7 @@ const COMPONENTS = [
   'List', 'ListView', 'ListMenu',
   'BottomModal', 'SidePanel', 'Reabon',
   'Tab', 'TabView', 'Icon', 'IconNetwork', 'PageScrollView', 'Icons',
-  'Gap', 'Example'
+  'Gap', 'Example', 'Padding', 'GridView'
 ];
 
 const HOOKS = [
@@ -17,7 +17,7 @@ const HOOKS = [
   'useRef', 'usePreviousValue',
   'useInstance', 'useComponentData',
   'useEffect', 'useMountEffect', 'useUpdateEffect',
-  'useCallback', 'useMemo', 'useMemoOnce', 'useStableCallback',
+  'useCallback', 'useMemo', 'useMemoOnce', 'useStableCallback', 
 ];
 
 

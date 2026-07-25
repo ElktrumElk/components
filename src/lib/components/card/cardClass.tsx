@@ -29,6 +29,7 @@ export interface CardProp {
   width?: string
   height?: string
   shadow?: boolean
+  shadowColor?: string
   className?: string
   style?: React.CSSProperties
   gest?: React.DetailedHTMLProps<
@@ -56,14 +57,14 @@ export class _Card {
         <div
           className={a.className}
           style={{
-            width: a.width,
-            height: a.height,
+            width: a.width || '10rem',
+            height: a.height || '10rem',
             padding: pad,
             borderRadius: rad,
             backgroundColor: a.backgroundColor || 'rgba(255,255,255,0.05)',
             borderColor: a.borderColor || 'rgba(255,255,255,0.08)',
             border: `1px solid ${a.borderColor || 'rgba(255,255,255,0.08)'}`,
-            boxShadow: a.shadow ? '0 2px 8px rgba(0,0,0,0.2)' : undefined,
+            boxShadow: a.shadow ? `0 2px 8px ${a.shadowColor || 'rgba(0,0,0,0.2)'}` : undefined,
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',

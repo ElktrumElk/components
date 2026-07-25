@@ -25,8 +25,8 @@ describe("Transition", () => {
     const wrapper = container.firstElementChild as HTMLElement;
     const fromLayer = wrapper.children[0] as HTMLElement;
     const toLayer = wrapper.children[1] as HTMLElement;
-    expect(fromLayer.style.visibility).toBe("visible");
-    expect(toLayer.style.visibility).toBe("hidden");
+    expect(fromLayer.style.display).toBe("flex");
+    expect(toLayer.style.display).toBe("none");
   });
 
   it("applies className", () => {
@@ -81,15 +81,15 @@ describe("Transition", () => {
     const fromLayer = wrapper.children[0] as HTMLElement;
     const toLayer = wrapper.children[1] as HTMLElement;
 
-    expect(fromLayer.style.visibility).toBe("visible");
-    expect(toLayer.style.visibility).toBe("hidden");
+    expect(fromLayer.style.display).toBe("flex");
+    expect(toLayer.style.display).toBe("none");
 
     act(() => {
       vi.advanceTimersByTime(100);
     });
 
-    expect(fromLayer.style.visibility).toBe("hidden");
-    expect(toLayer.style.visibility).toBe("visible");
+    expect(fromLayer.style.display).toBe("none");
+    expect(toLayer.style.display).toBe("flex");
     expect(onTransitionEnd).toHaveBeenCalledOnce();
     vi.useRealTimers();
   });
@@ -109,13 +109,13 @@ describe("Transition", () => {
     const wrapper = container.firstElementChild as HTMLElement;
     const toLayer = wrapper.children[1] as HTMLElement;
 
-    expect(toLayer.style.visibility).toBe("hidden");
+    expect(toLayer.style.display).toBe("none");
 
     act(() => {
       vi.advanceTimersByTime(100);
     });
 
-    expect(toLayer.style.visibility).toBe("visible");
+    expect(toLayer.style.display).toBe("flex");
     expect(onTransitionEnd).toHaveBeenCalledOnce();
     vi.useRealTimers();
   });
@@ -131,13 +131,13 @@ describe("Transition", () => {
     const wrapper = container.firstElementChild as HTMLElement;
     const toLayer = wrapper.children[1] as HTMLElement;
 
-    expect(toLayer.style.visibility).toBe("hidden");
+    expect(toLayer.style.display).toBe("none");
 
     act(() => {
       fireEvent.click(wrapper);
     });
 
-    expect(toLayer.style.visibility).toBe("visible");
+    expect(toLayer.style.display).toBe("flex");
   });
 
   it("transitions on gesture hover via fireEvent", () => {
@@ -151,13 +151,13 @@ describe("Transition", () => {
     const wrapper = container.firstElementChild as HTMLElement;
     const toLayer = wrapper.children[1] as HTMLElement;
 
-    expect(toLayer.style.visibility).toBe("hidden");
+    expect(toLayer.style.display).toBe("none");
 
     act(() => {
       fireEvent.mouseEnter(wrapper);
     });
 
-    expect(toLayer.style.visibility).toBe("visible");
+    expect(toLayer.style.display).toBe("flex");
   });
 
   it("applies fade effect exit on from layer when active", () => {
@@ -339,12 +339,12 @@ describe("Transition", () => {
     act(() => {
       vi.advanceTimersByTime(100);
     });
-    expect(toLayer.style.visibility).toBe("hidden");
+    expect(toLayer.style.display).toBe("none");
 
     act(() => {
       vi.advanceTimersByTime(100);
     });
-    expect(toLayer.style.visibility).toBe("visible");
+    expect(toLayer.style.display).toBe("flex");
     expect(onTransitionEnd).toHaveBeenCalledOnce();
     vi.useRealTimers();
   });

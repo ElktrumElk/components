@@ -11,6 +11,7 @@ const InitializeCard = () => {
   return { _card }
 }
 
+
 export default function Card({ ...a }: CardProp) {
   const { _card } = InitializeCard()
   a?.onFunc?.(_card?.current as _Card)

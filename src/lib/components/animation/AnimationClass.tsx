@@ -4,6 +4,7 @@ type Gesture = "click" | "hover" | "focus" | "scroll" | "none";
 
 export interface AnimationProp {
   child?: React.JSX.ElementType;
+  style?: React.CSSProperties;
   keyframes?: Keyframe[];
   duration?: number;
   delay?: number;
@@ -14,7 +15,6 @@ export interface AnimationProp {
   isAutomatic?: boolean;
   gesture?: Gesture;
   className?: string;
-  style?: React.CSSProperties;
   gest?: React.DetailedHTMLProps<
     React.HTMLAttributes<HTMLDivElement>,
     HTMLDivElement
@@ -109,7 +109,7 @@ export class _Animation {
       <div
         ref={this.wrapperRef}
         className={a.className}
-        style={a.style}
+        style={{width: 'auto', height: 'auto',...a.style}}
         {...a.gest}
       >
         {a.child && <a.child />}

@@ -11,6 +11,36 @@ const InitializeSectionDivider = () => {
   return { _sectionDivider };
 };
 
+
+/**
+ * ## SectionDivider
+ * variant?: DividerVariant;
+ * 
+ * color?: string;
+ * 
+ * fillColor?: string;
+ * 
+ * strokeWidth?: number;
+ * 
+ * height?: number;
+ * 
+ * width?: string;
+ * 
+ * flip?: boolean;
+ * 
+ * customPath?: string;
+ * 
+ * className?: string;
+ * 
+ * style?: React.CSSProperties;
+ * 
+ * child?: React.JSX.ElementType;
+ * 
+ * gest?: React.DetailedHTMLProps<React.SVGAttributes<SVGSVGElement>,SVGSVGElement>;
+ * 
+ * onFunc?: (self: _SectionDivider) => void;
+ * 
+ */
 export default function SectionDivider({ ...a }: SectionDividerProp) {
   const { _sectionDivider } = InitializeSectionDivider();
   a?.onFunc?.(_sectionDivider?.current as _SectionDivider);

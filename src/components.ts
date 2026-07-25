@@ -36,6 +36,8 @@ export {default as Example} from './lib/components/example/Example';
 export {default as Animation} from './lib/components/animation/Animation';
 export {default as Transition} from './lib/components/transition/Transition';
 export {default as SectionDivider} from './lib/components/sectionDivider/SectionDivider';
+export {default as Padding } from './lib/components/padding/Padding'
+export {default as GridView} from './lib/components/gridview/GridView'
 // icon
 export { default as Icons } from "./lib/utility/icon";
 

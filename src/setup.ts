@@ -1,3 +1,4 @@
+import type React from "react";
 import type { ComponentType } from "react";
 
 declare global {
@@ -42,6 +43,8 @@ declare global {
       animation: React.JSX.Element;
       transition: React.JSX.Element;
       "section-divider": React.JSX.Element;
+      padding: React.JSX.Element;
+      gridView: React.JSX.Element
     }
   }
 }

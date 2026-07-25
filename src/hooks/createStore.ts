@@ -3,7 +3,7 @@ import { useSyncExternalStore, useCallback } from "react";
 type Listener = () => void;
 type StateUpdater<T> = T | ((prev: T) => T);
 
-interface Store<T extends Record<string, unknown>> {
+export interface Store<T extends Record<string, unknown>> {
   getState: () => T;
   setState: (partial: StateUpdater<Partial<T>>) => void;
   subscribe: (listener: Listener) => () => void;
@@ -81,7 +81,7 @@ export function useStore<T extends Record<string, unknown>>(
   return useSyncExternalStore(
     store.subscribe,
     store.getSnapshot,
-    store.getSnapshot
+
   );
 }
 
