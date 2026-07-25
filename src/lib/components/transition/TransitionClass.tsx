@@ -2,7 +2,10 @@ import React from "react";
 import { createStore } from "../../../hooks/createStore";
 import { rrender } from "../../utility/lib";
 
+
 type Gesture = "click" | "hover" | "focus" | "scroll" | "none";
+
+
 
 type TransitionEffect =
   | "fade"
@@ -126,6 +129,10 @@ const EFFECTS: Record<
   },
 };
 
+// ==========================================================================
+//
+// =========================================================================
+/** */
 export class _Transition {
   /**
    * The transition container that apply transition to its childere
@@ -156,13 +163,14 @@ export class _Transition {
   /**
    * Set the origin of transformation
    */
-  private transformOrigin: string = 'top left';
+  private transformOrigin: string = "top left";
 
   /**
    * method that starts the transition flag
    */
+
   trigger = () => {
-    this.isBaseTransition = true;
+      this.isBaseTransition = !this.isBaseTransition;
   };
 
   /**
@@ -194,6 +202,7 @@ export class _Transition {
    * @param onTrigger
    * @returns
    */
+
   bindGestures = (
     gesture?: Gesture,
     delay?: number,
@@ -202,48 +211,42 @@ export class _Transition {
   ) => {
     this.gestureCleanups.forEach((fn) => fn());
     this.gestureCleanups = [];
-
+    
     const el = this.containerRef.current;
+  
     if (!el || !gesture || gesture === "none") return;
+  
 
     const handler = () => {
+
+      // then we trigger the transition
       onTrigger?.();
+      
       const id = setTimeout(
         () => {
-          this.isBasehide = true;
-          rrender.setState({ isGestureActivate: true });
+            this.isBasehide = !this.isBasehide;
+            rrender.setState({ isGestureActivate: true });
         },
         delay! / (threshold || 2),
       );
+
       return () => clearTimeout(id);
     };
 
-    let cleanup: (() => void) | undefined;
+    const eventMap: Record<string, string> = {
+      click: "click",
+      hover: "mouseenter",
+      focus: "focusin",
+      scroll: "scroll",
+    };
 
-    switch (gesture) {
-      case "click": {
-        el.addEventListener("click", () => handler());
-        cleanup = () => el.removeEventListener("click", handler);
-        break;
-      }
-      case "hover": {
-        el.addEventListener("mouseenter", handler);
-        cleanup = () => el.removeEventListener("mouseenter", handler);
-        break;
-      }
-      case "focus": {
-        el.addEventListener("focusin", handler);
-        cleanup = () => el.removeEventListener("focusin", handler);
-        break;
-      }
-      case "scroll": {
-        el.addEventListener("scroll", handler);
-        cleanup = () => el.removeEventListener("scroll", handler);
-        break;
-      }
+    const eventName = eventMap[gesture];
+    if (eventName) {
+      el.addEventListener(eventName, handler);
+      this.gestureCleanups.push(() => {
+        el.removeEventListener(eventName, handler);
+      });
     }
-
-    if (cleanup) this.gestureCleanups.push(cleanup);
   };
 
   dispose = () => {
@@ -293,9 +296,9 @@ export class _Transition {
       ...(this.isBasehide ? effect.enter : effect.exit),
       width: "max-content",
       height: "max-content",
-      zIndex: showTo ? 1 : 0,
-      pointerEvents: showTo ? "auto" : "none",
-      display: this.isBaseTransition ? "flex" : "none",
+      zIndex: this.isBasehide ? 1 : 0,
+      pointerEvents: this.isBasehide ? "auto" : "none",
+      display: showTo ? "flex" : "none",
     };
 
     return (
