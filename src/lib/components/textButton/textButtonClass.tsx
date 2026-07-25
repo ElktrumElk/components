@@ -1,6 +1,20 @@
 import type { ElementType } from "react";
 import type React from "react";
 
+/**
+ * Props for the TextButton component.
+ * @prop child - Optional React element type to render as button content.
+ * @prop text - Optional text content if child is not provided.
+ * @prop color - Text color (default: "inherit").
+ * @prop hoverColor - Text color on hover.
+ * @prop activeColor - Text color when active.
+ * @prop fontSize - Font size (e.g., "1rem").
+ * @prop padding - Padding (default: "0").
+ * @prop className - Optional CSS class name.
+ * @prop style - Optional inline CSS styles.
+ * @prop gest - Optional HTML button attributes.
+ * @prop onFunc - Callback receiving the _TextButton instance.
+ */
 export interface _TextButtonProp {
   child?: React.JSX.ElementType;
   text?: string;

@@ -1,5 +1,23 @@
 import type { ElementType } from "react";
 
+/**
+ * Props for the SidePanel component.
+ *
+ * Renders a fixed-position slide-in panel with a semi-transparent backdrop.
+ * The panel can open from the left or right side of the viewport.
+ *
+ * @property child - A React component type rendered as the panel's content.
+ * @property side - Which side the panel slides in from. Defaults to `"left"`.
+ * @property width - CSS width of the panel. Defaults to `"280px"`.
+ * @property isOpen - Whether the panel is currently visible. When `false`, nothing is rendered.
+ * @property onClose - Callback invoked when the backdrop is clicked, typically used to close the panel.
+ * @property backgroundColor - Background color of the panel. Defaults to `"rgba(255,255,255,0.05)"`.
+ * @property padding - CSS padding inside the panel. Defaults to `"1rem"`.
+ * @property className - Additional CSS class names applied to the `<aside>` element.
+ * @property style - Inline styles merged onto the `<aside>` element.
+ * @property gest - Additional HTML attributes spread onto the `<aside>` element.
+ * @property onFunc - Callback invoked with the internal `_SidePanel` instance after initialization.
+ */
 export interface SidePanelProp {
   child?: React.JSX.ElementType
   side?: 'left' | 'right'

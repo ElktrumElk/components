@@ -10,6 +10,20 @@ const SIZE_MAP: Record<IconSize, number> = {
   xl: 48,
 }
 
+/**
+ * Props for the Icon component, a size-aware icon renderer.
+ *
+ * Supports predefined size tokens (`"xs"`, `"sm"`, `"md"`, `"lg"`, `"xl"`)
+ * or a custom numeric pixel value.
+ *
+ * @property icon - A React component that accepts `size` and `color` props.
+ * @property size - Preset token or pixel value. Defaults to `"md"` (24px).
+ *   Tokens: xs=12, sm=16, md=24, lg=32, xl=48.
+ * @property color - Color string passed to the icon component.
+ * @property className - CSS class name(s) applied to the wrapper `<span>`.
+ * @property style - Additional inline styles applied to the wrapper `<span>`.
+ * @property onFunc - Callback invoked with the internal `_Icon` instance after mount.
+ */
 export interface IconProp {
   icon: React.ComponentType<{ size?: number; color?: string }> | ElementType
   size?: IconSize | number

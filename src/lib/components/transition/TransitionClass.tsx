@@ -22,6 +22,25 @@ type TransitionEffect =
   | "reveal"
   | "pop";
 
+/**
+ * Props for the Transition component.
+ * @prop from - Optional React element type for the initial state.
+ * @prop to - Optional React element type for the final state.
+ * @prop active - Optional boolean to manually control transition state.
+ * @prop effect - Transition effect type (e.g., "fade", "slide-left", "zoom").
+ * @prop duration - Transition duration in milliseconds (default: 300).
+ * @prop delay - Delay before transition starts in milliseconds.
+ * @prop easing - CSS easing function (default: "cubic-bezier(0.4, 0, 0.2, 1)").
+ * @prop isAutomatic - If true, transition starts automatically on mount.
+ * @prop gesture - Gesture type to trigger transition ("click", "hover", "focus", "scroll", "none").
+ * @prop className - Optional CSS class name.
+ * @prop style - Optional inline CSS styles.
+ * @prop gest - Optional HTML div attributes.
+ * @prop origin - Transform origin (default: "top left").
+ * @prop threshold - Threshold for gesture timing calculations.
+ * @prop onFunc - Callback receiving the _Transition instance.
+ * @prop onTransitionEnd - Callback when transition animation ends.
+ */
 export interface TransitionProp {
   from?: React.JSX.ElementType;
   to?: React.JSX.ElementType;

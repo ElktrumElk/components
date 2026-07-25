@@ -38,6 +38,7 @@ export {default as Transition} from './lib/components/transition/Transition';
 export {default as SectionDivider} from './lib/components/sectionDivider/SectionDivider';
 export {default as Padding } from './lib/components/padding/Padding'
 export {default as GridView} from './lib/components/gridview/GridView'
+export {default as LetterAnimation} from './lib/components/letteranimation/LetterAnimation'
 // icon
 export { default as Icons } from "./lib/utility/icon";
 

@@ -1,5 +1,20 @@
 import type { ElementType } from "react";
 
+/**
+ * Props for the Reabon component.
+ * @property {React.JSX.ElementType} [child] - Dropdown/popover content component
+ * @property {React.JSX.ElementType} [trigger] - Trigger element that toggles the dropdown
+ * @property {boolean} [isOpen] - Controlled open state of the dropdown
+ * @property {() => void} [onClose] - Callback fired when the dropdown should close (e.g. click outside)
+ * @property {string} [width] - Width of the dropdown (default: '200px')
+ * @property {string} [backgroundColor] - Background color of the dropdown (default: 'rgba(255,255,255,0.05)')
+ * @property {string} [borderRadius] - Border radius of the dropdown (default: '.5rem')
+ * @property {string} [padding] - Inner padding of the dropdown (default: '.25rem 0')
+ * @property {string} [className] - CSS class name for the wrapper
+ * @property {React.CSSProperties} [style] - Additional inline styles for the wrapper
+ * @property {React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>} [gest] - HTML attributes to spread onto the wrapper
+ * @property {(self: _Reabon) => void} [onFunc] - Callback that receives the Reabon instance for imperative access
+ */
 export interface ReabonProp {
   child?: React.JSX.ElementType;
   trigger?: React.JSX.ElementType;

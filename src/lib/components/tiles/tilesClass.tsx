@@ -1,5 +1,19 @@
 import type { ElementType } from "react";
 
+/**
+ * Props for the Tiles component.
+ * @prop leading - Optional React element type for leading content (e.g., icon).
+ * @prop title - Optional React element type for title.
+ * @prop subtitle - Optional React element type for subtitle.
+ * @prop trailing - Optional React element type for trailing content (e.g., action).
+ * @prop padding - Padding (default: ".75rem 1rem").
+ * @prop gap - Gap between items (default: ".75rem").
+ * @prop borderBottom - Optional bottom border style.
+ * @prop className - Optional CSS class name.
+ * @prop style - Optional inline CSS styles.
+ * @prop gest - Optional HTML div attributes.
+ * @prop onFunc - Callback receiving the _Tiles instance.
+ */
 export interface TilesProp {
   leading?: React.JSX.ElementType
   title?: React.JSX.ElementType

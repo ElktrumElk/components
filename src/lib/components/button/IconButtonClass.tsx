@@ -1,6 +1,12 @@
 import { _Button, type ButtonProp } from "./_buttonClass";
 import './buttons.css'
+/**
+ * Props for the IconButton component.
+ * Extends ButtonProp with an icon property for rendering an icon-only button.
+ * Inherits all base ButtonProp styling options (border, color, borderRadius, etc.).
+ */
 export interface IconButtonProp extends ButtonProp {
+  /** Component type rendered as the button's icon content. */
   icon?: React.JSX.ElementType;
 }
 

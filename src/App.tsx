@@ -1,4 +1,4 @@
-import { Animation, Card, Page, Transition } from "./components";
+import { Animation, Card, LetterAnimation, Page, Transition } from "./components";
 import GridView from "./lib/components/gridview/GridView";
 import Padding from "./lib/components/padding/Padding";
 
@@ -29,6 +29,7 @@ export default function App() {
 
                       child={() => (
                         <>
+                        <LetterAnimation animation="glitch" text="Hello how are you doing" style={{color: 'red'}} iterations={Infinity}  duration={3000}/>
                           <Transition
 
                             style={{ display: 'flex', alignItems: 'center', flexDirection: 'column'}}

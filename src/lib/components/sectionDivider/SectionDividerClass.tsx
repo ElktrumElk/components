@@ -44,6 +44,26 @@ const FILLED_VARIANTS = new Set([
   "scroll",
 ]);
 
+/**
+ * Props for the SectionDivider component.
+ *
+ * Renders an SVG divider with multiple decorative variants (wave, curl, zigzag, etc.).
+ * Supports both stroked and filled rendering modes depending on the variant.
+ *
+ * @property variant - The visual style of the divider. Defaults to `"wave"`.
+ * @property color - Stroke color for stroked variants, also used as fallback fill. Defaults to `"#e2e8f0"`.
+ * @property fillColor - Fill color for filled variants. Falls back to `color` if omitted.
+ * @property strokeWidth - Stroke width in pixels for stroked variants. Defaults to `2`.
+ * @property height - Height of the SVG in pixels. Defaults to `80`.
+ * @property width - CSS width of the SVG. Defaults to `"100%"`.
+ * @property flip - If `true`, mirrors the divider vertically.
+ * @property customPath - A custom SVG path string to override the built-in variant path.
+ * @property className - Additional CSS class names applied to the root `<svg>` element.
+ * @property style - Inline styles merged onto the root `<svg>` element.
+ * @property child - A React component type rendered as a child element (reserved for extensibility).
+ * @property gest - Additional HTML/SVG attributes spread onto the root `<svg>` element.
+ * @property onFunc - Callback invoked with the internal `_SectionDivider` instance after initialization.
+ */
 export interface SectionDividerProp {
   variant?: DividerVariant;
   color?: string;

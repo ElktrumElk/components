@@ -1,6 +1,12 @@
 import type React from "react"
 
+/**
+ * Props for the Center component.
+ * Wraps a single child element in a flex container that centers it
+ * both horizontally and vertically.
+ */
 export interface _CenterProp {
+    /** Component type to render as the centered child. */
     child: React.JSX.ElementType
 }
 

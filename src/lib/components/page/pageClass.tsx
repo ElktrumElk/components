@@ -2,6 +2,17 @@ import type { JSX } from "react/jsx-runtime"
 import './__page.css'
 
 
+/**
+ * Props for the Page component.
+ * @property {React.JSX.ElementType} [header] - Header component to render at the top
+ * @property {React.JSX.ElementType} body - Body component to render as main content
+ * @property {React.JSX.ElementType} [footer] - Footer component to render at the bottom
+ * @property {string} [background] - Background color/style for the page
+ * @property {string} [className] - CSS class name for the page element
+ * @property {React.CSSProperties} [style] - Additional inline styles
+ * @property {React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>} [atrib] - HTML attributes to spread onto the section element
+ * @property {_Page} [onFunc] - Callback that receives the Page instance for imperative access
+ */
 export interface PageProp {
     header?: React.JSX.ElementType
     body: React.JSX.ElementType 

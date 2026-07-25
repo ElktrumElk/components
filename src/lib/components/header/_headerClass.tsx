@@ -1,6 +1,18 @@
 import type { ElementType } from "react";
 import type React from "react";
 
+/**
+ * Props for the Header component, a horizontal navigation/app bar layout.
+ *
+ * @property style - Additional inline styles applied to the `<header>` element.
+ * @property className - CSS class name(s) applied to the `<header>` element.
+ * @property underLine - CSS `border-bottom` value (e.g. `"1px solid #ccc"`).
+ * @property leading - Component rendered at the start (left) of the header.
+ * @property title - Required component rendered as the primary title content.
+ * @property subTitle - Component rendered below the title.
+ * @property action - Component rendered at the end (right) of the header, typically for buttons.
+ * @property titleGap - Gap between title and subtitle (e.g. `"0.5rem"`, `"8px"`, `"0.25em"`).
+ */
 export interface _HeaderProp {
   style?: React.CSSProperties;
   className?: string;

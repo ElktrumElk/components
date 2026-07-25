@@ -1,5 +1,20 @@
 import type React from "react";
 
+/**
+ * Props for the GridView component, a CSS Grid wrapper.
+ *
+ * @property key - React key for list rendering.
+ * @property templateRows - CSS `grid-template-rows` value (e.g. `"1fr 2fr"`).
+ * @property templateColumns - CSS `grid-template-columns` value. Defaults to `"1fr 1fr"`.
+ * @property autoRows - CSS `grid-auto-rows` value for implicitly created rows.
+ * @property autoColumn - CSS `grid-auto-columns` value for implicitly created columns.
+ * @property area - CSS `grid-area` value for named grid placement.
+ * @property autoFlow - CSS `grid-auto-flow` value (e.g. `"row"`, `"column"`, `"dense"`).
+ * @property justifyItems - CSS `justify-items` value for child alignment. Defaults to `"center"`.
+ * @property style - Additional inline styles applied to the grid container.
+ * @property child - A React component type rendered as the grid's children.
+ * @property onFunc - Callback invoked with the internal `_GridView` instance after mount.
+ */
 export interface GridViewProp {
   key?: React.Key;
   templateRows?: string;

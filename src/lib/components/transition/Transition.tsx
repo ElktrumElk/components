@@ -19,6 +19,28 @@ const InitializeTransition = () => {
 };
 
 
+/**
+ * Transition component animates between two states using configurable effects.
+ * @example
+ * <Transition from={ComponentA} to={ComponentB} effect="fade" duration={500} active={true} />
+ * @see TransitionProp
+ * @prop from - Optional React element type for the initial state.
+ * @prop to - Optional React element type for the final state.
+ * @prop active - Optional boolean to manually control transition state.
+ * @prop effect - Transition effect type (e.g., "fade", "slide-left", "zoom").
+ * @prop duration - Transition duration in milliseconds (default: 300).
+ * @prop delay - Delay before transition starts in milliseconds.
+ * @prop easing - CSS easing function.
+ * @prop isAutomatic - If true, transition starts automatically on mount.
+ * @prop gesture - Gesture type to trigger transition.
+ * @prop className - Optional CSS class name.
+ * @prop style - Optional inline CSS styles.
+ * @prop gest - Optional HTML div attributes.
+ * @prop origin - Transform origin.
+ * @prop threshold - Threshold for gesture timing calculations.
+ * @prop onFunc - Callback receiving the _Transition instance.
+ * @prop onTransitionEnd - Callback when transition animation ends.
+ */
 export default function Transition({ ...a }: TransitionProp) {
   const setLayerBase = useSetState(LAYER_BASE);
   const { _transition } = InitializeTransition();
