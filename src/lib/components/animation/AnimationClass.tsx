@@ -2,15 +2,30 @@ import React from "react";
 
 type Gesture = "click" | "hover" | "focus" | "scroll" | "none";
 
+export type MotionTransition = {
+  type?: "spring" | "tween";
+  duration?: number;
+  ease?: string | number[];
+  bounce?: number;
+  stiffness?: number;
+  damping?: number;
+  mass?: number;
+  delay?: number;
+  repeat?: number;
+  repeatType?: "loop" | "reverse" | "mirror";
+};
+
 /**
  * Props for the Animation component.
- * Provides Web Animation API integration with gesture-based triggers.
+ * Supports both Web Animations API (keyframes) and Motion (motion/react) declarative animations.
  */
 export interface AnimationProp {
   /** Component type to render as the child of the animation wrapper. */
   child?: React.JSX.ElementType;
   /** Custom inline styles applied to the wrapper element. */
   style?: React.CSSProperties;
+
+  // --- Web Animations API props (legacy) ---
   /** Array of Keyframe objects defining the animation steps. Defaults to a fade-in + slide-up. */
   keyframes?: Keyframe[];
   /** Duration of the animation in milliseconds. Defaults to 300. */
@@ -25,6 +40,30 @@ export interface AnimationProp {
   fill?: FillMode;
   /** CSS easing function string for timing. Defaults to "ease". */
   easing?: string;
+
+  // --- Motion props ---
+  /** Initial state for motion animation (e.g. `{ opacity: 0, y: 20 }`). */
+  initial?: Record<string, any>;
+  /** Target state for motion animation (e.g. `{ opacity: 1, y: 0 }`). Animates automatically when this changes. */
+  animate?: Record<string, any>;
+  /** Exit state for motion animation when used with AnimatePresence (e.g. `{ opacity: 0 }`). */
+  exit?: Record<string, any>;
+  /** State applied on hover (e.g. `{ scale: 1.05 }`). */
+  whileHover?: Record<string, any>;
+  /** State applied on tap/click (e.g. `{ scale: 0.95 }`). */
+  whileTap?: Record<string, any>;
+  /** State applied when element enters viewport (e.g. `{ opacity: 1 }`). */
+  whileInView?: Record<string, any>;
+  /** Motion transition configuration (spring or tween). */
+  transition?: MotionTransition;
+  /** Named animation states for variant-based animation. */
+  variants?: Record<string, any>;
+  /** Enable layout animations for automatic size/position transitions. */
+  layout?: boolean | "position" | "size" | "preserve";
+  /** Viewport configuration for whileInView (e.g. `{ once: true, amount: 0.5 }`). */
+  viewport?: { once?: boolean; amount?: number | "some" | "all" };
+
+  // --- Shared props ---
   /** When true the animation plays immediately on mount. When false it pauses until triggered. Defaults to true. */
   isAutomatic?: boolean;
   /** Gesture type that triggers the animation: "click", "hover", "focus", "scroll", or "none". */
@@ -46,9 +85,12 @@ const DEFAULT_KEYFRAMES: Keyframe[] = [
 ];
 
 export class _Animation {
-  wrapperRef = React.createRef<HTMLDivElement>();
+  wrapperRef = React.createRef<any>();
   animation: Animation | null = null;
   private gestureCleanups: (() => void)[] = [];
+
+  /** Whether this instance is using motion mode (has initial/animate props). */
+  isMotionMode = false;
 
   play = () => this.animation?.play();
   pause = () => this.animation?.pause();
@@ -58,6 +100,10 @@ export class _Animation {
   applyAnimation = (props: AnimationProp) => {
     const el = this.wrapperRef.current;
     if (!el) return;
+
+    this.isMotionMode = !!(props.initial || props.animate || props.exit || props.variants || props.whileHover || props.whileTap || props.whileInView);
+
+    if (this.isMotionMode) return;
 
     this.animation?.cancel();
 
@@ -74,7 +120,7 @@ export class _Animation {
     this.animation = el.animate(keyframes, options);
 
     if (!props.isAutomatic) {
-      this.animation.pause();
+      this.animation?.pause();
     }
 
     this.bindGestures(props.gesture);
@@ -123,11 +169,56 @@ export class _Animation {
   };
 
   build? = ({ ...a }: AnimationProp): React.JSX.Element => {
+    const useMotion = !!(a.initial || a.animate || a.exit || a.variants || a.whileHover || a.whileTap || a.whileInView);
+
+    if (useMotion) {
+      let MotionDiv: any;
+      try {
+        MotionDiv = require("motion/react").motion.div;
+      } catch {
+        MotionDiv = "div";
+      }
+
+      const motionProps: Record<string, any> = {};
+      if (a.initial !== undefined) motionProps.initial = a.initial;
+      if (a.animate !== undefined) motionProps.animate = a.animate;
+      if (a.exit !== undefined) motionProps.exit = a.exit;
+      if (a.whileHover !== undefined) motionProps.whileHover = a.whileHover;
+      if (a.whileTap !== undefined) motionProps.whileTap = a.whileTap;
+      if (a.whileInView !== undefined) motionProps.whileInView = a.whileInView;
+      if (a.variants !== undefined) motionProps.variants = a.variants;
+      if (a.layout !== undefined) motionProps.layout = a.layout;
+      if (a.transition !== undefined) {
+        motionProps.transition = a.transition;
+      } else {
+        motionProps.transition = {
+          type: "spring",
+          stiffness: 100,
+          damping: 15,
+          ...(a.duration !== undefined ? { duration: a.duration / 1000 } : {}),
+          ...(a.delay !== undefined ? { delay: a.delay / 1000 } : {}),
+        };
+      }
+      if (a.viewport !== undefined) motionProps.viewport = a.viewport;
+
+      return (
+        <MotionDiv
+          ref={this.wrapperRef}
+          className={a.className}
+          style={{ width: "auto", height: "auto", ...a.style }}
+          {...motionProps}
+          {...a.gest}
+        >
+          {a.child && <a.child />}
+        </MotionDiv>
+      );
+    }
+
     return (
       <div
         ref={this.wrapperRef}
         className={a.className}
-        style={{width: 'auto', height: 'auto',...a.style}}
+        style={{ width: "auto", height: "auto", ...a.style }}
         {...a.gest}
       >
         {a.child && <a.child />}

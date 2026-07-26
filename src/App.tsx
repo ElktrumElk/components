@@ -1,4 +1,10 @@
-import { Animation, Card, LetterAnimation, Page, Transition } from "./components";
+import {
+  Animation,
+  Card,
+  LetterAnimation,
+  Page,
+  Transition,
+} from "./components";
 import GridView from "./lib/components/gridview/GridView";
 import Padding from "./lib/components/padding/Padding";
 
@@ -18,32 +24,22 @@ export default function App() {
                       duration={1000}
                       iterations={Infinity}
                       easing="linear"
-                      
+                    
                       keyframes={[
-                        { transform: "translateY(2%)" },
+                        { transform: "translateY(20%)" },
                         { transform: "translateY(0%)" },
-                        { transform: "translateY(2%)" },
+                        { transform: "translateY(20%)" },
                       ]}
-                      
-                      style={{width: 'auto', height: 'max-content'}}
-
+                      style={{ width: "auto", height: "max-content" }}
                       child={() => (
                         <>
-                        <LetterAnimation animation="glitch" text="Hello how are you doing" style={{color: 'red'}} iterations={Infinity}  duration={3000}/>
-                          <Transition
-
-                            style={{ display: 'flex', alignItems: 'center', flexDirection: 'column'}}
-                            from={() => <Card  shadow shadowColor="#072d24" />}
-                            to={() => <Card shadow backgroundColor="red"  />}
-                            duration={400}
-                            delay={1000}
-                            active = {false}
-                            gesture="click"
-                            threshold={3.5}
-                            effect="slide-right"
-                            origin="top right"
-                          
-                            
+                          <LetterAnimation
+                            animation="glitch"
+                            textType="h1"
+                            text="Hello how are you doing"
+                            style={{ color: "red" }}
+                            iterations={Infinity}
+                            duration={3000}
                           />
                         </>
                       )}

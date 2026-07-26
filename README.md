@@ -1,6 +1,14 @@
-# Component Framework
+# elk-components
 
-A higher-level React component framework built on class-based state management with render props. All components follow a consistent **class + wrapper** architecture.
+React animation, layout, and styling toolkit. Declarative motion, transitions, letter animations, and composable UI primitives with built-in icons.
+
+---
+
+## Install
+
+```bash
+npm install elk-components
+```
 
 ---
 
@@ -519,6 +527,290 @@ import { Lock, Heart, ShoppingCart, Search } from "./icons";
 
 **Misc (22)**
 `Cloud` `CloudDownload` `CloudUpload` `Copy` `Download` `ExternalLink` `File` `Filter` `Flag` `Folder` `Globe` `GridView` `Key` `Link` `ListView` `Lock` `Map` `Moon` `Paperclip` `Search` `Settings` `ShareButton` `ShareLogo` `Sun` `Upload` `UploadImage` `UploadVideo` `Wind`
+
+---
+
+## Animation
+
+Dual-mode animation component. Use **Motion mode** (declarative props via `motion/react`) or **Legacy mode** (Web Animations API keyframes). The component auto-detects which mode to use based on which props you pass.
+
+### Motion Mode
+
+When you pass any motion prop (`initial`, `animate`, `exit`, `whileHover`, `whileTap`, `whileInView`, `variants`), the component renders as `motion.div` and uses the Motion library.
+
+| Prop | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `child` | `ElementType` | Yes | — | Content to animate |
+| `initial` | `Record<string, any>` | No | — | Initial state (e.g. `{ opacity: 0, y: 20 }`) |
+| `animate` | `Record<string, any>` | No | — | Target state. Animates when this value changes |
+| `exit` | `Record<string, any>` | No | — | Exit state (use with `AnimatePresence`) |
+| `whileHover` | `Record<string, any>` | No | — | State on hover |
+| `whileTap` | `Record<string, any>` | No | — | State on tap/click |
+| `whileInView` | `Record<string, any>` | No | — | State when entering viewport |
+| `transition` | `MotionTransition` | No | spring | Spring or tween config |
+| `variants` | `Record<string, any>` | No | — | Named animation states |
+| `layout` | `boolean \| "position" \| "size"` | No | — | Layout animations |
+| `viewport` | `{ once?: boolean; amount?: number }` | No | — | Viewport config for `whileInView` |
+| `className` | `string` | No | — | CSS class |
+| `style` | `CSSProperties` | No | — | Inline styles |
+
+```tsx
+import { Animation } from "elk-components";
+
+// Basic fade-in
+<Animation
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  child={() => <MyCard />}
+/>
+
+// Spring transition
+<Animation
+  initial={{ scale: 0.8, opacity: 0 }}
+  animate={{ scale: 1, opacity: 1 }}
+  transition={{ type: "spring", stiffness: 200, damping: 15 }}
+  child={() => <Hero />}
+/>
+
+// Hover + tap gestures
+<Animation
+  initial={{ opacity: 0 }}
+  animate={{ opacity: 1 }}
+  whileHover={{ scale: 1.05 }}
+  whileTap={{ scale: 0.95 }}
+  transition={{ type: "spring", stiffness: 300, damping: 20 }}
+  child={() => <Button />}
+/>
+
+// Scroll-triggered entrance
+<Animation
+  initial={{ opacity: 0, y: 40 }}
+  whileInView={{ opacity: 1, y: 0 }}
+  viewport={{ once: true, amount: 0.5 }}
+  transition={{ type: "spring", stiffness: 100, damping: 20 }}
+  child={() => <Section />}
+/>
+
+// Layout animation (auto-animate size/position changes)
+<Animation layout child={() => <ExpandingBox />} />
+```
+
+### Legacy Mode (Web Animations API)
+
+When no motion props are present, the component uses the native Web Animations API with keyframes.
+
+| Prop | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `child` | `ElementType` | Yes | — | Content to animate |
+| `keyframes` | `Keyframe[]` | No | fade-up | Array of Keyframe objects |
+| `duration` | `number` | No | 300 | Duration in ms |
+| `delay` | `number` | No | 0 | Delay in ms |
+| `iterations` | `number` | No | 1 | Repeat count (`Infinity` for loop) |
+| `direction` | `PlaybackDirection` | No | "normal" | Play direction |
+| `fill` | `FillMode` | No | "forwards" | Style retention after animation |
+| `easing` | `string` | No | "ease" | CSS timing function |
+| `isAutomatic` | `boolean` | No | true | Play immediately on mount |
+| `gesture` | `"click" \| "hover" \| "focus" \| "scroll" \| "none"` | No | "none" | Trigger gesture |
+
+```tsx
+// Play on hover
+<Animation
+  keyframes={[{ opacity: 0 }, { opacity: 1 }]}
+  duration={500}
+  gesture="hover"
+  isAutomatic={false}
+  child={() => <FadeInOnHover />}
+/>
+
+// Imperative control via onFunc
+<Animation
+  keyframes={[{ transform: "rotate(0deg)" }, { transform: "rotate(360deg)" }]}
+  duration={1000}
+  iterations={Infinity}
+  onFunc={(self) => {
+    self.play(); // or self.pause(), self.reverse(), self.cancel()
+  }}
+  child={() => <Spinner />}
+/>
+```
+
+---
+
+## Transition
+
+Switches between two elements (`from` and `to`) with built-in CSS transition effects or Motion-based enter/exit animations.
+
+### CSS Mode (default)
+
+Uses CSS transitions with 13 built-in effect presets.
+
+| Prop | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `from` | `ElementType` | Yes | — | Initial element |
+| `to` | `ElementType` | Yes | — | Target element |
+| `active` | `boolean` | No | — | Manual control (true = show `to`) |
+| `effect` | `TransitionEffect` | No | "fade" | Built-in effect preset |
+| `duration` | `number` | No | 300 | Duration in ms |
+| `delay` | `number` | No | 0 | Delay in ms |
+| `easing` | `string` | No | cubic-bezier(0.4,0,0.2,1) | CSS easing |
+| `isAutomatic` | `boolean` | No | false | Transition on mount |
+| `gesture` | `"click" \| "hover" \| "focus" \| "scroll" \| "none"` | No | "none" | Trigger gesture |
+| `origin` | `string` | No | "top left" | Transform origin |
+| `className` | `string` | No | — | CSS class |
+| `style` | `CSSProperties` | No | — | Inline styles |
+
+**Built-in effects:** `fade`, `slide-left`, `slide-right`, `slide-up`, `slide-down`, `zoom`, `flip`, `liquid`, `smooth`, `morph`, `glide`, `reveal`, `pop`
+
+```tsx
+import { Transition } from "elk-components";
+
+// Fade between two views
+<Transition
+  from={() => <LoginView />}
+  to={() => <RegisterView />}
+  effect="fade"
+  duration={400}
+  gesture="click"
+/>
+
+// Slide on hover
+<Transition
+  from={() => <DefaultState />}
+  to={() => <HoverState />}
+  effect="slide-left"
+  gesture="hover"
+  duration={250}
+/>
+
+// Controlled with active prop
+const [isOn, setIsOn] = useState(false);
+<Transition
+  from={() => <Off />}
+  to={() => <On />}
+  active={isOn}
+  effect="zoom"
+  duration={350}
+/>
+<Button gest={{ onClick: () => setIsOn(!isOn) }}
+  child={() => <Text text="Toggle" type="p" />}
+/>
+```
+
+### Motion Mode
+
+Enable with `useMotion` to use `AnimatePresence` + `motion.div` for enter/exit animations. Built-in effects are auto-converted to Motion-compatible values.
+
+| Prop | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `useMotion` | `boolean` | Yes | false | Enable Motion mode |
+| `motionInitial` | `Record<string, any>` | No | from effect | Custom Motion initial state |
+| `motionExit` | `Record<string, any>` | No | from effect | Custom Motion exit state |
+| `motionTransition` | `MotionTransition` | No | spring | Motion transition config |
+
+```tsx
+<Transition
+  useMotion
+  from={() => <StepOne />}
+  to={() => <StepTwo />}
+  effect="slide-right"
+  duration={400}
+  gesture="click"
+/>
+
+// Custom Motion states
+<Transition
+  useMotion
+  from={() => <PanelA />}
+  to={() => <PanelB />}
+  motionInitial={{ opacity: 0, x: -100, rotateY: -90 }}
+  motionExit={{ opacity: 0, x: 100, rotateY: 90 }}
+  motionTransition={{ type: "spring", stiffness: 120, damping: 20 }}
+  gesture="click"
+/>
+```
+
+---
+
+## LetterAnimation
+
+Animates individual letters or words of a text string with 20 built-in presets, per-letter/word keyframe overrides, and staggered timing.
+
+| Prop | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `text` | `string` | Yes | — | Text to animate |
+| `type` | `"letters" \| "words"` | No | "letters" | Animation granularity |
+| `animation` | `AnimationPreset` | No | "fadeUp" | Built-in preset name |
+| `keyframes` | `Keyframe[]` | No | fadeUp | Custom keyframes for all tokens |
+| `letterKeyframes` | `Keyframe[][]` | No | — | Per-letter keyframes (letters mode) |
+| `words` | `WordSegment[]` | No | — | Word segments with per-word keyframes |
+| `size` | `string` | No | — | Font size (e.g. `"2rem"`) |
+| `textType` | `"h1" \| "h2" \| ... \| "p" \| "pre"` | No | "div" | HTML element type |
+| `duration` | `number` | No | 300 | Animation duration in ms |
+| `delay` | `number` | No | 0 | Base delay in ms |
+| `stagger` | `number` | No | 50 | Delay between tokens in ms |
+| `iterations` | `number` | No | 1 | Repeat count |
+| `direction` | `PlaybackDirection` | No | "normal" | Play direction |
+| `fill` | `FillMode` | No | "forwards" | Style retention |
+| `easing` | `string` | No | "ease" | CSS timing function |
+| `className` | `string` | No | — | CSS class |
+| `style` | `CSSProperties` | No | — | Inline styles |
+
+**Built-in presets:** `fadeUp`, `fadeDown`, `fadeIn`, `slideLeft`, `slideRight`, `scaleUp`, `scaleDown`, `rotateIn`, `flipIn`, `bounceIn`, `typewriter`, `blurIn`, `swingIn`, `wave`, `glitch`, `pop`, `dropIn`, `foldIn`, `elastic`, `spiral`
+
+```tsx
+import { LetterAnimation } from "elk-components";
+
+// Basic letter animation
+<LetterAnimation
+  text="Hello World"
+  animation="bounceIn"
+  size="3rem"
+  stagger={60}
+  duration={400}
+/>
+
+// Word-level animation
+<LetterAnimation
+  text="Welcome to elk-components"
+  type="words"
+  animation="slideLeft"
+  size="2rem"
+  stagger={80}
+/>
+
+// Per-letter custom keyframes
+<LetterAnimation
+  text="CUSTOM"
+  size="4rem"
+  letterKeyframes={[
+    [{ opacity: 0, transform: "rotate(-180deg)" }, { opacity: 1, transform: "rotate(0)" }],
+    [{ opacity: 0, scale: 0 }, { opacity: 1, scale: 1.2 }, { opacity: 1, scale: 1 }],
+    // ... one array per letter
+  ]}
+/>
+
+// Word segments with per-word overrides
+<LetterAnimation
+  type="words"
+  size="2.5rem"
+  words={[
+    { text: "Bold", keyframes: [{ opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1.2 }, { opacity: 1, scale: 1 }] },
+    { text: " " },
+    { text: "Text", keyframes: [{ opacity: 0, y: 30 }, { opacity: 1, y: 0 }] },
+  ]}
+/>
+
+// Imperative control
+<LetterAnimation
+  text="Controlled"
+  animation="elastic"
+  size="2rem"
+  onFunc={(self) => {
+    self.play();
+    // self.pause(), self.reverse(), self.cancel()
+  }}
+/>
+```
 
 ---
 

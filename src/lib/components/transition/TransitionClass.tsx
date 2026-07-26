@@ -2,10 +2,7 @@ import React from "react";
 import { createStore } from "../../../hooks/createStore";
 import { rrender } from "../../utility/lib";
 
-
 type Gesture = "click" | "hover" | "focus" | "scroll" | "none";
-
-
 
 type TransitionEffect =
   | "fade"
@@ -22,45 +19,67 @@ type TransitionEffect =
   | "reveal"
   | "pop";
 
+type MotionTransition = {
+  type?: "spring" | "tween";
+  duration?: number;
+  ease?: string | number[];
+  bounce?: number;
+  stiffness?: number;
+  damping?: number;
+  mass?: number;
+  delay?: number;
+};
+
 /**
  * Props for the Transition component.
- * @prop from - Optional React element type for the initial state.
- * @prop to - Optional React element type for the final state.
- * @prop active - Optional boolean to manually control transition state.
- * @prop effect - Transition effect type (e.g., "fade", "slide-left", "zoom").
- * @prop duration - Transition duration in milliseconds (default: 300).
- * @prop delay - Delay before transition starts in milliseconds.
- * @prop easing - CSS easing function (default: "cubic-bezier(0.4, 0, 0.2, 1)").
- * @prop isAutomatic - If true, transition starts automatically on mount.
- * @prop gesture - Gesture type to trigger transition ("click", "hover", "focus", "scroll", "none").
- * @prop className - Optional CSS class name.
- * @prop style - Optional inline CSS styles.
- * @prop gest - Optional HTML div attributes.
- * @prop origin - Transform origin (default: "top left").
- * @prop threshold - Threshold for gesture timing calculations.
- * @prop onFunc - Callback receiving the _Transition instance.
- * @prop onTransitionEnd - Callback when transition animation ends.
+ * Supports both CSS transition-based effects and Motion (motion/react) declarative enter/exit animations.
  */
 export interface TransitionProp {
+  /** Element type to render as the initial/base state. */
   from?: React.JSX.ElementType;
+  /** Element type to render as the target state. */
   to?: React.JSX.ElementType;
+  /** Boolean to manually control which state is active (true = "to", false = "from"). */
   active?: boolean;
+  /** Built-in transition effect preset. */
   effect?: TransitionEffect;
+  /** Transition duration in milliseconds. Defaults to 300. */
   duration?: number;
+  /** Delay before transition starts in milliseconds. */
   delay?: number;
+  /** CSS easing function string. Defaults to "cubic-bezier(0.4, 0, 0.2, 1)". */
   easing?: string;
+  /** If true, transition starts automatically on mount. */
   isAutomatic?: boolean;
+  /** Gesture type to trigger transition: "click", "hover", "focus", "scroll", or "none". */
   gesture?: Gesture;
+  /** Optional CSS class name for the container. */
   className?: string;
+  /** Optional inline CSS styles for the container. */
   style?: React.CSSProperties;
+  /** Optional HTML div attributes spread onto the container. */
   gest?: React.DetailedHTMLProps<
     React.HTMLAttributes<HTMLDivElement>,
     HTMLDivElement
   >;
+  /** Transform origin for CSS transitions. Defaults to "top left". */
   origin?: string;
+  /** Threshold for gesture timing calculations. */
   threshold?: number;
+  /** Callback receiving the _Transition instance for imperative control. */
   onFunc?: (self: _Transition) => void;
+  /** Callback fired when the transition animation ends. */
   onTransitionEnd?: () => void;
+
+  // --- Motion props ---
+  /** Enable Motion-based enter/exit animations instead of CSS transitions. */
+  useMotion?: boolean;
+  /** Motion enter animation state (e.g. `{ opacity: 1, x: 0 }`). Overrides effect preset when useMotion is true. */
+  motionInitial?: Record<string, any>;
+  /** Motion exit animation state (e.g. `{ opacity: 0, x: -100 }`). Overrides effect preset when useMotion is true. */
+  motionExit?: Record<string, any>;
+  /** Motion transition configuration (spring or tween). */
+  motionTransition?: MotionTransition;
 }
 
 export const LAYER_BASE = createStore<{
@@ -105,7 +124,6 @@ const EFFECTS: Record<
     enter: { transform: "perspective(600px) rotateY(0deg)", opacity: "1" },
     exit: { transform: "perspective(600px) rotateY(-90deg)", opacity: "0" },
   },
-
   liquid: {
     enter: {
       filter: "blur(0px) saturate(1)",
@@ -148,55 +166,55 @@ const EFFECTS: Record<
   },
 };
 
-// ==========================================================================
-//
-// =========================================================================
-/** */
-export class _Transition {
-  /**
-   * The transition container that apply transition to its childere
-   * @see https://components-doc
-   */
-  containerRef = React.createRef<HTMLDivElement>();
-
-  /**
-   * This triggers the display of the base component(from) to set it display between flex / none
-   */
-  isBasehide: boolean = false;
-
-  /**
-   * This helps to apply the transition before the isBasehide is triggered to true
-   */
-  isBaseTransition: boolean = false;
-
-  /**
-   * Set the time delay
-   */
-  timer: ReturnType<typeof setTimeout> | null = null;
-
-  /**
-   * This listen for use gesture to trigger the transition
-   */
-  private gestureCleanups: (() => void)[] = [];
-
-  /**
-   * Set the origin of transformation
-   */
-  private transformOrigin: string = "top left";
-
-  /**
-   * method that starts the transition flag
-   */
-
-  trigger = () => {
-      this.isBaseTransition = !this.isBaseTransition;
+/** Convert effect presets to motion-compatible initial/animate/exit objects. */
+export const effectToMotion = (
+  effect: TransitionEffect,
+): { initial: Record<string, any>; animate: Record<string, any>; exit: Record<string, any> } => {
+  const toMotionStyle = (css: React.CSSProperties): Record<string, any> => {
+    const result: Record<string, any> = {};
+    if (css.opacity !== undefined) result.opacity = parseFloat(css.opacity as string);
+    if (css.transform) {
+      const transforms: Record<string, any> = {};
+      const regex = /(\w+3d|translateX|translateY|translateZ|scale|scaleX|scaleY|rotate|rotateX|rotateY|rotateZ|skewX|skewY)\(([^)]+)\)/g;
+      let match;
+      while ((match = regex.exec(css.transform as string)) !== null) {
+        const [, fn, val] = match;
+        if (fn === "translate3d") {
+          const [x, y] = val.split(",").map((v) => v.trim());
+          transforms.x = x;
+          transforms.y = y;
+        } else {
+          transforms[fn] = val;
+        }
+      }
+      if (Object.keys(transforms).length > 0) Object.assign(result, transforms);
+    }
+    if (css.filter) result.filter = css.filter;
+    if (css.clipPath) result.clipPath = css.clipPath;
+    if (css.borderRadius) result.borderRadius = css.borderRadius;
+    return result;
   };
 
-  /**
-   * start the transition animation
-   * @param duration
-   * @param cb
-   */
+  const preset = EFFECTS[effect];
+  return {
+    initial: toMotionStyle(preset.exit),
+    animate: toMotionStyle(preset.enter),
+    exit: toMotionStyle(preset.exit),
+  };
+};
+
+export class _Transition {
+  containerRef = React.createRef<HTMLDivElement>();
+  isBasehide: boolean = false;
+  isBaseTransition: boolean = false;
+  timer: ReturnType<typeof setTimeout> | null = null;
+  private gestureCleanups: (() => void)[] = [];
+  private transformOrigin: string = "top left";
+
+  trigger = () => {
+    this.isBaseTransition = !this.isBaseTransition;
+  };
+
   startTimer = (duration: number, cb?: () => void) => {
     this.disposeTimer();
     this.timer = setTimeout(() => {
@@ -205,22 +223,12 @@ export class _Transition {
     }, duration);
   };
 
-  /**
-   * clean up timmer
-   */
   disposeTimer = () => {
     if (this.timer) {
       clearTimeout(this.timer);
       this.timer = null;
     }
   };
-
-  /**
-   * Method that listen to user Gesture
-   * @param gesture
-   * @param onTrigger
-   * @returns
-   */
 
   bindGestures = (
     gesture?: Gesture,
@@ -230,21 +238,18 @@ export class _Transition {
   ) => {
     this.gestureCleanups.forEach((fn) => fn());
     this.gestureCleanups = [];
-    
+
     const el = this.containerRef.current;
-  
+
     if (!el || !gesture || gesture === "none") return;
-  
 
     const handler = () => {
-
-      // then we trigger the transition
       onTrigger?.();
-      
+
       const id = setTimeout(
         () => {
-            this.isBasehide = !this.isBasehide;
-            rrender.setState({ isGestureActivate: true });
+          this.isBasehide = !this.isBasehide;
+          rrender.setState({ isGestureActivate: true });
         },
         delay! / (threshold || 2),
       );
@@ -274,12 +279,102 @@ export class _Transition {
     this.gestureCleanups = [];
   };
 
-  /**
-   * Build method
-   * @param param0
-   * @returns
-   */
   build? = ({ ...a }: TransitionProp): React.JSX.Element => {
+    if (a.useMotion) {
+      return this.buildMotion({ ...a });
+    }
+    return this.buildCSS({ ...a });
+  };
+
+  private buildMotion = (a: TransitionProp): React.JSX.Element => {
+    const effect = a.effect ?? "fade";
+    const motionAnim = effectToMotion(effect);
+    const duration = (a.duration ?? 300) / 1000;
+    const delay = (a.delay ?? 0) / 1000;
+
+    const initial = a.motionInitial ?? motionAnim.initial;
+    const exit = a.motionExit ?? motionAnim.exit;
+    const animate = motionAnim.animate;
+
+    const motionTransition = a.motionTransition ?? {
+      type: "spring",
+      stiffness: 120,
+      damping: 20,
+      duration,
+      delay,
+    };
+
+    let AnimatePresence: any;
+    let MotionDiv: any;
+    try {
+      const motion = require("motion/react");
+      AnimatePresence = motion.AnimatePresence;
+      MotionDiv = motion.motion.div;
+    } catch {
+      return this.buildCSS(a);
+    }
+
+    const showTo = this.isBaseTransition;
+
+    return (
+      <div
+        ref={this.containerRef}
+        className={a.className}
+        style={{
+          position: "relative",
+          overflow: "visible",
+          width: "max-content",
+          height: "fit-content",
+          display: "flex",
+          alignItems: "center",
+          flexDirection: "column",
+          ...a.style,
+        }}
+        {...a.gest}
+      >
+        <AnimatePresence mode="wait">
+          {!showTo && a.from && (
+            <MotionDiv
+              key="from"
+              initial={initial}
+              animate={animate}
+              exit={exit}
+              transition={motionTransition}
+              style={{
+                position: "absolute",
+                width: "max-content",
+                height: "max-content",
+                zIndex: showTo ? 0 : 1,
+                pointerEvents: showTo ? "none" : "auto",
+              }}
+            >
+              <a.from />
+            </MotionDiv>
+          )}
+          {showTo && a.to && (
+            <MotionDiv
+              key="to"
+              initial={initial}
+              animate={animate}
+              exit={exit}
+              transition={motionTransition}
+              style={{
+                position: "absolute",
+                width: "max-content",
+                height: "max-content",
+                zIndex: 1,
+                pointerEvents: "auto",
+              }}
+            >
+              <a.to />
+            </MotionDiv>
+          )}
+        </AnimatePresence>
+      </div>
+    );
+  };
+
+  private buildCSS = (a: TransitionProp): React.JSX.Element => {
     const effect = EFFECTS[a.effect ?? "fade"];
 
     this.transformOrigin = a.origin || "top left";
@@ -310,7 +405,6 @@ export class _Transition {
       position: LAYER_BASE.getState().position,
       backfaceVisibility: LAYER_BASE.getState().backfaceVisibility,
       willChange: LAYER_BASE.getState().willChange,
-
       transition,
       ...(this.isBasehide ? effect.enter : effect.exit),
       width: "max-content",
@@ -326,7 +420,7 @@ export class _Transition {
         className={a.className}
         style={{
           position: "relative",
-          overflow: "vissible",
+          overflow: "visible",
           width: "max-content",
           height: "fit-content",
           display: "flex",
