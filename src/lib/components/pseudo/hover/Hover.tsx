@@ -15,6 +15,6 @@ const InitializeHover = () => {
 export default function Hover ({...a}: HoverProp) {
     useStore(__hoverStore)
     const {_hover} = InitializeHover()
-    return _hover?.current?.build({...a})
+    return _hover?.current?.build?.({...a}) ?? <></>
 
 }

@@ -32,18 +32,18 @@ export class _Hover {
             this.savedStyle = target.children[0]?.getAttribute("style");
             const __child = target.children[0] as HTMLDivElement;
             if (a.transition !== null) {
-              __child.style.transition = a.transition;
+              __child.style.transition = a.transition ?? "";
             }
             __key.forEach((key) => {
-              __child.style[key] = a.style[key];
+              (__child.style as unknown as Record<string, string>)[key] = (a.style as unknown as Record<string, string>)[key];
             });
           }}
           onMouseLeave={(e) => {
             const target = e.currentTarget as HTMLElement;
             const __child = target.children[0] as HTMLDivElement;
 
-            __child.setAttribute("style", this.savedStyle);
-            __child.style.transition = a.transition;
+            __child.setAttribute("style", this.savedStyle ?? "");
+            __child.style.transition = a.transition ?? "";
           }}
         >
           {a.child && <a.child />}

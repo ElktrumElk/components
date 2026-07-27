@@ -6,7 +6,7 @@ interface IconProps {
   fillColor?: string;
 }
 
-export default function Volume2({ size = 24, color = "currentColor", className, fill = false, fillColor }: IconProps) {
+export default function Volume2({ size = 24, color = "currentColor", className, fill: _fill = false, fillColor: _fillColor }: IconProps) {
   return (
     <svg
       width={size}
