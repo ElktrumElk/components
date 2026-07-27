@@ -1,4 +1,11 @@
-import { Animation, Card, LetterAnimation, Page, SectionDivider, Text } from "./components";
+import {
+  Animation,
+  Card,
+  LetterAnimation,
+  Page,
+  SectionDivider,
+  Text,
+} from "./components";
 import GridView from "./lib/components/gridview/GridView";
 import Padding from "./lib/components/padding/Padding";
 import Hover from "./lib/components/pseudo/hover/Hover";
@@ -21,18 +28,20 @@ export default function App() {
                         <Text text="Hover Wassup" type="h1" color="white" />
                       )}
                     />
-                    <SectionDivider animate variant="wave" direction="ltr"  duration={1000} flip fillColor="#02c8ff"/>
+                    <SectionDivider
+                      animate
+                      variant="wave"
+                      direction="ltr"
+                      duration={1000}
+                      flip
+                      fillColor="#02c8ff"
+                    />
 
                     <Animation
-                      isAutomatic
-                      duration={1000}
-                      iterations={Infinity}
-                      easing="linear"
-                      keyframes={[
-                        { transform: "translateY(20%)" },
-                        { transform: "translateY(0%)" },
-                        { transform: "translateY(20%)" },
-                      ]}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      transition={{ type: "spring", stiffness: 200 }}
                       style={{ width: "auto", height: "max-content" }}
                       child={() => (
                         <>
