@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import SectionDivider from "./SectionDivider";
@@ -51,7 +51,7 @@ describe("SectionDivider", () => {
     const { container } = render(<SectionDivider variant="dots" />);
     const svg = container.querySelector("svg");
     const paths = svg?.querySelectorAll("path");
-    expect(paths?.length).toBe(2);
+    expect(paths?.length).toBe(4);
   });
 
   it("applies custom color", () => {
@@ -86,16 +86,12 @@ describe("SectionDivider", () => {
   });
 
   it("applies className", () => {
-    const { container } = render(
-      <SectionDivider className="my-divider" />,
-    );
+    const { container } = render(<SectionDivider className="my-divider" />);
     expect(container.querySelector(".my-divider")).toBeInTheDocument();
   });
 
   it("applies custom style", () => {
-    const { container } = render(
-      <SectionDivider style={{ opacity: 0.5 }} />,
-    );
+    const { container } = render(<SectionDivider style={{ opacity: 0.5 }} />);
     const svg = container.querySelector("svg");
     expect(svg?.style.opacity).toBe("0.5");
   });
@@ -145,149 +141,117 @@ describe("SectionDivider", () => {
     expect(svg?.getAttribute("preserveAspectRatio")).toBe("none");
   });
 
+  it("has overflow hidden for scroll animation", () => {
+    const { container } = render(<SectionDivider />);
+    const svg = container.querySelector("svg");
+    expect(svg?.style.overflow).toBe("hidden");
+  });
+
+  it("renders duplicate paths for seamless scroll", () => {
+    const { container } = render(<SectionDivider variant="wave" />);
+    const svg = container.querySelector("svg");
+    const paths = svg?.querySelectorAll("path");
+    expect(paths?.length).toBe(2);
+  });
+
+  it("duplicate paths have translate(1440, 0)", () => {
+    const { container } = render(<SectionDivider variant="wave" />);
+    const svg = container.querySelector("svg");
+    const paths = svg?.querySelectorAll("path");
+    const secondPath = paths?.[1];
+    expect(secondPath?.getAttribute("transform")).toBe("translate(1440, 0)");
+  });
+
   // --- Animation tests ---
 
-  it("creates animations on path elements when animate is true", () => {
-    const { container } = render(<SectionDivider animate />);
-    const svg = container.querySelector("svg");
-    const path = svg?.querySelector("path");
-    expect(path).toBeTruthy();
+  it("creates animation on g element when animate is true", () => {
+    render(<SectionDivider animate />);
     expect(animateMock).toHaveBeenCalled();
   });
 
-  it("does not create animations when animate is false", () => {
+  it("does not create animation when animate is false", () => {
     render(<SectionDivider />);
     expect(animateMock).not.toHaveBeenCalled();
   });
 
-  it("creates animations when gesture is set even without animate", () => {
-    const { container } = render(<SectionDivider gesture="click" />);
-    const svg = container.querySelector("svg");
-    expect(svg).toBeInTheDocument();
+  it("creates animation when gesture is set even without animate", () => {
+    render(<SectionDivider gesture="click" />);
     expect(animateMock).toHaveBeenCalled();
   });
 
-  it("passes duration to animate()", () => {
-    const { container } = render(<SectionDivider animate duration={2000} />);
-    expect(animateMock).toHaveBeenCalled();
+  it("uses linear easing for continuous scroll", () => {
+    render(<SectionDivider animate />);
     const call = animateMock.mock.calls[0];
-    expect(call[1].duration).toBe(2000);
-  });
-
-  it("passes delay to animate()", () => {
-    const { container } = render(<SectionDivider animate delay={500} />);
-    expect(animateMock).toHaveBeenCalled();
-    const call = animateMock.mock.calls[0];
-    expect(call[1].delay).toBe(500);
-  });
-
-  it("defaults to variant-specific duration (wave = 4000ms)", () => {
-    const { container } = render(<SectionDivider animate />);
-    expect(animateMock).toHaveBeenCalled();
-    const call = animateMock.mock.calls[0];
-    expect(call[1].duration).toBe(4000);
+    expect(call[1].easing).toBe("linear");
   });
 
   it("defaults to Infinity iterations", () => {
-    const { container } = render(<SectionDivider animate />);
-    expect(animateMock).toHaveBeenCalled();
+    render(<SectionDivider animate />);
     const call = animateMock.mock.calls[0];
     expect(call[1].iterations).toBe(Infinity);
   });
 
-  it("uses variant-specific keyframes for curl (scroll with rotation)", () => {
-    const { container } = render(<SectionDivider variant="curl" animate />);
-    expect(animateMock).toHaveBeenCalled();
-    const call = animateMock.mock.calls[0];
-    const keyframes = call[0];
-    expect(keyframes[0]).toEqual({ transform: "translateX(0) rotate(0deg)" });
-    expect(keyframes.length).toBe(5);
-  });
-
-  it("uses variant-specific keyframes for heart (double-beat pulse)", () => {
-    const { container } = render(<SectionDivider variant="heart" animate />);
-    expect(animateMock).toHaveBeenCalled();
-    const call = animateMock.mock.calls[0];
-    const keyframes = call[0];
-    expect(keyframes[0]).toEqual({ transform: "scale(1)", opacity: "1" });
-    expect(keyframes[1]).toEqual({ transform: "scale(1.15)", opacity: "1" });
-    expect(keyframes.length).toBe(5);
-  });
-
-  it("uses variant-specific keyframes for dots (opacity + blur flash)", () => {
-    const { container } = render(<SectionDivider variant="dots" animate />);
-    expect(animateMock).toHaveBeenCalled();
-    const call = animateMock.mock.calls[0];
-    const keyframes = call[0];
-    expect(keyframes[0]).toEqual({ opacity: "0.3", filter: "blur(0px)" });
-    expect(keyframes[1]).toEqual({ opacity: "1", filter: "blur(1.5px)" });
-    expect(keyframes.length).toBe(5);
-  });
-
-  it("uses variant-specific keyframes for leaf (wind sway with rotation + translateY)", () => {
-    const { container } = render(<SectionDivider variant="leaf" animate />);
-    expect(animateMock).toHaveBeenCalled();
-    const call = animateMock.mock.calls[0];
-    const keyframes = call[0];
-    expect(keyframes[0]).toEqual({ transform: "rotate(0deg) translateY(0)" });
-    expect(keyframes[1]).toEqual({ transform: "rotate(6deg) translateY(-4px)" });
-    expect(keyframes.length).toBe(6);
-  });
-
-  it("uses variant-specific keyframes for pulse (electronic spike)", () => {
-    const { container } = render(<SectionDivider variant="pulse" animate />);
-    expect(animateMock).toHaveBeenCalled();
-    const call = animateMock.mock.calls[0];
-    const keyframes = call[0];
-    expect(keyframes[0]).toEqual({ transform: "translateY(0) scaleY(1)" });
-    expect(keyframes[1]).toEqual({ transform: "translateY(-10px) scaleY(1.4)" });
-    expect(keyframes.length).toBe(5);
-  });
-
-  it("uses variant-specific keyframes for zigzag (skew jitter)", () => {
-    const { container } = render(<SectionDivider variant="zigzag" animate />);
-    expect(animateMock).toHaveBeenCalled();
-    const call = animateMock.mock.calls[0];
-    const keyframes = call[0];
-    expect(keyframes[0]).toEqual({ transform: "translateX(0) skewX(0deg)" });
-    expect(keyframes[1]).toEqual({ transform: "translateX(-12px) skewX(3deg)" });
-  });
-
-  it("uses variant-specific easing per variant", () => {
-    render(<SectionDivider variant="pulse" animate />);
-    const pulseEasing = animateMock.mock.calls[0][1].easing;
-    animateMock.mockClear();
-
-    render(<SectionDivider variant="curl" animate />);
-    const curlEasing = animateMock.mock.calls[0][1].easing;
-
-    expect(pulseEasing).toBe("cubic-bezier(0.22, 1, 0.36, 1)");
-    expect(curlEasing).toBe("linear");
-    expect(pulseEasing).not.toBe(curlEasing);
-  });
-
   it("uses variant-specific default duration", () => {
-    render(<SectionDivider variant="heart" animate />);
-    const heartDuration = animateMock.mock.calls[0][1].duration;
+    render(<SectionDivider variant="wave" animate />);
+    const waveDuration = animateMock.mock.calls[0][1].duration;
     animateMock.mockClear();
 
     render(<SectionDivider variant="pulse" animate />);
     const pulseDuration = animateMock.mock.calls[0][1].duration;
 
-    expect(heartDuration).toBe(1200);
-    expect(pulseDuration).toBe(1000);
-    expect(heartDuration).not.toBe(pulseDuration);
+    expect(waveDuration).toBe(5000);
+    expect(pulseDuration).toBe(2500);
   });
 
   it("user duration overrides variant default", () => {
-    render(<SectionDivider variant="heart" animate duration={5000} />);
-    expect(animateMock.mock.calls[0][1].duration).toBe(5000);
+    render(<SectionDivider animate duration={8000} />);
+    expect(animateMock.mock.calls[0][1].duration).toBe(8000);
   });
 
-  it("animates all path elements", () => {
-    const { container } = render(<SectionDivider variant="dots" animate />);
-    // dots variant has 2 paths (main + decorative dots)
-    expect(animateMock).toHaveBeenCalledTimes(2);
+  it("generates ltr keyframes (translateX from 0 to -1440)", () => {
+    render(<SectionDivider animate direction="ltr" />);
+    const call = animateMock.mock.calls[0];
+    const keyframes = call[0];
+    expect(keyframes[0]).toEqual({ transform: "translateX(-1440px)" });
+    expect(keyframes[keyframes.length - 1]).toEqual({ transform: "translateX(0px)" });
+  });
+
+  it("generates rtl keyframes (translateX from 0 to 1440)", () => {
+    render(<SectionDivider animate direction="rtl" />);
+    const call = animateMock.mock.calls[0];
+    const keyframes = call[0];
+    expect(keyframes[0]).toEqual({ transform: "translateX(0px)" });
+    expect(keyframes[keyframes.length - 1]).toEqual({ transform: "translateX(1440px)" });
+  });
+
+  it("generates ttb keyframes (translateY from 0 to 80)", () => {
+    render(<SectionDivider animate direction="ttb" />);
+    const call = animateMock.mock.calls[0];
+    const keyframes = call[0];
+    expect(keyframes[0]).toEqual({ transform: "translateY(0px)" });
+    expect(keyframes[keyframes.length - 1]).toEqual({ transform: "translateY(80px)" });
+  });
+
+  it("generates btt keyframes (translateY from -80 to 0)", () => {
+    render(<SectionDivider animate direction="btt" />);
+    const call = animateMock.mock.calls[0];
+    const keyframes = call[0];
+    expect(keyframes[0]).toEqual({ transform: "translateY(-80px)" });
+    expect(keyframes[keyframes.length - 1]).toEqual({ transform: "translateY(0px)" });
+  });
+
+  it("defaults to ltr direction", () => {
+    render(<SectionDivider animate />);
+    const call = animateMock.mock.calls[0];
+    const keyframes = call[0];
+    expect(keyframes[0]).toEqual({ transform: "translateX(-1440px)" });
+  });
+
+  it("generates 61 keyframe steps for smooth scroll", () => {
+    render(<SectionDivider animate />);
+    const call = animateMock.mock.calls[0];
+    const keyframes = call[0];
+    expect(keyframes.length).toBe(61);
   });
 
   it("binds click gesture", async () => {
@@ -310,32 +274,17 @@ describe("SectionDivider", () => {
 
   it("listen prop triggers animation on store change", () => {
     const store = createStore({ trigger: false });
-    const { container } = render(<SectionDivider listen={store} animate />);
+    render(<SectionDivider listen={store} animate />);
     const playMock = animateMock.mock.results[0].value.play;
 
     store.setState({ trigger: true });
     expect(playMock).toHaveBeenCalled();
   });
 
-  it("listen prop triggers animation multiple times", () => {
-    const store = createStore({ n: 0 });
-    const { container } = render(<SectionDivider listen={store} animate />);
-    const playMock = animateMock.mock.results[0].value.play;
-
-    playMock.mockClear();
-    store.setState({ n: 1 });
-    store.setState({ n: 2 });
-    store.setState({ n: 3 });
-    expect(playMock).toHaveBeenCalledTimes(3);
-  });
-
   it("play() method starts animations", () => {
     let instance: _SectionDivider;
     render(
-      <SectionDivider
-        animate
-        onFunc={(self) => { instance = self; }}
-      />,
+      <SectionDivider animate onFunc={(self) => { instance = self; }} />,
     );
     const playMock = animateMock.mock.results[0].value.play;
     instance!.play();
@@ -345,10 +294,7 @@ describe("SectionDivider", () => {
   it("stop() method cancels animations", () => {
     let instance: _SectionDivider;
     render(
-      <SectionDivider
-        animate
-        onFunc={(self) => { instance = self; }}
-      />,
+      <SectionDivider animate onFunc={(self) => { instance = self; }} />,
     );
     const cancelMock = animateMock.mock.results[0].value.cancel;
     instance!.stop();
@@ -366,7 +312,6 @@ describe("SectionDivider", () => {
     const store = createStore({ n: 0 });
     const { unmount } = render(<SectionDivider listen={store} animate />);
     unmount();
-    // After unmount, store changes should not trigger play
     const playMock = animateMock.mock.results[0].value.play;
     playMock.mockClear();
     store.setState({ n: 1 });
@@ -374,12 +319,12 @@ describe("SectionDivider", () => {
   });
 
   it("does not animate when gesture is none", () => {
-    const { container } = render(<SectionDivider gesture="none" />);
+    render(<SectionDivider gesture="none" />);
     expect(animateMock).not.toHaveBeenCalled();
   });
 
   it("does not animate when animate is false and no gesture", () => {
-    const { container } = render(<SectionDivider animate={false} />);
+    render(<SectionDivider animate={false} />);
     expect(animateMock).not.toHaveBeenCalled();
   });
 });

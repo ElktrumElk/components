@@ -16,6 +16,7 @@ type DividerVariant =
   | "scroll";
 
 type Gesture = "click" | "hover" | "focus" | "scroll" | "none";
+type Direction = "ltr" | "rtl" | "ttb" | "btt";
 
 const SVG_PATHS: Record<DividerVariant, string> = {
   wave: "M0,32 C160,80 320,0 480,32 C640,64 800,16 960,32 C1120,48 1280,16 1440,32 L1440,0 L0,0 Z",
@@ -48,145 +49,24 @@ const FILLED_VARIANTS = new Set([
 ]);
 
 interface VariantAnimConfig {
-  keyframes: Keyframe[];
   easing: string;
   duration: number;
+  perPathDuration?: number;
 }
 
 const VARIANT_ANIM: Record<DividerVariant, VariantAnimConfig> = {
-  wave: {
-    keyframes: [
-      { transform: "translateX(0) scaleY(1)", opacity: "0.85" },
-      { transform: "translateX(-50px) scaleY(1.08)", opacity: "1" },
-      { transform: "translateX(-100px) scaleY(0.95)", opacity: "0.9" },
-      { transform: "translateX(-50px) scaleY(1.04)", opacity: "1" },
-      { transform: "translateX(0) scaleY(1)", opacity: "0.85" },
-    ],
-    easing: "cubic-bezier(0.4, 0, 0.2, 1)",
-    duration: 4000,
-  },
-  curl: {
-    keyframes: [
-      { transform: "translateX(0) rotate(0deg)" },
-      { transform: "translateX(-70px) rotate(-1deg)" },
-      { transform: "translateX(-140px) rotate(0deg)" },
-      { transform: "translateX(-70px) rotate(1deg)" },
-      { transform: "translateX(0) rotate(0deg)" },
-    ],
-    easing: "linear",
-    duration: 3000,
-  },
-  zigzag: {
-    keyframes: [
-      { transform: "translateX(0) skewX(0deg)" },
-      { transform: "translateX(-12px) skewX(3deg)" },
-      { transform: "translateX(8px) skewX(-2deg)" },
-      { transform: "translateX(-6px) skewX(1.5deg)" },
-      { transform: "translateX(0) skewX(0deg)" },
-    ],
-    easing: "steps(5)",
-    duration: 1200,
-  },
-  dots: {
-    keyframes: [
-      { opacity: "0.3", filter: "blur(0px)" },
-      { opacity: "1", filter: "blur(1.5px)" },
-      { opacity: "0.5", filter: "blur(0px)" },
-      { opacity: "1", filter: "blur(0.5px)" },
-      { opacity: "0.3", filter: "blur(0px)" },
-    ],
-    easing: "ease-in-out",
-    duration: 2500,
-  },
-  tilde: {
-    keyframes: [
-      { transform: "translateX(0) translateY(0)" },
-      { transform: "translateX(-35px) translateY(-6px)" },
-      { transform: "translateX(-70px) translateY(0)" },
-      { transform: "translateX(-35px) translateY(6px)" },
-      { transform: "translateX(0) translateY(0)" },
-    ],
-    easing: "cubic-bezier(0.45, 0.05, 0.55, 0.95)",
-    duration: 3500,
-  },
-  heart: {
-    keyframes: [
-      { transform: "scale(1)", opacity: "1" },
-      { transform: "scale(1.15)", opacity: "1" },
-      { transform: "scale(0.95)", opacity: "0.85" },
-      { transform: "scale(1.1)", opacity: "1" },
-      { transform: "scale(1)", opacity: "1" },
-    ],
-    easing: "cubic-bezier(0.25, 0.1, 0.25, 1)",
-    duration: 1200,
-  },
-  diamond: {
-    keyframes: [
-      { transform: "rotate(0deg) scale(1)", opacity: "0.8" },
-      { transform: "rotate(4deg) scale(1.06)", opacity: "1" },
-      { transform: "rotate(0deg) scale(1)", opacity: "0.8" },
-      { transform: "rotate(-4deg) scale(1.06)", opacity: "1" },
-      { transform: "rotate(0deg) scale(1)", opacity: "0.8" },
-    ],
-    easing: "ease-in-out",
-    duration: 3000,
-  },
-  leaf: {
-    keyframes: [
-      { transform: "rotate(0deg) translateY(0)" },
-      { transform: "rotate(6deg) translateY(-4px)" },
-      { transform: "rotate(-2deg) translateY(1px)" },
-      { transform: "rotate(-5deg) translateY(-3px)" },
-      { transform: "rotate(3deg) translateY(-1px)" },
-      { transform: "rotate(0deg) translateY(0)" },
-    ],
-    easing: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
-    duration: 4500,
-  },
-  curve: {
-    keyframes: [
-      { transform: "scaleY(1) scaleX(1)", opacity: "0.9" },
-      { transform: "scaleY(1.18) scaleX(0.97)", opacity: "1" },
-      { transform: "scaleY(0.92) scaleX(1.03)", opacity: "0.92" },
-      { transform: "scaleY(1.08) scaleX(0.99)", opacity: "0.97" },
-      { transform: "scaleY(1) scaleX(1)", opacity: "0.9" },
-    ],
-    easing: "cubic-bezier(0.4, 0, 0.2, 1)",
-    duration: 3500,
-  },
-  pulse: {
-    keyframes: [
-      { transform: "translateY(0) scaleY(1)" },
-      { transform: "translateY(-10px) scaleY(1.4)" },
-      { transform: "translateY(3px) scaleY(0.7)" },
-      { transform: "translateY(-4px) scaleY(1.15)" },
-      { transform: "translateY(0) scaleY(1)" },
-    ],
-    easing: "cubic-bezier(0.22, 1, 0.36, 1)",
-    duration: 1000,
-  },
-  loop: {
-    keyframes: [
-      { transform: "translateX(0) scaleX(1)" },
-      { transform: "translateX(-60px) scaleX(0.95)" },
-      { transform: "translateX(-120px) scaleX(1)" },
-      { transform: "translateX(-60px) scaleX(1.05)" },
-      { transform: "translateX(0) scaleX(1)" },
-    ],
-    easing: "cubic-bezier(0.45, 0, 0.55, 1)",
-    duration: 3500,
-  },
-  scroll: {
-    keyframes: [
-      { transform: "translateX(0) perspective(400px) rotateY(0deg)", opacity: "1" },
-      { transform: "translateX(-25px) perspective(400px) rotateY(6deg)", opacity: "0.88" },
-      { transform: "translateX(0) perspective(400px) rotateY(0deg)", opacity: "1" },
-      { transform: "translateX(15px) perspective(400px) rotateY(-4deg)", opacity: "0.92" },
-      { transform: "translateX(0) perspective(400px) rotateY(0deg)", opacity: "1" },
-    ],
-    easing: "cubic-bezier(0.4, 0, 0.2, 1)",
-    duration: 4000,
-  },
+  wave: { easing: "linear", duration: 5000, perPathDuration: 5000 },
+  curl: { easing: "linear", duration: 4000, perPathDuration: 4000 },
+  zigzag: { easing: "linear", duration: 3000, perPathDuration: 3000 },
+  dots: { easing: "linear", duration: 6000, perPathDuration: 6000 },
+  tilde: { easing: "linear", duration: 4500, perPathDuration: 4500 },
+  heart: { easing: "linear", duration: 4000, perPathDuration: 4000 },
+  diamond: { easing: "linear", duration: 3500, perPathDuration: 3500 },
+  leaf: { easing: "linear", duration: 5500, perPathDuration: 5500 },
+  curve: { easing: "linear", duration: 5000, perPathDuration: 5000 },
+  pulse: { easing: "linear", duration: 2500, perPathDuration: 2500 },
+  loop: { easing: "linear", duration: 4500, perPathDuration: 4500 },
+  scroll: { easing: "linear", duration: 6000, perPathDuration: 6000 },
 };
 
 /**
@@ -194,7 +74,7 @@ const VARIANT_ANIM: Record<DividerVariant, VariantAnimConfig> = {
  *
  * Renders an SVG divider with multiple decorative variants (wave, curl, zigzag, etc.).
  * Supports both stroked and filled rendering modes, with optional Web Animations API
- * powered animation per variant.
+ * powered continuous scroll animation per variant.
  *
  * @property variant - The visual style of the divider. Defaults to `"wave"`.
  * @property color - Stroke color for stroked variants, also used as fallback fill. Defaults to `"#e2e8f0"`.
@@ -209,9 +89,10 @@ const VARIANT_ANIM: Record<DividerVariant, VariantAnimConfig> = {
  * @property child - A React component type rendered as a child element (reserved for extensibility).
  * @property gest - Additional HTML/SVG attributes spread onto the root `<svg>` element.
  * @property onFunc - Callback invoked with the internal `_SectionDivider` instance after initialization.
- * @property animate - When `true`, enables Web Animations API animation on the divider path(s).
- * @property duration - Animation duration in milliseconds. Defaults to `3000`.
+ * @property animate - When `true`, enables continuous scroll animation on the divider path(s).
+ * @property duration - Animation duration per cycle in milliseconds. Defaults to variant-specific.
  * @property delay - Delay before the animation starts in milliseconds. Defaults to `0`.
+ * @property direction - Scroll direction: `"ltr"` (left-to-right), `"rtl"` (right-to-left), `"ttb"` (top-to-bottom), `"btt"` (bottom-to-top). Defaults to `"ltr"`.
  * @property gesture - Gesture that triggers the animation: `"click"`, `"hover"`, `"focus"`, `"scroll"`, or `"none"`. When set, `animate` is implied.
  * @property listen - A `Store` instance. When its state changes, the animation replays. Useful for cross-component triggering.
  */
@@ -235,6 +116,7 @@ export interface SectionDividerProp {
   animate?: boolean;
   duration?: number;
   delay?: number;
+  direction?: Direction;
   gesture?: Gesture;
   listen?: Store<Record<string, unknown>>;
 }
@@ -265,6 +147,49 @@ export class _SectionDivider {
     this.listenUnsubscribes = [];
   };
 
+  private buildScrollKeyframes = (
+    direction: Direction,
+    duration: number,
+  ): { keyframes: Keyframe[]; easing: string; dur: number } => {
+    const cycle = 1440;
+    const steps = 60;
+
+    switch (direction) {
+      case "ltr":
+        return {
+          keyframes: Array.from({ length: steps + 1 }, (_, i) => ({
+            transform: `translateX(${-cycle + (i * cycle) / steps}px)`,
+          })),
+          easing: "linear",
+          dur: duration,
+        };
+      case "rtl":
+        return {
+          keyframes: Array.from({ length: steps + 1 }, (_, i) => ({
+            transform: `translateX(${(i * cycle) / steps}px)`,
+          })),
+          easing: "linear",
+          dur: duration,
+        };
+      case "ttb":
+        return {
+          keyframes: Array.from({ length: steps + 1 }, (_, i) => ({
+            transform: `translateY(${(i * 80) / steps}px)`,
+          })),
+          easing: "linear",
+          dur: duration,
+        };
+      case "btt":
+        return {
+          keyframes: Array.from({ length: steps + 1 }, (_, i) => ({
+            transform: `translateY(${-80 + (i * 80) / steps}px)`,
+          })),
+          easing: "linear",
+          dur: duration,
+        };
+    }
+  };
+
   private applyAnimation = (props: SectionDividerProp) => {
     if (!this.svgRef) return;
 
@@ -274,21 +199,23 @@ export class _SectionDivider {
 
     const variant = props.variant || "wave";
     const variantAnim = VARIANT_ANIM[variant];
+    const direction = props.direction || "ltr";
     const duration = props.duration ?? variantAnim.duration;
     const delay = props.delay ?? 0;
-    const keyframes = variantAnim.keyframes;
 
-    const paths = this.svgRef.querySelectorAll("path");
-    paths.forEach((path) => {
-      const anim = path.animate(keyframes, {
-        duration,
-        delay,
-        iterations: Infinity,
-        easing: variantAnim.easing,
-      });
-      anim.pause();
-      this.animations.push(anim);
+    const scrollConfig = this.buildScrollKeyframes(direction, duration);
+
+    const pathContainer = this.svgRef.querySelector("g");
+    if (!pathContainer) return;
+
+    const anim = pathContainer.animate(scrollConfig.keyframes, {
+      duration: scrollConfig.dur,
+      delay,
+      iterations: Infinity,
+      easing: scrollConfig.easing,
     });
+    anim.pause();
+    this.animations.push(anim);
 
     if (shouldAnimate && (!props.gesture || props.gesture === "none")) {
       this.animations.forEach((a) => a.play());
@@ -372,35 +299,55 @@ export class _SectionDivider {
             width: w,
             height: `${h}px`,
             transform: `scaleY(${flip})`,
+            overflow: "hidden",
             ...a.style,
           }}
           {...a.gest}
         >
-          {isFilled ? (
-            <path
-              d={path}
-              fill={fillColor}
-              opacity={0.9}
-            />
-          ) : (
-            <>
-              <path
-                d={path}
-                fill="none"
-                stroke={color}
-                strokeWidth={strokeWidth}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              {dots && (
+          <g>
+            {isFilled ? (
+              <>
+                <path d={path} fill={fillColor} opacity={0.9} />
                 <path
-                  d={dots}
-                  fill={color}
-                  opacity={0.5}
+                  d={path}
+                  fill={fillColor}
+                  opacity={0.9}
+                  transform="translate(1440, 0)"
                 />
-              )}
-            </>
-          )}
+              </>
+            ) : (
+              <>
+                <path
+                  d={path}
+                  fill="none"
+                  stroke={color}
+                  strokeWidth={strokeWidth}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d={path}
+                  fill="none"
+                  stroke={color}
+                  strokeWidth={strokeWidth}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  transform="translate(1440, 0)"
+                />
+                {dots && (
+                  <>
+                    <path d={dots} fill={color} opacity={0.5} />
+                    <path
+                      d={dots}
+                      fill={color}
+                      opacity={0.5}
+                      transform="translate(1440, 0)"
+                    />
+                  </>
+                )}
+              </>
+            )}
+          </g>
         </svg>
       </>
     );

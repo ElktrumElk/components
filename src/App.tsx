@@ -1,4 +1,4 @@
-import { Animation, Card, LetterAnimation, Page, Text } from "./components";
+import { Animation, Card, LetterAnimation, Page, SectionDivider, Text } from "./components";
 import GridView from "./lib/components/gridview/GridView";
 import Padding from "./lib/components/padding/Padding";
 import Hover from "./lib/components/pseudo/hover/Hover";
@@ -21,6 +21,7 @@ export default function App() {
                         <Text text="Hover Wassup" type="h1" color="white" />
                       )}
                     />
+                    <SectionDivider animate variant="wave" direction="btt"  duration={1000}  fillColor="#02c8ff"/>
 
                     <Animation
                       isAutomatic
@@ -35,8 +36,9 @@ export default function App() {
                       style={{ width: "auto", height: "max-content" }}
                       child={() => (
                         <>
-                          <Hover style={{color: 'blue'}}
-                          transition="color 1s ease"
+                          <Hover
+                            style={{ color: "blue" }}
+                            transition="color 1s ease"
                             child={() => (
                               <LetterAnimation
                                 animation="glitch"

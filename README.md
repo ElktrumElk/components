@@ -1349,9 +1349,7 @@ Lightweight placeholder `<span>` for prototyping. Renders HTML via `dangerouslyS
 
 ### SectionDivider
 
-SVG-based decorative divider between content sections. 12 built-in visual variants with optional Web Animations API powered animation.
-
-Each variant has its own unique animation: wave variants slide horizontally, heart pulses with a beat, dots scale and glow, leaf sways, and more.
+SVG-based decorative divider between content sections. 12 built-in visual variants with optional continuous scroll animation.
 
 | Prop | Type | Required | Default | Description |
 |------|------|----------|---------|-------------|
@@ -1368,22 +1366,12 @@ Each variant has its own unique animation: wave variants slide horizontally, hea
 | `child` | `ElementType` | No | — | Child component |
 | `gest` | `SVGAttributes<SVGSVGElement>` | No | — | SVG attributes |
 | `onFunc` | `(self: _SectionDivider) => void` | No | — | Instance callback |
-| `animate` | `boolean` | No | — | Enable animation on the divider path(s) |
-| `duration` | `number` | No | `3000` | Animation duration in ms |
+| `animate` | `boolean` | No | — | Enable continuous scroll animation |
+| `duration` | `number` | No | variant-specific | Animation duration per cycle in ms |
 | `delay` | `number` | No | `0` | Delay before animation starts in ms |
+| `direction` | `'ltr'\|'rtl'\|'ttb'\|'btt'` | No | `"ltr"` | Scroll direction |
 | `gesture` | `'click'\|'hover'\|'focus'\|'scroll'\|'none'` | No | — | Gesture that triggers the animation |
 | `listen` | `Store` | No | — | A store; when its state changes the animation replays |
-
-**Animation per variant:**
-
-| Variant | Animation |
-|---------|-----------|
-| `wave`, `curl`, `tilde`, `loop`, `scroll` | Horizontal oscillation (translateX) |
-| `zigzag`, `pulse` | Subtle horizontal slide |
-| `dots` | Scale pulse with opacity glow |
-| `heart` | Beat pulse (scale) |
-| `diamond`, `curve` | Vertical stretch (scaleY) |
-| `leaf` | Gentle rotation sway |
 
 ```tsx
 static
@@ -1393,16 +1381,17 @@ static
 ```
 
 ```tsx
-animated
+continuous scroll animation
 <SectionDivider variant="wave" animate color="#6366f1" height={60} />
-<SectionDivider variant="curl" animate duration={2000} color="#22c55e" />
-<SectionDivider variant="heart" fillColor="#ec4899" animate delay={500} />
+<SectionDivider variant="curl" animate direction="rtl" color="#22c55e" />
+<SectionDivider variant="heart" fillColor="#ec4899" animate direction="ttb" />
+<SectionDivider variant="dots" animate direction="btt" duration={8000} />
 ```
 
 ```tsx
 gesture-triggered
 <SectionDivider variant="dots" gesture="hover" animate color="#6366f1" />
-<SectionDivider variant="wave" gesture="click" animate color="#22c55e" />
+<SectionDivider variant="wave" gesture="click" animate direction="ltr" />
 ```
 
 ```tsx
@@ -1481,6 +1470,35 @@ CSS Grid container with configurable template and auto-placement properties.
   <Card body={() => <Text text="Cell 3" type="p" />} />
 </GridView>
 ```
+
+---
+
+## Pseudo Components
+
+Import pseudo components from `elk-components`:
+
+```ts
+import { Hover } from "elk-components";
+```
+
+### Hover
+
+A pseudo component that applies inline styles on mouseenter and restores original styles on mouseleave. Useful for building hover effects without CSS.
+
+```tsx
+<Hover style={{ color: "red" }} transition="color 0.3s">
+  <span>Hover me</span>
+</Hover>
+```
+
+#### Props
+
+| Prop | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `style` | `CSSProperties` | Yes | — | Inline styles applied on hover |
+| `child` | `ElementType` | No | — | Component type to render as wrapper |
+| `key` | `string` | No | — | React key |
+| `transition` | `string \| null` | No | `""` | CSS transition string. `null` skips setting transition on leave |
 
 ---
 

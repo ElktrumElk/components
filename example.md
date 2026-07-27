@@ -689,3 +689,53 @@ function NotificationList() {
   );
 }
 ```
+
+---
+
+## Hover Effects
+
+```tsx
+import { Hover, Text } from "elk-components";
+
+// Basic hover color change
+<Hover style={{ color: "#6366f1" }} transition="color 0.3s">
+  <Text text="Hover me" type="p" />
+</Hover>
+
+// Hover with scale and glow
+<Hover
+  style={{ transform: "scale(1.05)", boxShadow: "0 4px 20px rgba(99,102,241,0.3)" }}
+  transition="all 0.3s ease"
+>
+  <div style={{ padding: "1rem", borderRadius: "8px", background: "#1e1e2e" }}>
+    <Text text="Hover card" type="p" />
+  </div>
+</Hover>
+
+// Hover with background color change (no transition reset)
+<Hover style={{ backgroundColor: "rgba(255,255,255,0.05)" }} transition={null}>
+  <div style={{ padding: "0.5rem 1rem", borderRadius: "4px" }}>
+    <Text text="Menu item" type="p" />
+  </div>
+</Hover>
+```
+
+```tsx
+// Hover with child wrapper component
+import { Hover, Card, Text } from "elk-components";
+
+function HoverCard() {
+  return (
+    <Hover style={{ transform: "translateY(-4px)" }} transition="transform 0.2s ease">
+      <Card
+        body={() => (
+          <Stack gap=".5rem">
+            <Text text="Hover to lift" type="h3" />
+            <Text text="This card lifts on hover" type="p" />
+          </Stack>
+        )}
+      />
+    </Hover>
+  );
+}
+```
