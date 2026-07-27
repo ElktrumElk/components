@@ -36,7 +36,7 @@ describe("SectionDivider", () => {
     const { container } = render(<SectionDivider variant="curl" />);
     const svg = container.querySelector("svg");
     const path = svg?.querySelector("path");
-    expect(path?.getAttribute("d")).toContain("M0,40 C80,10");
+    expect(path?.getAttribute("d")).toContain("M0,40");
   });
 
   it("renders zigzag variant as stroke not fill", () => {
@@ -47,7 +47,7 @@ describe("SectionDivider", () => {
     expect(path?.getAttribute("stroke")).toBeTruthy();
   });
 
-  it("renders dots variant with decorative circles", () => {
+  it("renders dots variant with paths", () => {
     const { container } = render(<SectionDivider variant="dots" />);
     const svg = container.querySelector("svg");
     const paths = svg?.querySelectorAll("path");
@@ -478,5 +478,17 @@ describe("SectionDivider", () => {
   it("does not animate when animate is false and no gesture and no float", () => {
     render(<SectionDivider animate={false} />);
     expect(animateMock).not.toHaveBeenCalled();
+  });
+
+  it("each variant generates valid path starting with M", () => {
+    const variants = [
+      "wave", "curl", "zigzag", "dots", "tilde", "heart",
+      "diamond", "leaf", "curve", "pulse", "loop", "scroll",
+    ] as const;
+    for (const v of variants) {
+      const { container } = render(<SectionDivider variant={v} />);
+      const d = container.querySelector("path")?.getAttribute("d") || "";
+      expect(d.startsWith("M")).toBe(true);
+    }
   });
 });

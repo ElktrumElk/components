@@ -1367,25 +1367,15 @@ SVG-based decorative divider between content sections. 12 built-in visual varian
 | `gest` | `SVGAttributes<SVGSVGElement>` | No | — | SVG attributes |
 | `onFunc` | `(self: _SectionDivider) => void` | No | — | Instance callback |
 | `animate` | `boolean` | No | — | Enable continuous scroll animation |
-| `duration` | `number` | No | variant-specific | Animation duration per cycle in ms |
+| `duration` | `number` | No | variant-specific | Scroll animation duration per cycle in ms |
 | `delay` | `number` | No | `0` | Delay before animation starts in ms |
 | `direction` | `'ltr'\|'rtl'\|'ttb'\|'btt'` | No | `"ltr"` | Scroll direction |
 | `easing` | `'linear'\|'ease'\|'ease-in'\|'ease-out'\|'ease-in-out'\|string` | No | `"linear"` | Scroll easing function |
 | `gesture` | `'click'\|'hover'\|'focus'\|'scroll'\|'none'` | No | — | Gesture that triggers the animation |
 | `listen` | `Store` | No | — | A store; when its state changes the animation replays |
-| `float` | `boolean` | No | — | Enable continuous vertical undulation (bobbing motion) |
+| `float` | `boolean` | No | — | Enable continuous vertical undulation (bobbing on water) |
 | `amplitude` | `number` | No | `15` | Float distance in px from center. Higher = more dramatic |
-| `frequency` | `number` | No | variant-specific | Oscillation cycles per animation duration. Higher = more ripples |
-
-**Default frequencies per variant:**
-
-| Variant | Frequency | Duration |
-|---------|-----------|----------|
-| `wave`, `leaf` | 2 | 5s, 5.5s |
-| `curl`, `loop` | 4 | 4s, 4.5s |
-| `zigzag`, `diamond`, `pulse` | 5-6 | 3s, 3.5s, 2.5s |
-| `dots`, `curve` | 1 | 6s, 5s |
-| `tilde`, `heart`, `scroll` | 3 | 4.5s, 4s, 6s |
+| `frequency` | `number` | No | variant-specific | Float oscillation cycles per animation duration |
 
 ```tsx
 static
@@ -1399,7 +1389,6 @@ continuous scroll animation
 <SectionDivider variant="wave" animate color="#6366f1" height={60} />
 <SectionDivider variant="curl" animate direction="rtl" easing="ease-in-out" />
 <SectionDivider variant="heart" fillColor="#ec4899" animate direction="ttb" />
-<SectionDivider variant="dots" animate direction="btt" duration={8000} />
 ```
 
 ```tsx
@@ -1418,29 +1407,7 @@ combine scroll + float
 ```tsx
 gesture-triggered
 <SectionDivider variant="dots" gesture="hover" animate float color="#6366f1" />
-<SectionDivider variant="wave" gesture="click" animate float direction="ltr" />
-```
-
-```tsx
-cross-component trigger
-const dividerStore = createStore({ play: false });
-
-// In another component:
-<button onClick={() => dividerStore.setState({ play: true })} />
-
-// The divider replays on every store change:
-<SectionDivider variant="curl" listen={dividerStore} animate color="#a855f7" />
-```
-
-**Imperative control via `onFunc`:**
-
-```tsx
-let divider: _SectionDivider;
-<SectionDivider animate onFunc={(self) => { divider = self; }} />
-
-// Later:
-divider.play();  // replay animation
-divider.stop();  // cancel animation
+<SectionDivider variant="wave" gesture="click" animate float />
 ```
 
 ---

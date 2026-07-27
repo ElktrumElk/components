@@ -141,6 +141,73 @@ The `prepare` script runs `npm run build`, so `npm publish` will trigger a full 
 
 ---
 
+## SectionDivider — Component Deep Dive
+
+### Architecture
+
+The SVG is structured as nested `<g data-scroll>` > `<g data-float>` > paths. Scroll and float animations run independently on separate group elements.
+
+```
+<svg viewBox="0 0 1440 80">
+  <g data-scroll>       ← scroll animation target (translateX/Y)
+    <g data-float>      ← float animation target (sine translateY)
+      <path d="..." />
+      <path d="..." transform="translate(1440, 0)" />  ← duplicate for seamless loop
+    </g>
+  </g>
+</svg>
+```
+
+### Path Generation
+
+Each variant has a hardcoded SVG path in `SVG_PATHS`. Filled variants (wave, curl, tilde, heart, leaf, curve, loop, scroll) render paths with a fill color. Stroked variants (zigzag, diamond, pulse) render paths with a stroke. The dots variant includes decorative dot paths via `DECORATIVE_DOTS`.
+
+### Animation Layers
+
+Two independent animation layers compose on the SVG groups:
+
+1. **Scroll** — applied to `<g data-scroll>`, uses `translateX` (ltr/rtl) or `translateY` (ttb/btt). Duration defaults to the variant's `defaultDuration`.
+2. **Float** — applied to `<g data-float>`, uses a sine-wave `translateY` for vertical bobbing. Shares the scroll duration.
+
+### Key Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `float` | `boolean` | `false` | Enables continuous vertical undulation independent of scroll. |
+| `amplitude` | `number` | `15` | Vertical distance in px the float travels from center. |
+| `frequency` | `number` | variant-specific | Full oscillation cycles per animation duration for float. |
+| `easing` | `Easing` | `"linear"` | CSS easing for scroll animation. |
+| `direction` | `Direction` | `"ltr"` | Scroll direction: `ltr`, `rtl`, `ttb`, `btt`. ttb/btt use HEIGHT (80), not WIDTH. |
+| `animate` | `boolean` | `false` | Enables continuous scroll animation. |
+| `duration` | `number` | variant-specific | Scroll cycle duration in ms. |
+| `delay` | `number` | `0` | Delay before animation starts in ms. |
+| `gesture` | `Gesture` | — | `click`, `hover`, `focus`, `scroll`, `none`. Implies `animate`. |
+
+### Default Duration and Frequency by Variant
+
+| Variant | Duration | Frequency |
+|---------|----------|-----------|
+| wave | 5000ms | 2 |
+| curl | 4000ms | 4 |
+| zigzag | 3000ms | 6 |
+| dots | 6000ms | 1 |
+| tilde | 4500ms | 3 |
+| heart | 4000ms | 3 |
+| diamond | 3500ms | 5 |
+| leaf | 5500ms | 2 |
+| curve | 5000ms | 1 |
+| pulse | 2500ms | 3 |
+| loop | 4500ms | 4 |
+| scroll | 6000ms | 3 |
+
+### Built-in Helpers (exported from Class)
+
+- `play()` — starts all scroll + float animations
+- `stop()` — cancels all animations
+- `dispose()` — stops animations + removes gesture/store listeners
+
+---
+
 ## Common Pitfalls
 
 1. **Unused variables fail the build** — `noUnusedLocals` and `noUnusedParameters` are `true` in `tsconfig.build.json`. Prefix unused params with `_`.

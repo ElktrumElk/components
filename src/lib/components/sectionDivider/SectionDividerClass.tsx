@@ -23,7 +23,7 @@ type Easing =
   | "ease-in"
   | "ease-out"
   | "ease-in-out"
-  | "cubic-bezier(n,n,n,n)";
+  | (string & {});
 
 const SVG_PATHS: Record<DividerVariant, string> = {
   wave: "M0,32 C160,80 320,0 480,32 C640,64 800,16 960,32 C1120,48 1280,16 1440,32 L1440,0 L0,0 Z",
@@ -88,56 +88,128 @@ const VARIANT_ANIM: Record<DividerVariant, VariantAnimConfig> = {
  * Supports continuous scroll animation, floating undulation, gesture triggering,
  * and cross-component animation via store subscription.
  *
- * @property variant - The visual style of the divider. Defaults to `"wave"`.
- * @property color - Stroke color for stroked variants, also used as fallback fill. Defaults to `"#e2e8f0"`.
- * @property fillColor - Fill color for filled variants. Falls back to `color` if omitted.
- * @property strokeWidth - Stroke width in pixels for stroked variants. Defaults to `2`.
- * @property height - Height of the SVG in pixels. Defaults to `80`.
- * @property width - CSS width of the SVG. Defaults to `"100%"`.
- * @property flip - If `true`, mirrors the divider vertically.
- * @property customPath - A custom SVG path string to override the built-in variant path.
- * @property className - Additional CSS class names applied to the root `<svg>` element.
- * @property style - Inline styles merged onto the root `<svg>` element.
- * @property child - A React component type rendered as a child element (reserved for extensibility).
- * @property gest - Additional HTML/SVG attributes spread onto the root `<svg>` element.
- * @property onFunc - Callback invoked with the internal `_SectionDivider` instance after initialization.
- * @property animate - When `true`, enables continuous scroll animation on the divider path(s).
- * @property duration - Scroll animation duration per cycle in milliseconds. Defaults to variant-specific.
- * @property delay - Delay before the animation starts in milliseconds. Defaults to `0`.
- * @property direction - Scroll direction: `"ltr"`, `"rtl"`, `"ttb"`, `"btt"`. Defaults to `"ltr"`.
- * @property easing - CSS easing function for the scroll animation. Defaults to `"linear"`.
- * @property gesture - Gesture that triggers the animation: `"click"`, `"hover"`, `"focus"`, `"scroll"`, or `"none"`.
- * @property listen - A `Store` instance. When its state changes, the animation replays.
- * @property float - When `true`, enables continuous vertical undulation on the path(s). The divider bobs up and down like a boat on water.
- * @property amplitude - Vertical distance in pixels the float travels from center. Defaults to `15`. Higher values = more dramatic bobbing.
- * @property frequency - Number of full oscillation cycles per animation duration. Defaults to variant-specific (wave=2, curl=4, etc.). Higher values = more ripples.
+ * The SVG is structured as nested `<g data-scroll>` > `<g data-float>` so that
+ * scroll and float animations run independently and can be combined.
+ *
+ * @example
+ * // Static wave divider
+ * <SectionDivider variant="wave" color="#6366f1" height={60} />
+ *
+ * @example
+ * // Scroll + float with tight ripples
+ * <SectionDivider variant="curl" animate float amplitude={20} frequency={6} />
+ *
+ * @see {@link SectionDividerProp} for all available props.
  */
 export interface SectionDividerProp {
+  /** Visual style of the divider. Defaults to `"wave"`. */
   variant?: DividerVariant;
+
+  /** Stroke color for stroked variants, also used as fallback fill color. Defaults to `"#e2e8f0"`. */
   color?: string;
+
+  /** Fill color for filled variants (wave, curl, tilde, heart, leaf, curve, loop, scroll). Falls back to `color`. */
   fillColor?: string;
+
+  /** Stroke width in pixels for stroked variants (zigzag, diamond, pulse). Defaults to `2`. */
   strokeWidth?: number;
+
+  /** Height of the SVG element in pixels. Defaults to `80`. */
   height?: number;
+
+  /** CSS width of the SVG element. Defaults to `"100%"`. */
   width?: string;
+
+  /** If `true`, mirrors the divider vertically via `scaleY(-1)`. */
   flip?: boolean;
+
+  /** A custom SVG path string to override the built-in variant path. */
   customPath?: string;
+
+  /** Additional CSS class names applied to the root `<svg>` element. */
   className?: string;
+
+  /** Inline styles merged onto the root `<svg>` element. */
   style?: React.CSSProperties;
+
+  /** A React component type rendered as a child element (reserved for extensibility). */
   child?: React.JSX.ElementType;
+
+  /** Additional HTML/SVG attributes spread onto the root `<svg>` element. */
   gest?: React.DetailedHTMLProps<
     React.SVGAttributes<SVGSVGElement>,
     SVGSVGElement
   >;
+
+  /** Callback invoked with the internal `_SectionDivider` instance after initialization. */
   onFunc?: (self: _SectionDivider) => void;
+
+  /** When `true`, enables continuous scroll animation on the divider path(s). */
   animate?: boolean;
+
+  /**
+   * Scroll animation duration per cycle in milliseconds.
+   * Defaults to a variant-specific value (e.g. wave=5000ms, pulse=2500ms).
+   */
   duration?: number;
+
+  /** Delay before the animation starts in milliseconds. Defaults to `0`. */
   delay?: number;
+
+  /**
+   * Scroll direction for the continuous scroll animation.
+   * - `"ltr"` — left-to-right (pattern scrolls left, new content appears from right)
+   * - `"rtl"` — right-to-left
+   * - `"ttb"` — top-to-bottom
+   * - `"btt"` — bottom-to-top
+   *
+   * Defaults to `"ltr"`.
+   */
   direction?: Direction;
+
+  /**
+   * CSS easing function for the scroll animation.
+   * Accepts any valid CSS easing: `"linear"`, `"ease"`, `"ease-in"`, `"ease-out"`, `"ease-in-out"`,
+   * or a custom `"cubic-bezier(...)"` string.
+   *
+   * Defaults to `"linear"`.
+   */
   easing?: Easing;
+
+  /**
+   * Gesture that triggers the animation. When set, `animate` is implied.
+   * - `"click"` — plays on click
+   * - `"hover"` — plays on mouseenter
+   * - `"focus"` — plays on focusin
+   * - `"scroll"` — plays on scroll
+   * - `"none"` — no gesture binding
+   */
   gesture?: Gesture;
+
+  /**
+   * A `Store` instance. When its state changes, the animation replays.
+   * Useful for cross-component animation triggering.
+   */
   listen?: Store<Record<string, unknown>>;
+
+  /**
+   * When `true`, enables continuous vertical undulation on the path(s).
+   * The divider bobs up and down like a boat on water, independent of the scroll animation.
+   * Can be combined with `animate` for scroll + float simultaneously.
+   */
   float?: boolean;
+
+  /**
+   * Vertical distance in pixels the float travels from center.
+   * Higher values = more dramatic bobbing. Defaults to `15`.
+   */
   amplitude?: number;
+
+  /**
+   * Number of full oscillation cycles per animation duration for the float effect.
+   * Higher values = more ripples per cycle. Defaults to variant-specific
+   * (wave=2, curl=4, zigzag=6, dots=1, etc.).
+   */
   frequency?: number;
 }
 

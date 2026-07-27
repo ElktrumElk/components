@@ -19,7 +19,7 @@ const InitializeSectionDivider = () => {
  * built-in variants (wave, curl, zigzag, dots, tilde, heart, diamond, leaf,
  * curve, pulse, loop, scroll) or a fully custom SVG path.
  *
- * Optionally animate the divider with `animate`, `gesture`, and `listen` props.
+ * Combine with `animate` and `float` for scroll + bobbing.
  *
  * @example
  * <SectionDivider variant="wave" color="#6366f1" height={60} />
@@ -51,11 +51,16 @@ const InitializeSectionDivider = () => {
  * @param child - Child component type
  * @param gest - Extra SVG attributes spread onto the root element
  * @param onFunc - Callback receiving the internal class instance
- * @param animate - Enable Web Animations API animation on the path(s)
- * @param duration - Animation duration in ms (default 3000)
+ * @param animate - Enable Web Animations API scroll animation on the path(s)
+ * @param duration - Animation duration in ms (default variant-specific)
  * @param delay - Delay before animation starts in ms (default 0)
+ * @param direction - Scroll direction: "ltr", "rtl", "ttb", "btt" (default "ltr")
+ * @param easing - CSS easing for scroll: "linear", "ease-in-out", etc. (default "linear")
  * @param gesture - Gesture that triggers the animation: "click", "hover", "focus", "scroll", or "none"
  * @param listen - A Store instance; when its state changes, the animation replays
+ * @param float - Enable continuous vertical undulation (bobbing on water)
+ * @param amplitude - Float distance in px from center (default 15)
+ * @param frequency - Float oscillation cycles per animation duration (default variant-specific)
  */
 export default function SectionDivider({ ...a }: SectionDividerProp) {
   const { _sectionDivider } = InitializeSectionDivider();

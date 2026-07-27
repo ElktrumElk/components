@@ -21,7 +21,7 @@ export default function App() {
                         <Text text="Hover Wassup" type="h1" color="white" />
                       )}
                     />
-                    <SectionDivider animate variant="curl" direction="rtl"  duration={5000} flip fillColor="#02c8ff"/>
+                    <SectionDivider animate variant="curl" float direction="rtl"  duration={5000} flip fillColor="#02c8ff"/>
 
                     <Animation
                       isAutomatic
