@@ -1,4 +1,5 @@
 import React from "react";
+import { motion as motionComponents } from "motion/react";
 
 type Gesture = "click" | "hover" | "focus" | "scroll" | "none";
 
@@ -179,12 +180,7 @@ export class _Animation {
     const useMotion = !!(a.initial || a.animate || a.exit || a.variants || a.whileHover || a.whileTap || a.whileInView);
 
     if (useMotion) {
-      let MotionDiv: any;
-      try {
-        MotionDiv = require("motion/react").motion.div;
-      } catch {
-        MotionDiv = "div";
-      }
+      const MotionDiv = motionComponents.div as any;
 
       const motionProps: Record<string, any> = {};
       if (a.initial !== undefined) motionProps.initial = a.initial;
