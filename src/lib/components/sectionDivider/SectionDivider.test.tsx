@@ -181,11 +181,11 @@ describe("SectionDivider", () => {
     expect(call[1].delay).toBe(500);
   });
 
-  it("defaults to 3000ms duration", () => {
+  it("defaults to variant-specific duration (wave = 4000ms)", () => {
     const { container } = render(<SectionDivider animate />);
     expect(animateMock).toHaveBeenCalled();
     const call = animateMock.mock.calls[0];
-    expect(call[1].duration).toBe(3000);
+    expect(call[1].duration).toBe(4000);
   });
 
   it("defaults to Infinity iterations", () => {
@@ -195,40 +195,93 @@ describe("SectionDivider", () => {
     expect(call[1].iterations).toBe(Infinity);
   });
 
-  it("uses variant-specific keyframes for curl", () => {
+  it("uses variant-specific keyframes for curl (scroll with rotation)", () => {
     const { container } = render(<SectionDivider variant="curl" animate />);
     expect(animateMock).toHaveBeenCalled();
     const call = animateMock.mock.calls[0];
     const keyframes = call[0];
-    expect(keyframes).toEqual([
-      { transform: "translateX(0)" },
-      { transform: "translateX(-50px)" },
-      { transform: "translateX(0)" },
-    ]);
+    expect(keyframes[0]).toEqual({ transform: "translateX(0) rotate(0deg)" });
+    expect(keyframes.length).toBe(5);
   });
 
-  it("uses variant-specific keyframes for heart (scale pulse)", () => {
+  it("uses variant-specific keyframes for heart (double-beat pulse)", () => {
     const { container } = render(<SectionDivider variant="heart" animate />);
     expect(animateMock).toHaveBeenCalled();
     const call = animateMock.mock.calls[0];
     const keyframes = call[0];
-    expect(keyframes).toEqual([
-      { transform: "scale(1)" },
-      { transform: "scale(1.08)" },
-      { transform: "scale(1)" },
-    ]);
+    expect(keyframes[0]).toEqual({ transform: "scale(1)", opacity: "1" });
+    expect(keyframes[1]).toEqual({ transform: "scale(1.15)", opacity: "1" });
+    expect(keyframes.length).toBe(5);
   });
 
-  it("uses variant-specific keyframes for dots (scale + opacity)", () => {
+  it("uses variant-specific keyframes for dots (opacity + blur flash)", () => {
     const { container } = render(<SectionDivider variant="dots" animate />);
     expect(animateMock).toHaveBeenCalled();
     const call = animateMock.mock.calls[0];
     const keyframes = call[0];
-    expect(keyframes).toEqual([
-      { transform: "scale(1)", opacity: "0.5" },
-      { transform: "scale(1.3)", opacity: "1" },
-      { transform: "scale(1)", opacity: "0.5" },
-    ]);
+    expect(keyframes[0]).toEqual({ opacity: "0.3", filter: "blur(0px)" });
+    expect(keyframes[1]).toEqual({ opacity: "1", filter: "blur(1.5px)" });
+    expect(keyframes.length).toBe(5);
+  });
+
+  it("uses variant-specific keyframes for leaf (wind sway with rotation + translateY)", () => {
+    const { container } = render(<SectionDivider variant="leaf" animate />);
+    expect(animateMock).toHaveBeenCalled();
+    const call = animateMock.mock.calls[0];
+    const keyframes = call[0];
+    expect(keyframes[0]).toEqual({ transform: "rotate(0deg) translateY(0)" });
+    expect(keyframes[1]).toEqual({ transform: "rotate(6deg) translateY(-4px)" });
+    expect(keyframes.length).toBe(6);
+  });
+
+  it("uses variant-specific keyframes for pulse (electronic spike)", () => {
+    const { container } = render(<SectionDivider variant="pulse" animate />);
+    expect(animateMock).toHaveBeenCalled();
+    const call = animateMock.mock.calls[0];
+    const keyframes = call[0];
+    expect(keyframes[0]).toEqual({ transform: "translateY(0) scaleY(1)" });
+    expect(keyframes[1]).toEqual({ transform: "translateY(-10px) scaleY(1.4)" });
+    expect(keyframes.length).toBe(5);
+  });
+
+  it("uses variant-specific keyframes for zigzag (skew jitter)", () => {
+    const { container } = render(<SectionDivider variant="zigzag" animate />);
+    expect(animateMock).toHaveBeenCalled();
+    const call = animateMock.mock.calls[0];
+    const keyframes = call[0];
+    expect(keyframes[0]).toEqual({ transform: "translateX(0) skewX(0deg)" });
+    expect(keyframes[1]).toEqual({ transform: "translateX(-12px) skewX(3deg)" });
+  });
+
+  it("uses variant-specific easing per variant", () => {
+    render(<SectionDivider variant="pulse" animate />);
+    const pulseEasing = animateMock.mock.calls[0][1].easing;
+    animateMock.mockClear();
+
+    render(<SectionDivider variant="curl" animate />);
+    const curlEasing = animateMock.mock.calls[0][1].easing;
+
+    expect(pulseEasing).toBe("cubic-bezier(0.22, 1, 0.36, 1)");
+    expect(curlEasing).toBe("linear");
+    expect(pulseEasing).not.toBe(curlEasing);
+  });
+
+  it("uses variant-specific default duration", () => {
+    render(<SectionDivider variant="heart" animate />);
+    const heartDuration = animateMock.mock.calls[0][1].duration;
+    animateMock.mockClear();
+
+    render(<SectionDivider variant="pulse" animate />);
+    const pulseDuration = animateMock.mock.calls[0][1].duration;
+
+    expect(heartDuration).toBe(1200);
+    expect(pulseDuration).toBe(1000);
+    expect(heartDuration).not.toBe(pulseDuration);
+  });
+
+  it("user duration overrides variant default", () => {
+    render(<SectionDivider variant="heart" animate duration={5000} />);
+    expect(animateMock.mock.calls[0][1].duration).toBe(5000);
   });
 
   it("animates all path elements", () => {

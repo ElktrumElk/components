@@ -47,69 +47,146 @@ const FILLED_VARIANTS = new Set([
   "scroll",
 ]);
 
-const VARIANT_KEYFRAMES: Record<DividerVariant, Keyframe[]> = {
-  wave: [
-    { transform: "translateX(0)" },
-    { transform: "translateX(-40px)" },
-    { transform: "translateX(0)" },
-  ],
-  curl: [
-    { transform: "translateX(0)" },
-    { transform: "translateX(-50px)" },
-    { transform: "translateX(0)" },
-  ],
-  zigzag: [
-    { transform: "translateX(0)" },
-    { transform: "translateX(-30px)" },
-    { transform: "translateX(0)" },
-  ],
-  dots: [
-    { transform: "scale(1)", opacity: "0.5" },
-    { transform: "scale(1.3)", opacity: "1" },
-    { transform: "scale(1)", opacity: "0.5" },
-  ],
-  tilde: [
-    { transform: "translateX(0)" },
-    { transform: "translateX(-35px)" },
-    { transform: "translateX(0)" },
-  ],
-  heart: [
-    { transform: "scale(1)" },
-    { transform: "scale(1.08)" },
-    { transform: "scale(1)" },
-  ],
-  diamond: [
-    { transform: "scaleY(1)" },
-    { transform: "scaleY(1.15)" },
-    { transform: "scaleY(1)" },
-  ],
-  leaf: [
-    { transform: "rotate(0deg)" },
-    { transform: "rotate(3deg)" },
-    { transform: "rotate(0deg)" },
-    { transform: "rotate(-3deg)" },
-    { transform: "rotate(0deg)" },
-  ],
-  curve: [
-    { transform: "scaleY(1)" },
-    { transform: "scaleY(1.1)" },
-    { transform: "scaleY(1)" },
-  ],
-  pulse: [
-    { transform: "translateX(0)" },
-    { transform: "translateX(-20px)" },
-    { transform: "translateX(0)" },
-  ],
-  loop: [
-    { transform: "translateX(0)" },
-    { transform: "translateX(-45px)" },
-    { transform: "translateX(0)" },
-  ],
-  scroll: [
-    { transform: "translateX(0)" },
-    { transform: "translateX(-30px)" },
-    { transform: "translateX(0)" },
-  ],
+interface VariantAnimConfig {
+  keyframes: Keyframe[];
+  easing: string;
+  duration: number;
+}
+
+const VARIANT_ANIM: Record<DividerVariant, VariantAnimConfig> = {
+  wave: {
+    keyframes: [
+      { transform: "translateX(0) scaleY(1)", opacity: "0.85" },
+      { transform: "translateX(-50px) scaleY(1.08)", opacity: "1" },
+      { transform: "translateX(-100px) scaleY(0.95)", opacity: "0.9" },
+      { transform: "translateX(-50px) scaleY(1.04)", opacity: "1" },
+      { transform: "translateX(0) scaleY(1)", opacity: "0.85" },
+    ],
+    easing: "cubic-bezier(0.4, 0, 0.2, 1)",
+    duration: 4000,
+  },
+  curl: {
+    keyframes: [
+      { transform: "translateX(0) rotate(0deg)" },
+      { transform: "translateX(-70px) rotate(-1deg)" },
+      { transform: "translateX(-140px) rotate(0deg)" },
+      { transform: "translateX(-70px) rotate(1deg)" },
+      { transform: "translateX(0) rotate(0deg)" },
+    ],
+    easing: "linear",
+    duration: 3000,
+  },
+  zigzag: {
+    keyframes: [
+      { transform: "translateX(0) skewX(0deg)" },
+      { transform: "translateX(-12px) skewX(3deg)" },
+      { transform: "translateX(8px) skewX(-2deg)" },
+      { transform: "translateX(-6px) skewX(1.5deg)" },
+      { transform: "translateX(0) skewX(0deg)" },
+    ],
+    easing: "steps(5)",
+    duration: 1200,
+  },
+  dots: {
+    keyframes: [
+      { opacity: "0.3", filter: "blur(0px)" },
+      { opacity: "1", filter: "blur(1.5px)" },
+      { opacity: "0.5", filter: "blur(0px)" },
+      { opacity: "1", filter: "blur(0.5px)" },
+      { opacity: "0.3", filter: "blur(0px)" },
+    ],
+    easing: "ease-in-out",
+    duration: 2500,
+  },
+  tilde: {
+    keyframes: [
+      { transform: "translateX(0) translateY(0)" },
+      { transform: "translateX(-35px) translateY(-6px)" },
+      { transform: "translateX(-70px) translateY(0)" },
+      { transform: "translateX(-35px) translateY(6px)" },
+      { transform: "translateX(0) translateY(0)" },
+    ],
+    easing: "cubic-bezier(0.45, 0.05, 0.55, 0.95)",
+    duration: 3500,
+  },
+  heart: {
+    keyframes: [
+      { transform: "scale(1)", opacity: "1" },
+      { transform: "scale(1.15)", opacity: "1" },
+      { transform: "scale(0.95)", opacity: "0.85" },
+      { transform: "scale(1.1)", opacity: "1" },
+      { transform: "scale(1)", opacity: "1" },
+    ],
+    easing: "cubic-bezier(0.25, 0.1, 0.25, 1)",
+    duration: 1200,
+  },
+  diamond: {
+    keyframes: [
+      { transform: "rotate(0deg) scale(1)", opacity: "0.8" },
+      { transform: "rotate(4deg) scale(1.06)", opacity: "1" },
+      { transform: "rotate(0deg) scale(1)", opacity: "0.8" },
+      { transform: "rotate(-4deg) scale(1.06)", opacity: "1" },
+      { transform: "rotate(0deg) scale(1)", opacity: "0.8" },
+    ],
+    easing: "ease-in-out",
+    duration: 3000,
+  },
+  leaf: {
+    keyframes: [
+      { transform: "rotate(0deg) translateY(0)" },
+      { transform: "rotate(6deg) translateY(-4px)" },
+      { transform: "rotate(-2deg) translateY(1px)" },
+      { transform: "rotate(-5deg) translateY(-3px)" },
+      { transform: "rotate(3deg) translateY(-1px)" },
+      { transform: "rotate(0deg) translateY(0)" },
+    ],
+    easing: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+    duration: 4500,
+  },
+  curve: {
+    keyframes: [
+      { transform: "scaleY(1) scaleX(1)", opacity: "0.9" },
+      { transform: "scaleY(1.18) scaleX(0.97)", opacity: "1" },
+      { transform: "scaleY(0.92) scaleX(1.03)", opacity: "0.92" },
+      { transform: "scaleY(1.08) scaleX(0.99)", opacity: "0.97" },
+      { transform: "scaleY(1) scaleX(1)", opacity: "0.9" },
+    ],
+    easing: "cubic-bezier(0.4, 0, 0.2, 1)",
+    duration: 3500,
+  },
+  pulse: {
+    keyframes: [
+      { transform: "translateY(0) scaleY(1)" },
+      { transform: "translateY(-10px) scaleY(1.4)" },
+      { transform: "translateY(3px) scaleY(0.7)" },
+      { transform: "translateY(-4px) scaleY(1.15)" },
+      { transform: "translateY(0) scaleY(1)" },
+    ],
+    easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+    duration: 1000,
+  },
+  loop: {
+    keyframes: [
+      { transform: "translateX(0) scaleX(1)" },
+      { transform: "translateX(-60px) scaleX(0.95)" },
+      { transform: "translateX(-120px) scaleX(1)" },
+      { transform: "translateX(-60px) scaleX(1.05)" },
+      { transform: "translateX(0) scaleX(1)" },
+    ],
+    easing: "cubic-bezier(0.45, 0, 0.55, 1)",
+    duration: 3500,
+  },
+  scroll: {
+    keyframes: [
+      { transform: "translateX(0) perspective(400px) rotateY(0deg)", opacity: "1" },
+      { transform: "translateX(-25px) perspective(400px) rotateY(6deg)", opacity: "0.88" },
+      { transform: "translateX(0) perspective(400px) rotateY(0deg)", opacity: "1" },
+      { transform: "translateX(15px) perspective(400px) rotateY(-4deg)", opacity: "0.92" },
+      { transform: "translateX(0) perspective(400px) rotateY(0deg)", opacity: "1" },
+    ],
+    easing: "cubic-bezier(0.4, 0, 0.2, 1)",
+    duration: 4000,
+  },
 };
 
 /**
@@ -196,9 +273,10 @@ export class _SectionDivider {
     if (!shouldAnimate) return;
 
     const variant = props.variant || "wave";
-    const duration = props.duration ?? 3000;
+    const variantAnim = VARIANT_ANIM[variant];
+    const duration = props.duration ?? variantAnim.duration;
     const delay = props.delay ?? 0;
-    const keyframes = VARIANT_KEYFRAMES[variant];
+    const keyframes = variantAnim.keyframes;
 
     const paths = this.svgRef.querySelectorAll("path");
     paths.forEach((path) => {
@@ -206,7 +284,7 @@ export class _SectionDivider {
         duration,
         delay,
         iterations: Infinity,
-        easing: "ease-in-out",
+        easing: variantAnim.easing,
       });
       anim.pause();
       this.animations.push(anim);
