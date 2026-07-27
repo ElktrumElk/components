@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import { _SectionDivider, type SectionDividerProp } from "./SectionDividerClass";
 
 const InitializeSectionDivider = () => {
@@ -19,6 +19,8 @@ const InitializeSectionDivider = () => {
  * built-in variants (wave, curl, zigzag, dots, tilde, heart, diamond, leaf,
  * curve, pulse, loop, scroll) or a fully custom SVG path.
  *
+ * Optionally animate the divider with `animate`, `gesture`, and `listen` props.
+ *
  * @example
  * <SectionDivider variant="wave" color="#6366f1" height={60} />
  *
@@ -26,7 +28,13 @@ const InitializeSectionDivider = () => {
  * <SectionDivider variant="heart" fillColor="#e11d48" flip height={40} />
  *
  * @example
- * <SectionDivider variant="zigzag" color="#000" strokeWidth={3} width="80%" />
+ * <SectionDivider variant="curl" animate duration={2000} color="#6366f1" />
+ *
+ * @example
+ * <SectionDivider variant="wave" gesture="hover" animate color="#22c55e" />
+ *
+ * @example
+ * <SectionDivider variant="dots" listen={myStore} animate />
  *
  * @see {@link SectionDividerProp} for all available props.
  *
@@ -43,9 +51,21 @@ const InitializeSectionDivider = () => {
  * @param child - Child component type
  * @param gest - Extra SVG attributes spread onto the root element
  * @param onFunc - Callback receiving the internal class instance
+ * @param animate - Enable Web Animations API animation on the path(s)
+ * @param duration - Animation duration in ms (default 3000)
+ * @param delay - Delay before animation starts in ms (default 0)
+ * @param gesture - Gesture that triggers the animation: "click", "hover", "focus", "scroll", or "none"
+ * @param listen - A Store instance; when its state changes, the animation replays
  */
 export default function SectionDivider({ ...a }: SectionDividerProp) {
   const { _sectionDivider } = InitializeSectionDivider();
   a?.onFunc?.(_sectionDivider?.current as _SectionDivider);
+
+  useEffect(() => {
+    return () => {
+      _sectionDivider.current?.dispose();
+    };
+  }, []);
+
   return _sectionDivider.current?.build?.({ ...a });
 }

@@ -235,6 +235,180 @@ function LandingPage() {
 
 ---
 
+## Animated Section Dividers
+
+```tsx
+import { Stack, Text, SectionDivider, Card } from "elk-components";
+
+function AnimatedPage() {
+  return (
+    <Stack direction="column">
+      <Card padding="lg" radius="0" backgroundColor="#1e1b4b">
+        <Text text="Hero Section" type="h1" size="3rem" />
+      </Card>
+      <SectionDivider
+        variant="wave"
+        fillColor="#1e1b4b"
+        height={60}
+        animate
+        duration={2000}
+      />
+      <Card padding="lg" radius="0">
+        <Text text="Features Section" type="h2" />
+      </Card>
+      <SectionDivider
+        variant="heart"
+        fillColor="#ec4899"
+        animate
+        delay={300}
+      />
+      <Card padding="lg" radius="0">
+        <Text text="Testimonials" type="h2" />
+      </Card>
+      <SectionDivider
+        variant="dots"
+        color="#6366f1"
+        animate
+        duration={4000}
+      />
+      <Card padding="lg" radius="0" backgroundColor="#0f172a">
+        <Text text="Footer" type="p" />
+      </Card>
+    </Stack>
+  );
+}
+```
+
+---
+
+## Gesture-Triggered Dividers
+
+```tsx
+import { Stack, Text, SectionDivider, Card } from "elk-components";
+
+function InteractivePage() {
+  return (
+    <Stack direction="column">
+      <Card padding="lg" radius="0" backgroundColor="#0c1a2a">
+        <Text text="Scroll down" type="p" />
+      </Card>
+      <SectionDivider
+        variant="curl"
+        color="#22c55e"
+        animate
+        gesture="hover"
+      />
+      <Card padding="lg" radius="0">
+        <Text text="Hover the divider above!" type="h2" />
+      </Card>
+      <SectionDivider
+        variant="zigzag"
+        color="#f59e0b"
+        animate
+        gesture="click"
+      />
+      <Card padding="lg" radius="0">
+        <Text text="Click the divider above!" type="h2" />
+      </Card>
+    </Stack>
+  );
+}
+```
+
+---
+
+## Cross-Component Divider Trigger
+
+```tsx
+import { createStore } from "elk-components";
+import { useState } from "react";
+import { Stack, Text, SectionDivider, Button, Card } from "elk-components";
+
+const dividerStore = createStore({ play: false });
+
+function TriggerButton() {
+  return (
+    <Button
+      borderRadius="8px"
+      padding=".6rem 1.5rem"
+      gest={{
+        onClick: () =>
+          dividerStore.setState((s) => ({ play: !(s.play as boolean) })),
+      }}
+      child={() => <Text text="Toggle Divider Animation" type="p" />}
+    />
+  );
+}
+
+function AnimatedDivider() {
+  return (
+    <SectionDivider
+      variant="loop"
+      color="#a855f7"
+      animate
+      listen={dividerStore}
+    />
+  );
+}
+
+function Page() {
+  return (
+    <Stack direction="column" gap="1rem">
+      <Card padding="md" radius="md">
+        <TriggerButton />
+      </Card>
+      <AnimatedDivider />
+      <Card padding="md" radius="md">
+        <Text text="The divider animates when you click the button" type="p" />
+      </Card>
+    </Stack>
+  );
+}
+```
+
+---
+
+## Imperative Divider Control
+
+```tsx
+import { useRef } from "react";
+import { SectionDivider, Button, Stack, Text } from "elk-components";
+import type { _SectionDivider } from "elk-components";
+
+function ControlledDivider() {
+  const dividerRef = useRef<_SectionDivider>(null);
+
+  return (
+    <Stack direction="column" gap="1rem">
+      <SectionDivider
+        variant="wave"
+        color="#6366f1"
+        animate
+        onFunc={(self) => {
+          dividerRef.current = self;
+        }}
+      />
+      <Stack direction="row" gap=".5rem">
+        <Button
+          borderRadius="8px"
+          padding=".5rem 1rem"
+          gest={{ onClick: () => dividerRef.current?.play() }}
+          child={() => <Text text="Play" type="p" />}
+        />
+        <Button
+          borderRadius="8px"
+          padding=".5rem 1rem"
+          gest={{ onClick: () => dividerRef.current?.stop() }}
+          child={() => <Text text="Stop" type="p" />}
+        />
+      </Stack>
+    </Stack>
+  );
+}
+```
+
+---
+
 ## Scroll Snapping Sections
 
 ```tsx

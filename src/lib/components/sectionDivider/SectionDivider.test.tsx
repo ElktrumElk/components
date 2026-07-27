@@ -1,7 +1,21 @@
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
+import userEvent from "@testing-library/user-event";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import SectionDivider from "./SectionDivider";
 import { _SectionDivider } from "./SectionDividerClass";
+import { createStore } from "../../../hooks/createStore";
+
+const animateMock = vi.fn(() => ({
+  play: vi.fn(),
+  pause: vi.fn(),
+  reverse: vi.fn(),
+  cancel: vi.fn(),
+}));
+
+beforeEach(() => {
+  vi.clearAllMocks();
+  Element.prototype.animate = animateMock;
+});
 
 describe("SectionDivider", () => {
   it("renders an SVG element", () => {
@@ -129,5 +143,190 @@ describe("SectionDivider", () => {
     const { container } = render(<SectionDivider />);
     const svg = container.querySelector("svg");
     expect(svg?.getAttribute("preserveAspectRatio")).toBe("none");
+  });
+
+  // --- Animation tests ---
+
+  it("creates animations on path elements when animate is true", () => {
+    const { container } = render(<SectionDivider animate />);
+    const svg = container.querySelector("svg");
+    const path = svg?.querySelector("path");
+    expect(path).toBeTruthy();
+    expect(animateMock).toHaveBeenCalled();
+  });
+
+  it("does not create animations when animate is false", () => {
+    render(<SectionDivider />);
+    expect(animateMock).not.toHaveBeenCalled();
+  });
+
+  it("creates animations when gesture is set even without animate", () => {
+    const { container } = render(<SectionDivider gesture="click" />);
+    const svg = container.querySelector("svg");
+    expect(svg).toBeInTheDocument();
+    expect(animateMock).toHaveBeenCalled();
+  });
+
+  it("passes duration to animate()", () => {
+    const { container } = render(<SectionDivider animate duration={2000} />);
+    expect(animateMock).toHaveBeenCalled();
+    const call = animateMock.mock.calls[0];
+    expect(call[1].duration).toBe(2000);
+  });
+
+  it("passes delay to animate()", () => {
+    const { container } = render(<SectionDivider animate delay={500} />);
+    expect(animateMock).toHaveBeenCalled();
+    const call = animateMock.mock.calls[0];
+    expect(call[1].delay).toBe(500);
+  });
+
+  it("defaults to 3000ms duration", () => {
+    const { container } = render(<SectionDivider animate />);
+    expect(animateMock).toHaveBeenCalled();
+    const call = animateMock.mock.calls[0];
+    expect(call[1].duration).toBe(3000);
+  });
+
+  it("defaults to Infinity iterations", () => {
+    const { container } = render(<SectionDivider animate />);
+    expect(animateMock).toHaveBeenCalled();
+    const call = animateMock.mock.calls[0];
+    expect(call[1].iterations).toBe(Infinity);
+  });
+
+  it("uses variant-specific keyframes for curl", () => {
+    const { container } = render(<SectionDivider variant="curl" animate />);
+    expect(animateMock).toHaveBeenCalled();
+    const call = animateMock.mock.calls[0];
+    const keyframes = call[0];
+    expect(keyframes).toEqual([
+      { transform: "translateX(0)" },
+      { transform: "translateX(-50px)" },
+      { transform: "translateX(0)" },
+    ]);
+  });
+
+  it("uses variant-specific keyframes for heart (scale pulse)", () => {
+    const { container } = render(<SectionDivider variant="heart" animate />);
+    expect(animateMock).toHaveBeenCalled();
+    const call = animateMock.mock.calls[0];
+    const keyframes = call[0];
+    expect(keyframes).toEqual([
+      { transform: "scale(1)" },
+      { transform: "scale(1.08)" },
+      { transform: "scale(1)" },
+    ]);
+  });
+
+  it("uses variant-specific keyframes for dots (scale + opacity)", () => {
+    const { container } = render(<SectionDivider variant="dots" animate />);
+    expect(animateMock).toHaveBeenCalled();
+    const call = animateMock.mock.calls[0];
+    const keyframes = call[0];
+    expect(keyframes).toEqual([
+      { transform: "scale(1)", opacity: "0.5" },
+      { transform: "scale(1.3)", opacity: "1" },
+      { transform: "scale(1)", opacity: "0.5" },
+    ]);
+  });
+
+  it("animates all path elements", () => {
+    const { container } = render(<SectionDivider variant="dots" animate />);
+    // dots variant has 2 paths (main + decorative dots)
+    expect(animateMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("binds click gesture", async () => {
+    const user = userEvent.setup();
+    const { container } = render(<SectionDivider gesture="click" animate />);
+    const svg = container.querySelector("svg")!;
+    const playMock = animateMock.mock.results[0].value.play;
+    await user.click(svg);
+    expect(playMock).toHaveBeenCalled();
+  });
+
+  it("binds hover gesture", async () => {
+    const user = userEvent.setup();
+    const { container } = render(<SectionDivider gesture="hover" animate />);
+    const svg = container.querySelector("svg")!;
+    const playMock = animateMock.mock.results[0].value.play;
+    await user.hover(svg);
+    expect(playMock).toHaveBeenCalled();
+  });
+
+  it("listen prop triggers animation on store change", () => {
+    const store = createStore({ trigger: false });
+    const { container } = render(<SectionDivider listen={store} animate />);
+    const playMock = animateMock.mock.results[0].value.play;
+
+    store.setState({ trigger: true });
+    expect(playMock).toHaveBeenCalled();
+  });
+
+  it("listen prop triggers animation multiple times", () => {
+    const store = createStore({ n: 0 });
+    const { container } = render(<SectionDivider listen={store} animate />);
+    const playMock = animateMock.mock.results[0].value.play;
+
+    playMock.mockClear();
+    store.setState({ n: 1 });
+    store.setState({ n: 2 });
+    store.setState({ n: 3 });
+    expect(playMock).toHaveBeenCalledTimes(3);
+  });
+
+  it("play() method starts animations", () => {
+    let instance: _SectionDivider;
+    render(
+      <SectionDivider
+        animate
+        onFunc={(self) => { instance = self; }}
+      />,
+    );
+    const playMock = animateMock.mock.results[0].value.play;
+    instance!.play();
+    expect(playMock).toHaveBeenCalled();
+  });
+
+  it("stop() method cancels animations", () => {
+    let instance: _SectionDivider;
+    render(
+      <SectionDivider
+        animate
+        onFunc={(self) => { instance = self; }}
+      />,
+    );
+    const cancelMock = animateMock.mock.results[0].value.cancel;
+    instance!.stop();
+    expect(cancelMock).toHaveBeenCalled();
+  });
+
+  it("cleanup on unmount cancels animations", () => {
+    const { unmount } = render(<SectionDivider animate />);
+    const cancelMock = animateMock.mock.results[0].value.cancel;
+    unmount();
+    expect(cancelMock).toHaveBeenCalled();
+  });
+
+  it("cleanup on unmount unsubscribes from listen store", () => {
+    const store = createStore({ n: 0 });
+    const { unmount } = render(<SectionDivider listen={store} animate />);
+    unmount();
+    // After unmount, store changes should not trigger play
+    const playMock = animateMock.mock.results[0].value.play;
+    playMock.mockClear();
+    store.setState({ n: 1 });
+    expect(playMock).not.toHaveBeenCalled();
+  });
+
+  it("does not animate when gesture is none", () => {
+    const { container } = render(<SectionDivider gesture="none" />);
+    expect(animateMock).not.toHaveBeenCalled();
+  });
+
+  it("does not animate when animate is false and no gesture", () => {
+    const { container } = render(<SectionDivider animate={false} />);
+    expect(animateMock).not.toHaveBeenCalled();
   });
 });

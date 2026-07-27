@@ -1,4 +1,5 @@
 import type { ElementType } from "react";
+import type { Store } from "../../../hooks/createStore";
 
 type DividerVariant =
   | "wave"
@@ -13,6 +14,8 @@ type DividerVariant =
   | "pulse"
   | "loop"
   | "scroll";
+
+type Gesture = "click" | "hover" | "focus" | "scroll" | "none";
 
 const SVG_PATHS: Record<DividerVariant, string> = {
   wave: "M0,32 C160,80 320,0 480,32 C640,64 800,16 960,32 C1120,48 1280,16 1440,32 L1440,0 L0,0 Z",
@@ -44,11 +47,77 @@ const FILLED_VARIANTS = new Set([
   "scroll",
 ]);
 
+const VARIANT_KEYFRAMES: Record<DividerVariant, Keyframe[]> = {
+  wave: [
+    { transform: "translateX(0)" },
+    { transform: "translateX(-40px)" },
+    { transform: "translateX(0)" },
+  ],
+  curl: [
+    { transform: "translateX(0)" },
+    { transform: "translateX(-50px)" },
+    { transform: "translateX(0)" },
+  ],
+  zigzag: [
+    { transform: "translateX(0)" },
+    { transform: "translateX(-30px)" },
+    { transform: "translateX(0)" },
+  ],
+  dots: [
+    { transform: "scale(1)", opacity: "0.5" },
+    { transform: "scale(1.3)", opacity: "1" },
+    { transform: "scale(1)", opacity: "0.5" },
+  ],
+  tilde: [
+    { transform: "translateX(0)" },
+    { transform: "translateX(-35px)" },
+    { transform: "translateX(0)" },
+  ],
+  heart: [
+    { transform: "scale(1)" },
+    { transform: "scale(1.08)" },
+    { transform: "scale(1)" },
+  ],
+  diamond: [
+    { transform: "scaleY(1)" },
+    { transform: "scaleY(1.15)" },
+    { transform: "scaleY(1)" },
+  ],
+  leaf: [
+    { transform: "rotate(0deg)" },
+    { transform: "rotate(3deg)" },
+    { transform: "rotate(0deg)" },
+    { transform: "rotate(-3deg)" },
+    { transform: "rotate(0deg)" },
+  ],
+  curve: [
+    { transform: "scaleY(1)" },
+    { transform: "scaleY(1.1)" },
+    { transform: "scaleY(1)" },
+  ],
+  pulse: [
+    { transform: "translateX(0)" },
+    { transform: "translateX(-20px)" },
+    { transform: "translateX(0)" },
+  ],
+  loop: [
+    { transform: "translateX(0)" },
+    { transform: "translateX(-45px)" },
+    { transform: "translateX(0)" },
+  ],
+  scroll: [
+    { transform: "translateX(0)" },
+    { transform: "translateX(-30px)" },
+    { transform: "translateX(0)" },
+  ],
+};
+
 /**
  * Props for the SectionDivider component.
  *
  * Renders an SVG divider with multiple decorative variants (wave, curl, zigzag, etc.).
- * Supports both stroked and filled rendering modes depending on the variant.
+ * Supports both stroked and filled rendering modes, with optional Web Animations API
+ * powered animation per variant.
  *
  * @property variant - The visual style of the divider. Defaults to `"wave"`.
  * @property color - Stroke color for stroked variants, also used as fallback fill. Defaults to `"#e2e8f0"`.
@@ -63,6 +132,11 @@ const FILLED_VARIANTS = new Set([
  * @property child - A React component type rendered as a child element (reserved for extensibility).
  * @property gest - Additional HTML/SVG attributes spread onto the root `<svg>` element.
  * @property onFunc - Callback invoked with the internal `_SectionDivider` instance after initialization.
+ * @property animate - When `true`, enables Web Animations API animation on the divider path(s).
+ * @property duration - Animation duration in milliseconds. Defaults to `3000`.
+ * @property delay - Delay before the animation starts in milliseconds. Defaults to `0`.
+ * @property gesture - Gesture that triggers the animation: `"click"`, `"hover"`, `"focus"`, `"scroll"`, or `"none"`. When set, `animate` is implied.
+ * @property listen - A `Store` instance. When its state changes, the animation replays. Useful for cross-component triggering.
  */
 export interface SectionDividerProp {
   variant?: DividerVariant;
@@ -81,10 +155,115 @@ export interface SectionDividerProp {
     SVGSVGElement
   >;
   onFunc?: (self: _SectionDivider) => void;
+  animate?: boolean;
+  duration?: number;
+  delay?: number;
+  gesture?: Gesture;
+  listen?: Store<Record<string, unknown>>;
 }
 
 export class _SectionDivider {
   child!: ElementType;
+  private svgRef: SVGSVGElement | null = null;
+  private animations: Animation[] = [];
+  private gestureCleanups: (() => void)[] = [];
+  private listenUnsubscribes: (() => void)[] = [];
+
+  play = () => {
+    this.animations.forEach((a) => {
+      a.cancel();
+      a.play();
+    });
+  };
+
+  stop = () => {
+    this.animations.forEach((a) => a.cancel());
+  };
+
+  dispose = () => {
+    this.stop();
+    this.gestureCleanups.forEach((fn) => fn());
+    this.gestureCleanups = [];
+    this.listenUnsubscribes.forEach((fn) => fn());
+    this.listenUnsubscribes = [];
+  };
+
+  private applyAnimation = (props: SectionDividerProp) => {
+    if (!this.svgRef) return;
+
+    const shouldAnimate =
+      props.animate || (props.gesture && props.gesture !== "none");
+    if (!shouldAnimate) return;
+
+    const variant = props.variant || "wave";
+    const duration = props.duration ?? 3000;
+    const delay = props.delay ?? 0;
+    const keyframes = VARIANT_KEYFRAMES[variant];
+
+    const paths = this.svgRef.querySelectorAll("path");
+    paths.forEach((path) => {
+      const anim = path.animate(keyframes, {
+        duration,
+        delay,
+        iterations: Infinity,
+        easing: "ease-in-out",
+      });
+      anim.pause();
+      this.animations.push(anim);
+    });
+
+    if (shouldAnimate && (!props.gesture || props.gesture === "none")) {
+      this.animations.forEach((a) => a.play());
+    }
+
+    this.bindGestures(props.gesture, props.delay);
+    this.bindListen(props.listen);
+  };
+
+  private bindGestures = (gesture?: Gesture, delay?: number) => {
+    this.gestureCleanups.forEach((fn) => fn());
+    this.gestureCleanups = [];
+
+    if (!this.svgRef || !gesture || gesture === "none") return;
+
+    const playAll = () => {
+      this.animations.forEach((a) => {
+        a.cancel();
+        if (delay) {
+          setTimeout(() => a.play(), delay);
+        } else {
+          a.play();
+        }
+      });
+    };
+
+    const eventMap: Record<string, string> = {
+      click: "click",
+      hover: "mouseenter",
+      focus: "focusin",
+      scroll: "scroll",
+    };
+
+    const eventName = eventMap[gesture];
+    if (eventName) {
+      this.svgRef.addEventListener(eventName, playAll);
+      this.gestureCleanups.push(() => {
+        this.svgRef?.removeEventListener(eventName, playAll);
+      });
+    }
+  };
+
+  private bindListen = (store?: Store<Record<string, unknown>>) => {
+    this.listenUnsubscribes.forEach((fn) => fn());
+    this.listenUnsubscribes = [];
+
+    if (!store) return;
+
+    const unsubscribe = store.subscribe(() => {
+      this.play();
+    });
+    this.listenUnsubscribes.push(unsubscribe);
+  };
 
   build? = ({ ...a }: SectionDividerProp): React.JSX.Element => {
     this.child = a.child as ElementType;
@@ -103,6 +282,10 @@ export class _SectionDivider {
     return (
       <>
         <svg
+          ref={(el) => {
+            this.svgRef = el;
+            if (el) this.applyAnimation(a);
+          }}
           className={a.className}
           viewBox="0 0 1440 80"
           preserveAspectRatio="none"

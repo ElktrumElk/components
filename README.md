@@ -1349,7 +1349,9 @@ Lightweight placeholder `<span>` for prototyping. Renders HTML via `dangerouslyS
 
 ### SectionDivider
 
-SVG-based decorative divider between content sections. 12 built-in visual variants.
+SVG-based decorative divider between content sections. 12 built-in visual variants with optional Web Animations API powered animation.
+
+Each variant has its own unique animation: wave variants slide horizontally, heart pulses with a beat, dots scale and glow, leaf sways, and more.
 
 | Prop | Type | Required | Default | Description |
 |------|------|----------|---------|-------------|
@@ -1366,11 +1368,63 @@ SVG-based decorative divider between content sections. 12 built-in visual varian
 | `child` | `ElementType` | No | — | Child component |
 | `gest` | `SVGAttributes<SVGSVGElement>` | No | — | SVG attributes |
 | `onFunc` | `(self: _SectionDivider) => void` | No | — | Instance callback |
+| `animate` | `boolean` | No | — | Enable animation on the divider path(s) |
+| `duration` | `number` | No | `3000` | Animation duration in ms |
+| `delay` | `number` | No | `0` | Delay before animation starts in ms |
+| `gesture` | `'click'\|'hover'\|'focus'\|'scroll'\|'none'` | No | — | Gesture that triggers the animation |
+| `listen` | `Store` | No | — | A store; when its state changes the animation replays |
+
+**Animation per variant:**
+
+| Variant | Animation |
+|---------|-----------|
+| `wave`, `curl`, `tilde`, `loop`, `scroll` | Horizontal oscillation (translateX) |
+| `zigzag`, `pulse` | Subtle horizontal slide |
+| `dots` | Scale pulse with opacity glow |
+| `heart` | Beat pulse (scale) |
+| `diamond`, `curve` | Vertical stretch (scaleY) |
+| `leaf` | Gentle rotation sway |
 
 ```tsx
+static
 <SectionDivider variant="wave" color="#6366f1" height={60} />
 <SectionDivider variant="dots" color="rgba(255,255,255,0.3)" />
 <SectionDivider variant="heart" fillColor="#ec4899" flip />
+```
+
+```tsx
+animated
+<SectionDivider variant="wave" animate color="#6366f1" height={60} />
+<SectionDivider variant="curl" animate duration={2000} color="#22c55e" />
+<SectionDivider variant="heart" fillColor="#ec4899" animate delay={500} />
+```
+
+```tsx
+gesture-triggered
+<SectionDivider variant="dots" gesture="hover" animate color="#6366f1" />
+<SectionDivider variant="wave" gesture="click" animate color="#22c55e" />
+```
+
+```tsx
+cross-component trigger
+const dividerStore = createStore({ play: false });
+
+// In another component:
+<button onClick={() => dividerStore.setState({ play: true })} />
+
+// The divider replays on every store change:
+<SectionDivider variant="curl" listen={dividerStore} animate color="#a855f7" />
+```
+
+**Imperative control via `onFunc`:**
+
+```tsx
+let divider: _SectionDivider;
+<SectionDivider animate onFunc={(self) => { divider = self; }} />
+
+// Later:
+divider.play();  // replay animation
+divider.stop();  // cancel animation
 ```
 
 ---
