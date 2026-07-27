@@ -1,4 +1,4 @@
-import { createStore, useStore } from "@elktrumelk/components";
+import { createStore, useStore } from "elk-components";
 import {
   Button,
   Center,
@@ -10,7 +10,7 @@ import {
   Icon,
   Icons,
   Badge,
-} from "@elktrumelk/components";
+} from "elk-components";
 
 const counter = createStore({ count: 0 });
 
@@ -276,7 +276,7 @@ export default function Body() {
                   <Animation
                     child={() => (
                       <Text
-                        text="npm install @elktrumelk/components"
+                        text="npm install elk-components"
                         type="p"
                         size=".8rem"
                         color="rgba(255,255,255,0.3)"

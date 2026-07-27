@@ -9,7 +9,9 @@ React animation, layout, and styling toolkit. Declarative motion, transitions, l
 ```bash
 npm install elk-components
 ```
-
+```bash
+npx create-elk-component@latest
+```
 ---
 
 ## Conventions
@@ -59,7 +61,9 @@ Top-level layout section. Wraps header, body, and footer.
 | `footer` | `ElementType` | No | — | Footer slot |
 | `className` | `string` | No | `"page"` | CSS class |
 | `style` | `CSSProperties` | No | `{}` | Inline styles |
-| `atrib` | `HTMLAttributes<HTMLElement>` | No | — | Native HTML attributes |
+| `atrib` | `HTMLAttributes<HTMLElement>` | No | — | Native HTML| 
+| `background` | `color` | No | -- | CSS Color |
+attributes |
 
 ```tsx
 <Page
@@ -810,6 +814,895 @@ import { LetterAnimation } from "elk-components";
     // self.pause(), self.reverse(), self.cancel()
   }}
 />
+```
+
+---
+
+### Panel
+
+Styled container `<div>` with layout, color, and border properties.
+
+| Prop | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `child` | `ElementType` | No | — | Content slot |
+| `width` | `string` | No | `"100%"` | Width |
+| `height` | `string` | No | — | Height |
+| `padding` | `string` | No | — | Inner padding |
+| `margin` | `string` | No | — | Outer margin |
+| `color` | `string` | No | — | Background color |
+| `border` | `string` | No | — | Border style |
+| `borderRadius` | `string` | No | — | Border radius |
+| `overflow` | `'visible'\|'hidden'\|'scroll'\|'auto'` | No | — | Overflow behavior |
+| `className` | `string` | No | — | CSS class |
+| `style` | `CSSProperties` | No | — | Inline styles |
+| `gest` | `HTMLAttributes<HTMLDivElement>` | No | — | Native div attributes |
+| `onFunc` | `(self: _Panel) => void` | No | — | Instance callback |
+
+```tsx
+<Panel width="300px" padding="1rem" border="1px solid rgba(255,255,255,0.1)" borderRadius=".5rem">
+  <Text text="Panel content" type="p" />
+</Panel>
+```
+
+---
+
+### Span
+
+Inline `<span>` element with shorthand style props for color, font, and spacing.
+
+| Prop | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `child` | `ElementType` | No | — | Content slot |
+| `color` | `string` | No | — | Text color |
+| `fontSize` | `string` | No | — | Font size |
+| `fontWeight` | `string \| number` | No | — | Font weight |
+| `padding` | `string` | No | — | Padding |
+| `margin` | `string` | No | — | Margin |
+| `className` | `string` | No | — | CSS class |
+| `style` | `CSSProperties` | No | — | Inline styles |
+| `gest` | `HTMLAttributes<HTMLSpanElement>` | No | — | Native span attributes |
+| `onFunc` | `(self: _Span) => void` | No | — | Instance callback |
+
+```tsx
+<Span color="red" fontSize="1.2rem" fontWeight="bold">
+  <Text text="inline styled text" type="p" />
+</Span>
+```
+
+---
+
+### ScrollView
+
+Scrollable container with configurable direction and optional hidden scrollbar.
+
+| Prop | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `child` | `ElementType` | No | — | Content slot |
+| `direction` | `'vertical'\|'horizontal'\|'both'` | No | `"vertical"` | Scroll direction |
+| `width` | `string` | No | `"100%"` | Width |
+| `height` | `string` | No | `"100%"` | Height |
+| `padding` | `string` | No | — | Inner padding |
+| `hideScrollbar` | `boolean` | No | — | Hide scrollbar via CSS |
+| `className` | `string` | No | — | CSS class |
+| `style` | `CSSProperties` | No | — | Inline styles |
+| `gest` | `HTMLAttributes<HTMLDivElement>` | No | — | Native div attributes |
+| `onFunc` | `(self: _ScrollView) => void` | No | — | Instance callback |
+
+```tsx
+<ScrollView direction="vertical" height="400px" hideScrollbar>
+  <Stack direction="column" gap="1rem" child={() => (
+    <>
+      <Text text="Item 1" type="p" />
+      <Text text="Item 2" type="p" />
+      <Text text="Item 3" type="p" />
+    </>
+  )} />
+</ScrollView>
+```
+
+---
+
+### Section
+
+Semantic `<section>` element with a required title and optional body content.
+
+| Prop | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `title` | `ElementType` | Yes | — | Section heading |
+| `child` | `ElementType` | No | — | Body content |
+| `padding` | `string` | No | — | Inner padding |
+| `className` | `string` | No | — | CSS class |
+| `style` | `CSSProperties` | No | — | Inline styles |
+| `gest` | `HTMLAttributes<HTMLElement>` | No | — | Native section attributes |
+| `onFunc` | `(self: _Section) => void` | No | — | Instance callback |
+
+```tsx
+<Section
+  title={() => <Text text="Settings" type="h2" />}
+  child={() => <Text text="Configure your preferences here" type="p" />}
+/>
+```
+
+---
+
+### Article
+
+Semantic `<article>` element with required title and body.
+
+| Prop | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `title` | `ElementType` | Yes | — | Article title |
+| `body` | `ElementType` | Yes | — | Article body |
+| `padding` | `string` | No | — | Padding |
+| `className` | `string` | No | — | CSS class |
+| `style` | `CSSProperties` | No | — | Inline styles |
+| `gest` | `HTMLAttributes<HTMLElement>` | No | — | Native article attributes |
+| `onFunc` | `(self: _Article) => void` | No | — | Instance callback |
+
+```tsx
+<Article
+  title={() => <Text text="Getting Started" type="h2" />}
+  body={() => <Text text="Follow these steps to set up your project." type="p" />}
+/>
+```
+
+---
+
+### Navigator
+
+Semantic `<nav>` element with flexbox layout for navigation bars.
+
+| Prop | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `child` | `ElementType` | No | — | Navigation content |
+| `direction` | `'horizontal'\|'vertical'` | No | `"horizontal"` | Flex direction |
+| `gap` | `string` | No | — | Gap between items |
+| `className` | `string` | No | — | CSS class |
+| `style` | `CSSProperties` | No | — | Inline styles |
+| `gest` | `HTMLAttributes<HTMLElement>` | No | — | Native nav attributes |
+| `onFunc` | `(self: _Navigator) => void` | No | — | Instance callback |
+
+```tsx
+<Navigator direction="horizontal" gap="1rem">
+  <Button child={() => <Text text="Home" type="p" />} />
+  <Button child={() => <Text text="About" type="p" />} />
+  <Button child={() => <Text text="Contact" type="p" />} />
+</Navigator>
+```
+
+---
+
+### TextButton
+
+Transparent `<button>` with text content and hover/active color states.
+
+| Prop | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `child` | `ElementType` | No | — | Custom content (renders instead of `text`) |
+| `text` | `string` | No | — | Plain text content |
+| `color` | `string` | No | `"inherit"` | Text color |
+| `hoverColor` | `string` | No | — | Text color on hover |
+| `activeColor` | `string` | No | — | Text color when active |
+| `fontSize` | `string` | No | — | Font size |
+| `padding` | `string` | No | `"0"` | Padding |
+| `className` | `string` | No | — | CSS class |
+| `style` | `CSSProperties` | No | — | Inline styles |
+| `gest` | `HTMLAttributes<HTMLButtonElement>` | No | — | Native button attributes |
+| `onFunc` | `(self: _TextButton) => void` | No | — | Instance callback |
+
+```tsx
+<TextButton text="Learn more" color="blue" hoverColor="darkblue" />
+<TextButton child={() => <Text text="Cancel" type="p" />} padding="0 .5rem" />
+```
+
+---
+
+### Tiles
+
+Flexible list-item layout with leading, title, subtitle, and trailing sections.
+
+| Prop | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `leading` | `ElementType` | No | — | Leading content (icon, avatar) |
+| `title` | `ElementType` | No | — | Title content |
+| `subtitle` | `ElementType` | No | — | Subtitle content |
+| `trailing` | `ElementType` | No | — | Trailing content (action button) |
+| `padding` | `string` | No | `".75rem 1rem"` | Container padding |
+| `gap` | `string` | No | `".75rem"` | Gap between sections |
+| `borderBottom` | `string` | No | — | Bottom border style |
+| `className` | `string` | No | — | CSS class |
+| `style` | `CSSProperties` | No | — | Inline styles |
+| `gest` | `HTMLAttributes<HTMLDivElement>` | No | — | Native div attributes |
+| `onFunc` | `(self: _Tiles) => void` | No | — | Instance callback |
+
+```tsx
+<Tiles
+  leading={() => <Avatar src="/user.jpg" size="sm" />}
+  title={() => <Text text="John Doe" type="h3" />}
+  subtitle={() => <Text text="john@example.com" type="p" />}
+  trailing={() => <IconButton icon={() => <MoreVertical />} />}
+  borderBottom="1px solid rgba(255,255,255,0.1)"
+/>
+```
+
+---
+
+### List
+
+Single `<li>` list item element for use inside `ListView`.
+
+| Prop | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `child` | `ElementType` | No | — | List item content |
+| `padding` | `string` | No | — | Padding |
+| `margin` | `string` | No | — | Margin |
+| `className` | `string` | No | — | CSS class |
+| `style` | `CSSProperties` | No | — | Inline styles |
+| `gest` | `HTMLAttributes<HTMLLIElement>` | No | — | Native li attributes |
+| `onFunc` | `(self: _List) => void` | No | — | Instance callback |
+
+```tsx
+<ListView child={() => (
+  <>
+    <List child={() => <Text text="First item" type="p" />} />
+    <List child={() => <Text text="Second item" type="p" />} />
+    <List child={() => <Text text="Third item" type="p" />} />
+  </>
+)} />
+```
+
+---
+
+### ListView
+
+Unordered `<ul>` list container with `listStyle: none`. Use with `List` children.
+
+| Prop | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `child` | `ElementType` | No | — | List items content |
+| `padding` | `string` | No | — | Padding |
+| `margin` | `string` | No | — | Margin |
+| `gap` | `string` | No | — | Gap between items. Typed: `${string}rem` / `${string}px` / `${string}em` |
+| `className` | `string` | No | — | CSS class |
+| `style` | `CSSProperties` | No | — | Inline styles |
+| `onFunc` | `(self: _ListView) => void` | No | — | Instance callback |
+
+```tsx
+<ListView gap=".5rem" child={() => (
+  <>
+    <List child={() => <Text text="Item A" type="p" />} />
+    <List child={() => <Text text="Item B" type="p" />} />
+  </>
+)} />
+```
+
+---
+
+### ListMenu
+
+Vertical menu container. Delegates to `Stack` with `direction: "column"`.
+
+| Prop | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `child` | `ElementType` | No | — | Menu content |
+| `gap` | `string` | No | `"0rem"` | Gap between items. Typed: `${string}rem` / `${string}px` / `${string}em` |
+| `className` | `string` | No | — | CSS class |
+| `style` | `CSSProperties` | No | — | Inline styles |
+| `gest` | `HTMLAttributes<HTMLDivElement>` | No | — | Native div attributes |
+| `onFunc` | `(self: _ListMenu) => void` | No | — | Instance callback |
+
+```tsx
+<ListMenu gap=".5rem">
+  <Button child={() => <Text text="Profile" type="p" />} />
+  <Button child={() => <Text text="Settings" type="p" />} />
+  <Button child={() => <Text text="Logout" type="p" />} />
+</ListMenu>
+```
+
+---
+
+### BottomModal
+
+Full-screen overlay with a bottom-anchored panel that slides up. Renders nothing when closed.
+
+| Prop | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `child` | `ElementType` | No | — | Modal body content |
+| `title` | `ElementType` | No | — | Modal title |
+| `isOpen` | `boolean` | No | — | Controls visibility |
+| `onClose` | `() => void` | No | — | Close callback |
+| `height` | `string` | No | `"80vh"` | Max panel height |
+| `padding` | `string` | No | `"1rem"` | Panel padding |
+| `showHandle` | `boolean` | No | `true` | Show drag handle indicator |
+| `backgroundColor` | `string` | No | `"rgba(0,0,0,0.8)"` | Backdrop color |
+| `className` | `string` | No | — | CSS class |
+| `style` | `CSSProperties` | No | — | Inline styles |
+| `onFunc` | `(self: _BottomModal) => void` | No | — | Instance callback |
+
+```tsx
+const [open, setOpen] = useState(false);
+
+<BottomModal
+  isOpen={open}
+  onClose={() => setOpen(false)}
+  title={() => <Text text="Select Option" type="h3" />}
+  height="60vh"
+  child={() => (
+    <Stack direction="column" gap=".5rem" child={() => (
+      <>
+        <Button child={() => <Text text="Option A" type="p" />} />
+        <Button child={() => <Text text="Option B" type="p" />} />
+      </>
+    )} />
+  )}
+/>
+```
+
+---
+
+### SidePanel
+
+Fixed-position slide-in `<aside>` panel anchored to the left or right edge. Renders nothing when closed.
+
+| Prop | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `child` | `ElementType` | No | — | Panel content |
+| `side` | `'left'\|'right'` | No | `"left"` | Which edge to anchor to |
+| `width` | `string` | No | `"280px"` | Panel width |
+| `isOpen` | `boolean` | No | — | Controls visibility |
+| `onClose` | `() => void` | No | — | Close callback (backdrop click) |
+| `backgroundColor` | `string` | No | `"rgba(255,255,255,0.05)"` | Panel background |
+| `padding` | `string` | No | `"1rem"` | Panel padding |
+| `className` | `string` | No | — | CSS class |
+| `style` | `CSSProperties` | No | — | Inline styles |
+| `gest` | `HTMLAttributes<HTMLElement>` | No | — | Native aside attributes |
+| `onFunc` | `(self: _SidePanel) => void` | No | — | Instance callback |
+
+```tsx
+const [open, setOpen] = useState(false);
+
+<SidePanel
+  isOpen={open}
+  side="right"
+  onClose={() => setOpen(false)}
+  child={() => (
+    <Stack direction="column" gap="1rem" child={() => (
+      <>
+        <Text text="Menu" type="h2" />
+        <Button child={() => <Text text="Settings" type="p" />} />
+        <Button child={() => <Text text="Help" type="p" />} />
+      </>
+    )} />
+  )}
+/>
+```
+
+---
+
+### Reabon
+
+Dropdown/popover component positioned absolutely below a trigger element. Auto-closes on outside click.
+
+| Prop | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `child` | `ElementType` | No | — | Dropdown content |
+| `trigger` | `ElementType` | No | — | Trigger element |
+| `isOpen` | `boolean` | No | — | Controlled open state |
+| `onClose` | `() => void` | No | — | Close callback (outside click) |
+| `width` | `string` | No | `"200px"` | Dropdown width |
+| `backgroundColor` | `string` | No | `"rgba(255,255,255,0.05)"` | Dropdown background |
+| `borderRadius` | `string` | No | `".5rem"` | Dropdown border radius |
+| `padding` | `string` | No | `".25rem 0"` | Dropdown padding |
+| `className` | `string` | No | — | CSS class |
+| `style` | `CSSProperties` | No | — | Inline styles |
+| `gest` | `HTMLAttributes<HTMLDivElement>` | No | — | Native div attributes |
+| `onFunc` | `(self: _Reabon) => void` | No | — | Instance callback |
+
+```tsx
+const [open, setOpen] = useState(false);
+
+<Reabon
+  isOpen={open}
+  onClose={() => setOpen(false)}
+  trigger={() => <Button child={() => <Text text="Menu" type="p" />} />}
+  width="180px"
+  child={() => (
+    <ListMenu gap="0rem" child={() => (
+      <>
+        <Button child={() => <Text text="Edit" type="p" />} />
+        <Button child={() => <Text text="Delete" type="p" />} />
+      </>
+    )} />
+  )}
+/>
+```
+
+---
+
+### Tab
+
+Transparent `<button>` styled as a tab indicator. Color toggles based on `isActive`.
+
+| Prop | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `label` | `ElementType` | Yes | — | Tab label |
+| `isActive` | `boolean` | No | `false` | Whether tab is selected |
+| `onClick` | `() => void` | No | — | Click handler |
+| `activeColor` | `string` | No | `"#fff"` | Text color when active |
+| `inactiveColor` | `string` | No | `"rgba(255,255,255,0.5)"` | Text color when inactive |
+| `padding` | `string` | No | `".5rem 1rem"` | Button padding |
+| `className` | `string` | No | — | CSS class |
+| `style` | `CSSProperties` | No | — | Inline styles |
+| `gest` | `HTMLAttributes<HTMLButtonElement>` | No | — | Native button attributes |
+| `onFunc` | `(self: _Tab) => void` | No | — | Instance callback |
+
+```tsx
+<Tab
+  label={() => <Text text="Tab 1" type="p" />}
+  isActive={activeTab === "tab1"}
+  onClick={() => setActiveTab("tab1")}
+/>
+```
+
+---
+
+### TabView
+
+Self-contained tabbed interface with tab buttons and content panel. Supports controlled and uncontrolled modes.
+
+| Prop | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `tabs` | `Array<{ id: string; label: ElementType; content: ElementType }>` | No | — | Tab definitions |
+| `activeTab` | `string` | No | — | Controlled active tab id |
+| `defaultTab` | `string` | No | — | Uncontrolled default tab id |
+| `onChange` | `(tabId: string) => void` | No | — | Tab change callback |
+| `gap` | `string` | No | — | Spacing between tab buttons |
+| `className` | `string` | No | — | CSS class |
+| `style` | `CSSProperties` | No | — | Inline styles |
+| `onFunc` | `(self: _TabView) => void` | No | — | Instance callback |
+
+```tsx
+<TabView
+  tabs={[
+    { id: "info", label: () => <Text text="Info" type="p" />, content: () => <Text text="Info content" type="p" /> },
+    { id: "settings", label: () => <Text text="Settings" type="p" />, content: () => <Text text="Settings content" type="p" /> },
+  ]}
+  defaultTab="info"
+  onChange={(id) => console.log("Switched to", id)}
+  gap="1rem"
+/>
+```
+
+---
+
+### PageScrollView
+
+Full-height scroll container with snap-scrolling sections and IntersectionObserver-based section tracking.
+
+| Prop | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `child` | `ElementType` | No | — | Single child (non-section mode) |
+| `sections` | `Array<{ id: string; child: ElementType }>` | No | — | Snap-scroll sections |
+| `activeSection` | `string` | No | — | Section ID to scroll to programmatically |
+| `onSectionChange` | `(sectionId: string) => void` | No | — | Callback when visible section changes |
+| `width` | `string` | No | `"100%"` | Width |
+| `height` | `string` | No | `"100vh"` | Height |
+| `snap` | `boolean` | No | `true` | Enable vertical snap scrolling |
+| `className` | `string` | No | — | CSS class |
+| `style` | `CSSProperties` | No | — | Inline styles |
+| `onFunc` | `(self: _PageScrollView) => void` | No | — | Instance callback |
+
+```tsx
+<PageScrollView
+  sections={[
+    { id: "hero", child: () => <Center child={() => <Text text="Welcome" type="h1" />} /> },
+    { id: "features", child: () => <Center child={() => <Text text="Features" type="h1" />} /> },
+    { id: "pricing", child: () => <Center child={() => <Text text="Pricing" type="h1" />} /> },
+  ]}
+  onSectionChange={(id) => console.log("Current section:", id)}
+/>
+```
+
+---
+
+### Gap
+
+Empty spacer `<div>` for spacing between sibling elements.
+
+| Prop | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `width` | `string` | No | — | CSS width |
+| `height` | `string` | No | — | CSS height |
+| `flex` | `string` | No | — | CSS flex value |
+
+```tsx
+<Stack direction="row" child={() => (
+  <>
+    <Button child={() => <Text text="Left" type="p" />} />
+    <Gap flex="1" />
+    <Button child={() => <Text text="Right" type="p" />} />
+  </>
+)} />
+```
+
+---
+
+### Example
+
+Lightweight placeholder `<span>` for prototyping. Renders HTML via `dangerouslySetInnerHTML`.
+
+| Prop | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `width` | `string` | No | — | CSS width |
+| `height` | `string` | No | — | CSS height |
+| `background` | `string` | No | — | Background color |
+| `border` | `string` | No | — | CSS border |
+| `borderRadius` | `string` | No | — | CSS border radius |
+| `text` | `string` | No | `""` | HTML string |
+| `onFunc` | `(self: _Example) => void` | No | — | Instance callback |
+
+```tsx
+<Example width="100px" height="100px" background="rgba(255,255,255,0.1)" text="<b>Bold</b>" />
+```
+
+---
+
+### SectionDivider
+
+SVG-based decorative divider between content sections. 12 built-in visual variants.
+
+| Prop | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `variant` | `'wave'\|'curl'\|'zigzag'\|'dots'\|'tilde'\|'heart'\|'diamond'\|'leaf'\|'curve'\|'pulse'\|'loop'\|'scroll'` | No | `"wave"` | Visual style |
+| `color` | `string` | No | `"#e2e8f0"` | Stroke/fallback fill color |
+| `fillColor` | `string` | No | uses `color` | Fill color for filled variants |
+| `strokeWidth` | `number` | No | `2` | Stroke width in px |
+| `height` | `number` | No | `80` | SVG height in px |
+| `width` | `string` | No | `"100%"` | CSS width |
+| `flip` | `boolean` | No | — | Mirror vertically |
+| `customPath` | `string` | No | — | Override built-in SVG path |
+| `className` | `string` | No | — | CSS class |
+| `style` | `CSSProperties` | No | — | Inline styles |
+| `child` | `ElementType` | No | — | Child component |
+| `gest` | `SVGAttributes<SVGSVGElement>` | No | — | SVG attributes |
+| `onFunc` | `(self: _SectionDivider) => void` | No | — | Instance callback |
+
+```tsx
+<SectionDivider variant="wave" color="#6366f1" height={60} />
+<SectionDivider variant="dots" color="rgba(255,255,255,0.3)" />
+<SectionDivider variant="heart" fillColor="#ec4899" flip />
+```
+
+---
+
+### Padding
+
+Wrapper `<div>` applying configurable padding using both physical and logical CSS properties.
+
+| Prop | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `child` | `ElementType` | Yes | — | Content slot |
+| `left` | `string` | No | — | Left padding |
+| `right` | `string` | No | — | Right padding |
+| `top` | `string` | No | — | Top padding |
+| `bottom` | `string` | No | — | Bottom padding |
+| `inline` | `string` | No | — | Logical inline (horizontal) padding |
+| `block` | `string` | No | — | Logical block (vertical) padding |
+| `blockStart` | `string` | No | — | Logical block-start padding |
+| `blockEnd` | `string` | No | — | Logical block-end padding |
+| `padding` | `string` | No | `"1rem"` | Shorthand padding (overrides all sides) |
+
+```tsx
+<Padding padding="2rem">
+  <Text text="Padded content" type="p" />
+</Padding>
+<Padding inline="1.5rem" block=".5rem">
+  <Text text="Logically padded" type="p" />
+</Padding>
+```
+
+---
+
+### GridView
+
+CSS Grid container with configurable template and auto-placement properties.
+
+| Prop | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `child` | `ElementType` | Yes | — | Grid children |
+| `templateRows` | `string` | No | — | `grid-template-rows` |
+| `templateColumns` | `string` | No | `"1fr 1fr"` | `grid-template-columns` |
+| `autoRows` | `string` | No | — | `grid-auto-rows` |
+| `autoColumn` | `string` | No | — | `grid-auto-columns` |
+| `area` | `string` | No | — | `grid-area` |
+| `autoFlow` | `string` | No | — | `grid-auto-flow` |
+| `justifyItems` | `string` | No | `"center"` | `justify-items` |
+| `style` | `CSSProperties` | No | — | Inline styles |
+| `onFunc` | `(self: _GridView) => void` | No | — | Instance callback |
+
+```tsx
+<GridView templateColumns="repeat(3, 1fr)" gap="1rem" autoRows="minmax(100px, auto)">
+  <Card body={() => <Text text="Cell 1" type="p" />} />
+  <Card body={() => <Text text="Cell 2" type="p" />} />
+  <Card body={() => <Text text="Cell 3" type="p" />} />
+</GridView>
+```
+
+---
+
+## Hooks
+
+Import hooks from `elk-components/hooks`:
+
+```ts
+import { useState, useRef, useEffect, useCallback, createStore, useInstance, useComponentData } from "elk-components/hooks";
+```
+
+### useState
+
+Enhanced version of React's `useState` with `reset()` and `get()` methods. Returns a named object instead of a tuple.
+
+```ts
+const state = useState<T>(initialValue);
+```
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `value` | `T` | Current state value |
+| `set` | `(value: SetStateAction<T>) => void` | Set value (accepts value or updater function) |
+| `reset` | `() => void` | Reset to original `initialValue` |
+| `get` | `() => T` | Get current value (stable reference, no re-render dependency) |
+
+```tsx
+const count = useState(0);
+
+count.set(1);               // set value
+count.set(prev => prev + 1); // updater function
+count.get();                // read without re-render dependency
+count.reset();              // back to 0
+```
+
+### useStateLazy
+
+Lazy-initialization variant. The initializer function only runs on first render.
+
+```ts
+const state = useStateLazy<T>(() => expensiveCompute());
+```
+
+Same return shape as `useState`. Note: `reset()` re-executes the initializer (unlike `useState` which resets to the captured initial value).
+
+---
+
+### useRef
+
+Enhanced `useRef` with `setValue`, `getValue`, and `isSet` methods. Use `setValue()` to mutate — direct `.current` assignment is not supported.
+
+```ts
+const ref = useRef<T>(initialValue);
+```
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `current` | `T` | Read-only getter for current value |
+| `setValue` | `(value: T) => void` | Update the ref |
+| `getValue` | `() => T` | Returns current value (stable callback) |
+| `isSet` | `() => boolean` | `true` if current is not `null` or `undefined` |
+
+```tsx
+const inputRef = useRef<HTMLInputElement>(null);
+
+inputRef.setValue(document.getElementById("my-input"));
+inputRef.getValue();  // HTMLElement | null
+inputRef.isSet();     // true
+```
+
+### usePreviousValue
+
+Convenience wrapper around `useRef` for tracking previous values.
+
+```ts
+const prev = usePreviousValue<T>(initialValue);
+// Returns same UseRefReturn shape as useRef
+```
+
+---
+
+### useEffect
+
+Enhanced effect hooks wrapping React's `useEffect` with additional patterns.
+
+#### useEffect (basic)
+
+Thin wrapper around `React.useEffect`. Defaults `deps` to `undefined` (runs every render).
+
+```ts
+useEffect(effect, deps?);
+```
+
+#### useMountEffect
+
+Runs `effect` once on mount. Cleanup function supported.
+
+```ts
+useMountEffect(() => {
+  init();
+  return () => cleanup();
+}, []);
+```
+
+#### useUpdateEffect
+
+Runs `effect` on every render (no deps array).
+
+```ts
+useUpdateEffect(() => {
+  console.log("rendered");
+});
+```
+
+#### usePreviousEffect
+
+Tracks previous dependency values. The effect receives the previous deps array.
+
+```ts
+usePreviousEffect(
+  deps,                        // deps to track
+  (prevDeps) => { /* ... */ }, // called with previous deps (undefined on first run)
+  currentDeps                  // actual React dependency array
+);
+```
+
+#### useDebounceEffect
+
+Debounced effect. Waits `delay` ms before calling `effect`. Clears timeout on cleanup or deps change.
+
+```ts
+useDebounceEffect(
+  () => { fetchData(query); },
+  300,                          // delay in ms
+  [query]                       // deps
+);
+```
+
+---
+
+### useCallback / useMemo
+
+Enhanced memoization hooks. When `deps` is omitted, defaults to `[]` (empty array) — differs from React which means "every render."
+
+#### useCallback
+
+```ts
+const fn = useCallback(() => doSomething(), deps?);
+```
+
+#### useMemo
+
+```ts
+const value = useMemo(() => computeExpensive(), deps?);
+```
+
+#### useMemoOnce
+
+Memoizes a value that **never recalculates**. Use for constants.
+
+```ts
+const CONSTANT = useMemoOnce(() => ({ key: "value" }));
+```
+
+#### useStableCallback
+
+Returns a **permanently stable** callback reference. Always calls the latest `callback` but the returned function identity never changes.
+
+```ts
+const stableFn = useStableCallback((data) => {
+  console.log(data);
+});
+
+// stableFn identity is always the same across renders
+```
+
+---
+
+### createStore / useStore / useSetState
+
+A lightweight external store compatible with `useSyncExternalStore`.
+
+#### createStore
+
+Creates a vanilla JS store (no React dependency).
+
+```ts
+const store = createStore<T>(initialState);
+```
+
+| Method | Type | Description |
+|--------|------|-------------|
+| `getState` | `() => T` | Get current state |
+| `setState` | `(partial: Partial<T> \| (prev) => Partial<T>) => void` | Shallow-merge update |
+| `subscribe` | `(listener: () => void) => () => void` | Subscribe (returns unsubscribe) |
+| `getSnapshot` | `() => T` | Get snapshot (for `useSyncExternalStore`) |
+
+#### useStore
+
+Hook that subscribes to a `Store`. Returns the full state object. Re-renders only when state reference changes.
+
+```ts
+const state = useStore(store);
+```
+
+#### useSetState
+
+Returns a stable `setState` callback bound to the given store.
+
+```ts
+const setState = useSetState(store);
+setState({ count: 1 });            // partial update
+setState(prev => ({ count: prev.count + 1 })); // updater
+```
+
+```tsx
+// Full example:
+const counterStore = createStore({ count: 0 });
+
+function Counter() {
+  const { count } = useStore(counterStore);
+  const setCount = useSetState(counterStore);
+
+  return (
+    <Button
+      child={() => <Text text={`Count: ${count}`} type="p" />}
+      gest={{ onClick: () => setCount(prev => ({ count: prev.count + 1 })) }}
+    />
+  );
+}
+```
+
+---
+
+### useInstance / useComponentData
+
+Cross-component data sharing without prop drilling.
+
+#### useInstance
+
+Creates or retrieves a named component instance in a global registry. Auto-registers on mount, auto-deletes on unmount.
+
+```ts
+const instance = useInstance(componentKey?);
+```
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `id` | `string` | Component's unique ID |
+| `registerElement` | `(el: HTMLElement \| null) => void` | Associate a DOM element |
+| `getElement` | `() => HTMLElement \| null` | Get the registered element |
+| `setData` | `<T>(key: string, value: T) => void` | Store arbitrary data |
+| `getData` | `<T>(key: string) => T \| undefined` | Read data by key |
+| `isMounted` | `() => boolean` | Check if component is mounted |
+
+#### useComponentData
+
+Read-only accessor to another component's `useInstance` data. Reads directly from the global registry — does **not** re-render when source data changes.
+
+```ts
+const data = useComponentData<T>(componentKey, dataKey);
+```
+
+```tsx
+// Component A — registers data
+function Sidebar() {
+  const { setData } = useInstance("sidebar");
+  useEffect(() => { setData("width", 280); }, []);
+  return <SidePanel ... />;
+}
+
+// Component B — reads data (no prop drilling needed)
+function Content() {
+  const width = useComponentData<number>("sidebar", "width");
+  return <Text text={`Sidebar width: ${width}`} type="p" />;
+}
 ```
 
 ---

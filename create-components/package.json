@@ -1,5 +1,5 @@
 {
-  "name": "@elktrumelk/create-component",
+  "name": "create-elk-component",
   "version": "1.0.5",
   "description": "Scaffold a new Elk Components project",
   "keywords": [

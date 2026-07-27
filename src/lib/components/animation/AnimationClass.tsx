@@ -13,6 +13,7 @@ export type MotionTransition = {
   delay?: number;
   repeat?: number;
   repeatType?: "loop" | "reverse" | "mirror";
+   
 };
 
 /**
@@ -66,6 +67,12 @@ export interface AnimationProp {
   // --- Shared props ---
   /** When true the animation plays immediately on mount. When false it pauses until triggered. Defaults to true. */
   isAutomatic?: boolean;
+  /**play the animation */
+  // play: boolean;
+  /**Pause the Animation */
+  //pause: boolean;
+  /**Clear the animation */
+  //cancel: boolean;
   /** Gesture type that triggers the animation: "click", "hover", "focus", "scroll", or "none". */
   gesture?: Gesture;
   /** Additional CSS class name for the wrapper element. */

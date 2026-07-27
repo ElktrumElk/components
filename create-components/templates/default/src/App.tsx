@@ -1,4 +1,4 @@
-import { Page } from "@elktrumelk/components";
+import { Page } from "elk-components";
 import Head from "./component/Header";
 import Body from "./component/Body";
 

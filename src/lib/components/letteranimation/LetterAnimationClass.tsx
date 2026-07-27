@@ -54,6 +54,7 @@ export interface LetterAnimationProp {
     React.HTMLAttributes<HTMLDivElement>,
     HTMLDivElement
   >;
+  isOpacity?: boolean 
   /** Callback invoked with the `_LetterAnimation` instance after mount, useful for imperative control. */
   onFunc?: (self: _LetterAnimation) => void;
 }
@@ -256,7 +257,9 @@ export class _LetterAnimation {
 
   build? = ({ ...a }: LetterAnimationProp): React.JSX.Element => {
     const mode = a.type ?? "letters";
-
+    if (a.isOpacity && a.animation) {
+      PRESETS[a.animation].forEach(x => x!.opacity = 1)
+    }
     const containerStyle: React.CSSProperties = {
       display: "inline-flex",
       flexWrap: "wrap",

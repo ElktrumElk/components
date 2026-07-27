@@ -86,7 +86,7 @@ export function useInstance(componentKey?: string): UseInstanceReturn {
       }
       componentRegistry.delete(idRef.current);
     };
-  }, []);
+  });
 
   const registerElement = useCallback((el: HTMLElement | null) => {
     elementRef.current = el;

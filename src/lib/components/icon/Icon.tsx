@@ -36,8 +36,8 @@ const InitializeIcon = () => {
  * @param style - Additional inline styles for the wrapper.
  * @param onFunc - Callback receiving the internal `_Icon` instance.
  */
-export default function Icon({ ...a }: IconProp) {
+export default function Icon({ name, ...a }: IconProp) {
   const { _icon } = InitializeIcon()
   a?.onFunc?.(_icon?.current as _Icon)
-  return _icon.current?.build?.({ ...a })
+  return _icon.current?.build?.({ ...a, name })
 }

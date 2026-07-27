@@ -2,15 +2,17 @@ interface IconProps {
   size?: number;
   color?: string;
   className?: string;
+  fill?: boolean;
+  fillColor?: string;
 }
 
-export default function Image2({ size = 24, color = "currentColor", className }: IconProps) {
+export default function Image2({ size = 24, color = "currentColor", className, fill = false, fillColor }: IconProps) {
   return (
     <svg
       width={size}
       height={size}
       viewBox="0 0 24 24"
-      fill="none"
+      fill={fill ? (fillColor || color) : "none"}
       xmlns="http://www.w3.org/2000/svg"
       className={className}
     >
@@ -32,19 +34,19 @@ export default function Image2({ size = 24, color = "currentColor", className }:
         cx="8"
         cy="8"
         r="1"
-        fill={color}
+        fill={fillColor || color}
       />
       <circle
         cx="16"
         cy="8"
         r="1"
-        fill={color}
+        fill={fillColor || color}
       />
       <circle
         cx="12"
         cy="12"
         r="1"
-        fill={color}
+        fill={fillColor || color}
       />
     </svg>
   );

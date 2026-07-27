@@ -2,21 +2,23 @@ interface IconProps {
   size?: number;
   color?: string;
   className?: string;
+  fill?: boolean;
+  fillColor?: string;
 }
 
-export default function MoreVertical({ size = 24, color = "currentColor", className }: IconProps) {
+export default function MoreVertical({ size = 24, color = "currentColor", className, fill = false, fillColor }: IconProps) {
   return (
     <svg
       width={size}
       height={size}
       viewBox="0 0 24 24"
-      fill="none"
+      fill={fill ? (fillColor || color) : "none"}
       xmlns="http://www.w3.org/2000/svg"
       className={className}
     >
-      <circle cx="12" cy="5" r="1.5" fill={color} />
-      <circle cx="12" cy="12" r="1.5" fill={color} />
-      <circle cx="12" cy="19" r="1.5" fill={color} />
+      <circle cx="12" cy="5" r="1.5" fill={fillColor || color} />
+      <circle cx="12" cy="12" r="1.5" fill={fillColor || color} />
+      <circle cx="12" cy="19" r="1.5" fill={fillColor || color} />
     </svg>
   );
 }

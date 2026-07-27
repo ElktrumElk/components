@@ -2,9 +2,11 @@ interface IconProps {
   size?: number;
   color?: string;
   className?: string;
+  fill?: boolean;
+  fillColor?: string;
 }
 
-export default function Flame({ size = 24, color = "currentColor", className }: IconProps) {
+export default function Flame({ size = 24, color = "currentColor", className, fill = false, fillColor }: IconProps) {
   return (
     <svg
       width={size}

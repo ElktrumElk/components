@@ -1,4 +1,4 @@
-import { Header, Text, Icon, Icons, Animation } from "@elktrumelk/components";
+import { Header, Text, Icon, Icons, Animation } from "elk-components";
 
 export default function Head() {
   return (
