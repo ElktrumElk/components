@@ -739,3 +739,61 @@ function HoverCard() {
   );
 }
 ```
+
+---
+
+## SectionDivider Animation
+
+```tsx
+import { SectionDivider } from "elk-components";
+
+// Static dividers
+<SectionDivider variant="wave" color="#6366f1" height={60} />
+<SectionDivider variant="dots" color="rgba(255,255,255,0.3)" />
+
+// Scroll animation — divider scrolls continuously left-to-right
+<SectionDivider variant="wave" animate color="#6366f1" height={60} />
+<SectionDivider variant="curl" animate direction="rtl" easing="ease-in-out" />
+
+// Floating undulation — divider bobs up and down like a boat on water
+<SectionDivider variant="wave" float amplitude={20} frequency={3} color="#6366f1" />
+<SectionDivider variant="curl" float amplitude={25} frequency={6} color="#22c55e" />
+
+// Combined scroll + float — scrolls AND bobs simultaneously
+<SectionDivider
+  variant="wave"
+  animate
+  float
+  amplitude={15}
+  frequency={2}
+  color="#6366f1"
+/>
+
+// Gentle ocean feel — slow scroll, soft bob
+<SectionDivider
+  variant="tilde"
+  animate
+  float
+  duration={6000}
+  amplitude={8}
+  frequency={1}
+  easing="ease-in-out"
+  color="#0ea5e9"
+/>
+
+// Dramatic fast ripples
+<SectionDivider
+  variant="curl"
+  animate
+  float
+  direction="rtl"
+  duration={2000}
+  amplitude={30}
+  frequency={8}
+  easing="ease-in-out"
+  color="#f43f5e"
+/>
+
+// Gesture-triggered — animates on hover
+<SectionDivider variant="dots" gesture="hover" animate float color="#6366f1" />
+```

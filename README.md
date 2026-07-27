@@ -1349,7 +1349,7 @@ Lightweight placeholder `<span>` for prototyping. Renders HTML via `dangerouslyS
 
 ### SectionDivider
 
-SVG-based decorative divider between content sections. 12 built-in visual variants with optional continuous scroll animation.
+SVG-based decorative divider between content sections. 12 built-in visual variants with continuous scroll animation and floating undulation.
 
 | Prop | Type | Required | Default | Description |
 |------|------|----------|---------|-------------|
@@ -1370,8 +1370,22 @@ SVG-based decorative divider between content sections. 12 built-in visual varian
 | `duration` | `number` | No | variant-specific | Animation duration per cycle in ms |
 | `delay` | `number` | No | `0` | Delay before animation starts in ms |
 | `direction` | `'ltr'\|'rtl'\|'ttb'\|'btt'` | No | `"ltr"` | Scroll direction |
+| `easing` | `'linear'\|'ease'\|'ease-in'\|'ease-out'\|'ease-in-out'\|string` | No | `"linear"` | Scroll easing function |
 | `gesture` | `'click'\|'hover'\|'focus'\|'scroll'\|'none'` | No | — | Gesture that triggers the animation |
 | `listen` | `Store` | No | — | A store; when its state changes the animation replays |
+| `float` | `boolean` | No | — | Enable continuous vertical undulation (bobbing motion) |
+| `amplitude` | `number` | No | `15` | Float distance in px from center. Higher = more dramatic |
+| `frequency` | `number` | No | variant-specific | Oscillation cycles per animation duration. Higher = more ripples |
+
+**Default frequencies per variant:**
+
+| Variant | Frequency | Duration |
+|---------|-----------|----------|
+| `wave`, `leaf` | 2 | 5s, 5.5s |
+| `curl`, `loop` | 4 | 4s, 4.5s |
+| `zigzag`, `diamond`, `pulse` | 5-6 | 3s, 3.5s, 2.5s |
+| `dots`, `curve` | 1 | 6s, 5s |
+| `tilde`, `heart`, `scroll` | 3 | 4.5s, 4s, 6s |
 
 ```tsx
 static
@@ -1383,15 +1397,28 @@ static
 ```tsx
 continuous scroll animation
 <SectionDivider variant="wave" animate color="#6366f1" height={60} />
-<SectionDivider variant="curl" animate direction="rtl" color="#22c55e" />
+<SectionDivider variant="curl" animate direction="rtl" easing="ease-in-out" />
 <SectionDivider variant="heart" fillColor="#ec4899" animate direction="ttb" />
 <SectionDivider variant="dots" animate direction="btt" duration={8000} />
 ```
 
 ```tsx
+floating undulation (bobbing on water)
+<SectionDivider variant="wave" float color="#6366f1" height={60} />
+<SectionDivider variant="curl" float amplitude={25} frequency={6} />
+<SectionDivider variant="tilde" float amplitude={10} frequency={2} />
+```
+
+```tsx
+combine scroll + float
+<SectionDivider variant="wave" animate float color="#6366f1" />
+<SectionDivider variant="curl" animate float amplitude={20} frequency={4} direction="rtl" easing="ease-in-out" />
+```
+
+```tsx
 gesture-triggered
-<SectionDivider variant="dots" gesture="hover" animate color="#6366f1" />
-<SectionDivider variant="wave" gesture="click" animate direction="ltr" />
+<SectionDivider variant="dots" gesture="hover" animate float color="#6366f1" />
+<SectionDivider variant="wave" gesture="click" animate float direction="ltr" />
 ```
 
 ```tsx

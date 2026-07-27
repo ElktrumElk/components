@@ -17,20 +17,33 @@ type DividerVariant =
 
 type Gesture = "click" | "hover" | "focus" | "scroll" | "none";
 type Direction = "ltr" | "rtl" | "ttb" | "btt";
+type Easing =
+  | "linear"
+  | "ease"
+  | "ease-in"
+  | "ease-out"
+  | "ease-in-out"
+  | "cubic-bezier(n,n,n,n)";
 
 const SVG_PATHS: Record<DividerVariant, string> = {
   wave: "M0,32 C160,80 320,0 480,32 C640,64 800,16 960,32 C1120,48 1280,16 1440,32 L1440,0 L0,0 Z",
   curl: "M0,40 C80,10 120,70 200,40 C280,10 320,70 400,40 C480,10 520,70 600,40 C680,10 720,70 800,40 C880,10 920,70 1000,40 C1080,10 1120,70 1200,40 C1280,10 1320,70 1440,40 L1440,0 L0,0 Z",
-  zigzag: "M0,0 L120,60 L240,0 L360,60 L480,0 L600,60 L720,0 L840,60 L960,0 L1080,60 L1200,0 L1320,60 L1440,0 Z",
+  zigzag:
+    "M0,0 L120,60 L240,0 L360,60 L480,0 L600,60 L720,0 L840,60 L960,0 L1080,60 L1200,0 L1320,60 L1440,0 Z",
   dots: "M0,40 Q360,0 720,40 Q1080,80 1440,40 L1440,0 L0,0 Z",
-  tilde: "M0,30 C120,60 240,0 360,30 C480,60 600,0 720,30 C840,60 960,0 1080,30 C1200,60 1320,0 1440,30 L1440,0 L0,0 Z",
-  heart: "M0,50 C180,20 240,70 360,40 C480,10 540,60 720,40 C900,20 960,70 1080,40 C1200,10 1260,60 1440,40 L1440,0 L0,0 Z",
-  diamond: "M0,40 L120,0 L240,40 L360,0 L480,40 L600,0 L720,40 L840,0 L960,40 L1080,0 L1200,40 L1320,0 L1440,40 L1440,0 L0,0 Z",
+  tilde:
+    "M0,30 C120,60 240,0 360,30 C480,60 600,0 720,30 C840,60 960,0 1080,30 C1200,60 1320,0 1440,30 L1440,0 L0,0 Z",
+  heart:
+    "M0,50 C180,20 240,70 360,40 C480,10 540,60 720,40 C900,20 960,70 1080,40 C1200,10 1260,60 1440,40 L1440,0 L0,0 Z",
+  diamond:
+    "M0,40 L120,0 L240,40 L360,0 L480,40 L600,0 L720,40 L840,0 L960,40 L1080,0 L1200,40 L1320,0 L1440,40 L1440,0 L0,0 Z",
   leaf: "M0,50 C120,10 240,60 360,30 C480,0 600,50 720,30 C840,10 960,60 1080,30 C1200,0 1320,50 1440,30 L1440,0 L0,0 Z",
   curve: "M0,48 C240,80 480,0 720,48 C960,96 1200,0 1440,48 L1440,0 L0,0 Z",
-  pulse: "M0,40 L200,40 L280,0 L360,80 L440,0 L520,80 L600,0 L680,40 L880,40 C1040,40 1040,40 1200,40 L1440,40 L1440,0 L0,0 Z",
+  pulse:
+    "M0,40 L200,40 L280,0 L360,80 L440,0 L520,80 L600,0 L680,40 L880,40 C1040,40 1040,40 1200,40 L1440,40 L1440,0 L0,0 Z",
   loop: "M0,40 C180,80 180,0 360,40 C540,80 540,0 720,40 C900,80 900,0 1080,40 C1260,80 1260,0 1440,40 L1440,0 L0,0 Z",
-  scroll: "M0,50 C80,20 160,50 240,30 C320,10 400,50 480,30 C560,10 640,50 720,30 C800,10 880,50 960,30 C1040,10 1120,50 1200,30 C1280,10 1360,50 1440,30 L1440,0 L0,0 Z",
+  scroll:
+    "M0,50 C80,20 160,50 240,30 C320,10 400,50 480,30 C560,10 640,50 720,30 C800,10 880,50 960,30 C1040,10 1120,50 1200,30 C1280,10 1360,50 1440,30 L1440,0 L0,0 Z",
 };
 
 const DECORATIVE_DOTS: Record<string, string> = {
@@ -49,32 +62,31 @@ const FILLED_VARIANTS = new Set([
 ]);
 
 interface VariantAnimConfig {
-  easing: string;
-  duration: number;
-  perPathDuration?: number;
+  defaultDuration: number;
+  defaultFrequency: number;
 }
 
 const VARIANT_ANIM: Record<DividerVariant, VariantAnimConfig> = {
-  wave: { easing: "linear", duration: 5000, perPathDuration: 5000 },
-  curl: { easing: "linear", duration: 4000, perPathDuration: 4000 },
-  zigzag: { easing: "linear", duration: 3000, perPathDuration: 3000 },
-  dots: { easing: "linear", duration: 6000, perPathDuration: 6000 },
-  tilde: { easing: "linear", duration: 4500, perPathDuration: 4500 },
-  heart: { easing: "linear", duration: 4000, perPathDuration: 4000 },
-  diamond: { easing: "linear", duration: 3500, perPathDuration: 3500 },
-  leaf: { easing: "linear", duration: 5500, perPathDuration: 5500 },
-  curve: { easing: "linear", duration: 5000, perPathDuration: 5000 },
-  pulse: { easing: "linear", duration: 2500, perPathDuration: 2500 },
-  loop: { easing: "linear", duration: 4500, perPathDuration: 4500 },
-  scroll: { easing: "linear", duration: 6000, perPathDuration: 6000 },
+  wave: { defaultDuration: 5000, defaultFrequency: 2 },
+  curl: { defaultDuration: 4000, defaultFrequency: 4 },
+  zigzag: { defaultDuration: 3000, defaultFrequency: 6 },
+  dots: { defaultDuration: 6000, defaultFrequency: 1 },
+  tilde: { defaultDuration: 4500, defaultFrequency: 3 },
+  heart: { defaultDuration: 4000, defaultFrequency: 3 },
+  diamond: { defaultDuration: 3500, defaultFrequency: 5 },
+  leaf: { defaultDuration: 5500, defaultFrequency: 2 },
+  curve: { defaultDuration: 5000, defaultFrequency: 1 },
+  pulse: { defaultDuration: 2500, defaultFrequency: 3 },
+  loop: { defaultDuration: 4500, defaultFrequency: 4 },
+  scroll: { defaultDuration: 6000, defaultFrequency: 3 },
 };
 
 /**
  * Props for the SectionDivider component.
  *
- * Renders an SVG divider with multiple decorative variants (wave, curl, zigzag, etc.).
- * Supports both stroked and filled rendering modes, with optional Web Animations API
- * powered continuous scroll animation per variant.
+ * Renders an SVG divider with twelve built-in visual variants.
+ * Supports continuous scroll animation, floating undulation, gesture triggering,
+ * and cross-component animation via store subscription.
  *
  * @property variant - The visual style of the divider. Defaults to `"wave"`.
  * @property color - Stroke color for stroked variants, also used as fallback fill. Defaults to `"#e2e8f0"`.
@@ -90,11 +102,15 @@ const VARIANT_ANIM: Record<DividerVariant, VariantAnimConfig> = {
  * @property gest - Additional HTML/SVG attributes spread onto the root `<svg>` element.
  * @property onFunc - Callback invoked with the internal `_SectionDivider` instance after initialization.
  * @property animate - When `true`, enables continuous scroll animation on the divider path(s).
- * @property duration - Animation duration per cycle in milliseconds. Defaults to variant-specific.
+ * @property duration - Scroll animation duration per cycle in milliseconds. Defaults to variant-specific.
  * @property delay - Delay before the animation starts in milliseconds. Defaults to `0`.
- * @property direction - Scroll direction: `"ltr"` (left-to-right), `"rtl"` (right-to-left), `"ttb"` (top-to-bottom), `"btt"` (bottom-to-top). Defaults to `"ltr"`.
- * @property gesture - Gesture that triggers the animation: `"click"`, `"hover"`, `"focus"`, `"scroll"`, or `"none"`. When set, `animate` is implied.
- * @property listen - A `Store` instance. When its state changes, the animation replays. Useful for cross-component triggering.
+ * @property direction - Scroll direction: `"ltr"`, `"rtl"`, `"ttb"`, `"btt"`. Defaults to `"ltr"`.
+ * @property easing - CSS easing function for the scroll animation. Defaults to `"linear"`.
+ * @property gesture - Gesture that triggers the animation: `"click"`, `"hover"`, `"focus"`, `"scroll"`, or `"none"`.
+ * @property listen - A `Store` instance. When its state changes, the animation replays.
+ * @property float - When `true`, enables continuous vertical undulation on the path(s). The divider bobs up and down like a boat on water.
+ * @property amplitude - Vertical distance in pixels the float travels from center. Defaults to `15`. Higher values = more dramatic bobbing.
+ * @property frequency - Number of full oscillation cycles per animation duration. Defaults to variant-specific (wave=2, curl=4, etc.). Higher values = more ripples.
  */
 export interface SectionDividerProp {
   variant?: DividerVariant;
@@ -117,26 +133,33 @@ export interface SectionDividerProp {
   duration?: number;
   delay?: number;
   direction?: Direction;
+  easing?: Easing;
   gesture?: Gesture;
   listen?: Store<Record<string, unknown>>;
+  float?: boolean;
+  amplitude?: number;
+  frequency?: number;
 }
 
 export class _SectionDivider {
   child!: ElementType;
   private svgRef: SVGSVGElement | null = null;
-  private animations: Animation[] = [];
+  private scrollAnimations: Animation[] = [];
+  private floatAnimations: Animation[] = [];
   private gestureCleanups: (() => void)[] = [];
   private listenUnsubscribes: (() => void)[] = [];
 
   play = () => {
-    this.animations.forEach((a) => {
+    [...this.scrollAnimations, ...this.floatAnimations].forEach((a) => {
       a.cancel();
       a.play();
     });
   };
 
   stop = () => {
-    this.animations.forEach((a) => a.cancel());
+    [...this.scrollAnimations, ...this.floatAnimations].forEach((a) =>
+      a.cancel(),
+    );
   };
 
   dispose = () => {
@@ -150,6 +173,7 @@ export class _SectionDivider {
   private buildScrollKeyframes = (
     direction: Direction,
     duration: number,
+    easing: Easing,
   ): { keyframes: Keyframe[]; easing: string; dur: number } => {
     const cycle = 1440;
     const steps = 60;
@@ -160,34 +184,46 @@ export class _SectionDivider {
           keyframes: Array.from({ length: steps + 1 }, (_, i) => ({
             transform: `translateX(${-cycle + (i * cycle) / steps}px)`,
           })),
-          easing: "linear",
+          easing,
           dur: duration,
         };
       case "rtl":
         return {
           keyframes: Array.from({ length: steps + 1 }, (_, i) => ({
-            transform: `translateX(${(i * cycle) / steps}px)`,
+            transform: `translateX(${-(i * cycle) / steps}px)`,
           })),
-          easing: "linear",
+          easing,
           dur: duration,
         };
       case "ttb":
         return {
           keyframes: Array.from({ length: steps + 1 }, (_, i) => ({
-            transform: `translateY(${(i * 80) / steps}px)`,
+            transform: `translateY(${-cycle + (i * cycle) / steps}px)`,
           })),
-          easing: "linear",
+          easing,
           dur: duration,
         };
       case "btt":
         return {
           keyframes: Array.from({ length: steps + 1 }, (_, i) => ({
-            transform: `translateY(${-80 + (i * 80) / steps}px)`,
+            transform: `translateY(${cycle - (i * cycle) / steps}px)`,
           })),
-          easing: "linear",
+          easing,
           dur: duration,
         };
     }
+  };
+
+  private buildFloatKeyframes = (
+    amplitude: number,
+    frequency: number,
+  ): Keyframe[] => {
+    const steps = 120;
+    return Array.from({ length: steps + 1 }, (_, i) => {
+      const t = i / steps;
+      const y = Math.sin(t * frequency * 2 * Math.PI) * amplitude;
+      return { transform: `translateY(${y.toFixed(2)}px)` };
+    });
   };
 
   private applyAnimation = (props: SectionDividerProp) => {
@@ -195,30 +231,59 @@ export class _SectionDivider {
 
     const shouldAnimate =
       props.animate || (props.gesture && props.gesture !== "none");
-    if (!shouldAnimate) return;
+    const shouldFloat = props.float;
+    if (!shouldAnimate && !shouldFloat) return;
 
     const variant = props.variant || "wave";
     const variantAnim = VARIANT_ANIM[variant];
     const direction = props.direction || "ltr";
-    const duration = props.duration ?? variantAnim.duration;
+    const easing = props.easing || "linear";
+    const duration = props.duration ?? variantAnim.defaultDuration;
     const delay = props.delay ?? 0;
 
-    const scrollConfig = this.buildScrollKeyframes(direction, duration);
+    const pathContainer = this.svgRef.querySelector("g[data-scroll]");
+    const floatContainer = this.svgRef.querySelector("g[data-float]");
 
-    const pathContainer = this.svgRef.querySelector("g");
-    if (!pathContainer) return;
+    if (shouldAnimate && pathContainer) {
+      const scrollConfig = this.buildScrollKeyframes(
+        direction,
+        duration,
+        easing,
+      );
+      const anim = pathContainer.animate(scrollConfig.keyframes, {
+        duration: scrollConfig.dur,
+        delay,
+        iterations: Infinity,
+        easing: scrollConfig.easing,
+      });
+      anim.pause();
+      this.scrollAnimations.push(anim);
+    }
 
-    const anim = pathContainer.animate(scrollConfig.keyframes, {
-      duration: scrollConfig.dur,
-      delay,
-      iterations: Infinity,
-      easing: scrollConfig.easing,
-    });
-    anim.pause();
-    this.animations.push(anim);
+    if (shouldFloat && floatContainer) {
+      const amplitude = props.amplitude ?? 15;
+      const frequency = props.frequency ?? variantAnim.defaultFrequency;
+      const floatKeyframes = this.buildFloatKeyframes(
+        amplitude,
+        frequency,
+      );
+      const anim = floatContainer.animate(floatKeyframes, {
+        duration,
+        delay,
+        iterations: Infinity,
+        easing: "ease-in-out",
+      });
+      anim.pause();
+      this.floatAnimations.push(anim);
+    }
 
-    if (shouldAnimate && (!props.gesture || props.gesture === "none")) {
-      this.animations.forEach((a) => a.play());
+    if (
+      (shouldAnimate || shouldFloat) &&
+      (!props.gesture || props.gesture === "none")
+    ) {
+      [...this.scrollAnimations, ...this.floatAnimations].forEach((a) =>
+        a.play(),
+      );
     }
 
     this.bindGestures(props.gesture, props.delay);
@@ -232,7 +297,7 @@ export class _SectionDivider {
     if (!this.svgRef || !gesture || gesture === "none") return;
 
     const playAll = () => {
-      this.animations.forEach((a) => {
+      [...this.scrollAnimations, ...this.floatAnimations].forEach((a) => {
         a.cancel();
         if (delay) {
           setTimeout(() => a.play(), delay);
@@ -284,6 +349,49 @@ export class _SectionDivider {
     const path = a.customPath || SVG_PATHS[variant] || SVG_PATHS.wave;
     const dots = DECORATIVE_DOTS[variant];
 
+    const pathContent = isFilled ? (
+      <>
+        <path d={path} fill={fillColor} opacity={0.9} />
+        <path
+          d={path}
+          fill={fillColor}
+          opacity={0.9}
+          transform="translate(1440, 0)"
+        />
+      </>
+    ) : (
+      <>
+        <path
+          d={path}
+          fill="none"
+          stroke={color}
+          strokeWidth={strokeWidth}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d={path}
+          fill="none"
+          stroke={color}
+          strokeWidth={strokeWidth}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          transform="translate(1440, 0)"
+        />
+        {dots && (
+          <>
+            <path d={dots} fill={color} opacity={0.5} />
+            <path
+              d={dots}
+              fill={color}
+              opacity={0.5}
+              transform="translate(1440, 0)"
+            />
+          </>
+        )}
+      </>
+    );
+
     return (
       <>
         <svg
@@ -304,49 +412,8 @@ export class _SectionDivider {
           }}
           {...a.gest}
         >
-          <g>
-            {isFilled ? (
-              <>
-                <path d={path} fill={fillColor} opacity={0.9} />
-                <path
-                  d={path}
-                  fill={fillColor}
-                  opacity={0.9}
-                  transform="translate(1440, 0)"
-                />
-              </>
-            ) : (
-              <>
-                <path
-                  d={path}
-                  fill="none"
-                  stroke={color}
-                  strokeWidth={strokeWidth}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d={path}
-                  fill="none"
-                  stroke={color}
-                  strokeWidth={strokeWidth}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  transform="translate(1440, 0)"
-                />
-                {dots && (
-                  <>
-                    <path d={dots} fill={color} opacity={0.5} />
-                    <path
-                      d={dots}
-                      fill={color}
-                      opacity={0.5}
-                      transform="translate(1440, 0)"
-                    />
-                  </>
-                )}
-              </>
-            )}
+          <g data-scroll="">
+            <g data-float="">{pathContent}</g>
           </g>
         </svg>
       </>

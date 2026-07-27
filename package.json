@@ -1,6 +1,6 @@
 {
   "name": "elk-components",
-  "version": "1.3.6",
+  "version": "1.3.7",
   "description": "React animation, layout, and styling toolkit. Declarative motion, transitions, letter animations, and composable UI primitives with built-in icons.",
   "type": "module",
   "main": "./dist/index.js",

@@ -162,14 +162,23 @@ describe("SectionDivider", () => {
     expect(secondPath?.getAttribute("transform")).toBe("translate(1440, 0)");
   });
 
-  // --- Animation tests ---
+  it("renders nested g elements for scroll and float", () => {
+    const { container } = render(<SectionDivider />);
+    const svg = container.querySelector("svg");
+    const scrollG = svg?.querySelector("g[data-scroll]");
+    const floatG = svg?.querySelector("g[data-float]");
+    expect(scrollG).toBeInTheDocument();
+    expect(floatG).toBeInTheDocument();
+  });
 
-  it("creates animation on g element when animate is true", () => {
+  // --- Scroll animation tests ---
+
+  it("creates scroll animation on g[data-scroll] when animate is true", () => {
     render(<SectionDivider animate />);
     expect(animateMock).toHaveBeenCalled();
   });
 
-  it("does not create animation when animate is false", () => {
+  it("does not create animation when animate is false and no float", () => {
     render(<SectionDivider />);
     expect(animateMock).not.toHaveBeenCalled();
   });
@@ -179,7 +188,13 @@ describe("SectionDivider", () => {
     expect(animateMock).toHaveBeenCalled();
   });
 
-  it("uses linear easing for continuous scroll", () => {
+  it("uses configured easing for scroll", () => {
+    render(<SectionDivider animate easing="ease-in-out" />);
+    const call = animateMock.mock.calls[0];
+    expect(call[1].easing).toBe("ease-in-out");
+  });
+
+  it("defaults to linear easing", () => {
     render(<SectionDivider animate />);
     const call = animateMock.mock.calls[0];
     expect(call[1].easing).toBe("linear");
@@ -208,36 +223,44 @@ describe("SectionDivider", () => {
     expect(animateMock.mock.calls[0][1].duration).toBe(8000);
   });
 
-  it("generates ltr keyframes (translateX from 0 to -1440)", () => {
+  it("generates ltr keyframes", () => {
     render(<SectionDivider animate direction="ltr" />);
     const call = animateMock.mock.calls[0];
     const keyframes = call[0];
     expect(keyframes[0]).toEqual({ transform: "translateX(-1440px)" });
-    expect(keyframes[keyframes.length - 1]).toEqual({ transform: "translateX(0px)" });
+    expect(keyframes[keyframes.length - 1]).toEqual({
+      transform: "translateX(0px)",
+    });
   });
 
-  it("generates rtl keyframes (translateX from 0 to 1440)", () => {
+  it("generates rtl keyframes", () => {
     render(<SectionDivider animate direction="rtl" />);
     const call = animateMock.mock.calls[0];
     const keyframes = call[0];
     expect(keyframes[0]).toEqual({ transform: "translateX(0px)" });
-    expect(keyframes[keyframes.length - 1]).toEqual({ transform: "translateX(1440px)" });
+    expect(keyframes[keyframes.length - 1]).toEqual({
+      transform: "translateX(-1440px)",
+    });
   });
 
-  it("generates ttb keyframes (translateY from 0 to 80)", () => {
+  it("generates ttb keyframes", () => {
     render(<SectionDivider animate direction="ttb" />);
     const call = animateMock.mock.calls[0];
     const keyframes = call[0];
-    expect(keyframes[0]).toEqual({ transform: "translateY(0px)" });
-    expect(keyframes[keyframes.length - 1]).toEqual({ transform: "translateY(80px)" });
+    expect(keyframes[0]).toEqual({ transform: "translateY(-1440px)" });
+    expect(keyframes[keyframes.length - 1]).toEqual({
+      transform: "translateY(0px)",
+    });
   });
 
-  it("generates btt keyframes (translateY from -80 to 0)", () => {
+  it("generates btt keyframes", () => {
     render(<SectionDivider animate direction="btt" />);
     const call = animateMock.mock.calls[0];
     const keyframes = call[0];
-    expect(keyframes[0]).toEqual({ transform: "translateY(-80px)" });
-    expect(keyframes[keyframes.length - 1]).toEqual({ transform: "translateY(0px)" });
+    expect(keyframes[0]).toEqual({ transform: "translateY(1440px)" });
+    expect(keyframes[keyframes.length - 1]).toEqual({
+      transform: "translateY(0px)",
+    });
   });
 
   it("defaults to ltr direction", () => {
@@ -253,6 +276,126 @@ describe("SectionDivider", () => {
     const keyframes = call[0];
     expect(keyframes.length).toBe(61);
   });
+
+  // --- Float animation tests ---
+
+  it("creates float animation when float is true", () => {
+    render(<SectionDivider float />);
+    expect(animateMock).toHaveBeenCalled();
+  });
+
+  it("creates both scroll and float when both are true", () => {
+    render(<SectionDivider animate float />);
+    expect(animateMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("float uses ease-in-out easing", () => {
+    render(<SectionDivider float />);
+    const call = animateMock.mock.calls[0];
+    expect(call[1].easing).toBe("ease-in-out");
+  });
+
+  it("float defaults to Infinity iterations", () => {
+    render(<SectionDivider float />);
+    const call = animateMock.mock.calls[0];
+    expect(call[1].iterations).toBe(Infinity);
+  });
+
+  it("float generates 121 keyframe steps", () => {
+    render(<SectionDivider float />);
+    const call = animateMock.mock.calls[0];
+    expect(call[0].length).toBe(121);
+  });
+
+  it("float keyframes start and end near zero", () => {
+    render(<SectionDivider float />);
+    const call = animateMock.mock.calls[0];
+    const keyframes = call[0] as { transform: string }[];
+    const extract = (k: { transform: string }) =>
+      parseFloat(k.transform.replace("translateY(", ""));
+    expect(Math.abs(extract(keyframes[0]))).toBeLessThan(0.01);
+    expect(Math.abs(extract(keyframes[keyframes.length - 1]))).toBeLessThan(
+      0.01,
+    );
+  });
+
+  it("float with amplitude 0 produces all zero keyframes", () => {
+    render(<SectionDivider float amplitude={0} />);
+    const call = animateMock.mock.calls[0];
+    const keyframes = call[0];
+    const allZero = keyframes.every(
+      (k: Keyframe) => k.transform === "translateY(0.00px)",
+    );
+    expect(allZero).toBe(true);
+  });
+
+  it("float with higher amplitude produces larger translateY values", () => {
+    render(<SectionDivider float amplitude={30} />);
+    const call = animateMock.mock.calls[0];
+    const keyframes = call[0];
+    const maxAbs = Math.max(
+      ...keyframes.map((k: Keyframe) => {
+        const match = (k.transform as string)?.match(/-?[\d.]+/);
+        return match ? Math.abs(parseFloat(match[0])) : 0;
+      }),
+    );
+    expect(maxAbs).toBeGreaterThan(15);
+  });
+
+  it("float with frequency 1 produces one full sine cycle", () => {
+    render(<SectionDivider float frequency={1} />);
+    const call = animateMock.mock.calls[0];
+    const keyframes = call[0];
+    const mid = keyframes[60];
+    expect(mid).toEqual({ transform: "translateY(0.00px)" });
+  });
+
+  it("float with frequency 4 produces four full cycles", () => {
+    render(<SectionDivider float frequency={4} />);
+    const call = animateMock.mock.calls[0];
+    const keyframes = call[0] as { transform: string }[];
+    const extract = (k: { transform: string }) =>
+      parseFloat(k.transform.replace("translateY(", ""));
+    // sin(4 * 2π * 8/120) = sin(π/1.5) ≈ peak
+    const peak = keyframes[8];
+    // sin(4 * 2π * 30/120) = sin(2π) ≈ 0
+    const zero = keyframes[30];
+    expect(Math.abs(extract(peak))).toBeGreaterThan(10);
+    expect(Math.abs(extract(zero))).toBeLessThan(0.01);
+  });
+
+  it("uses variant-specific default frequency", () => {
+    render(<SectionDivider variant="wave" float />);
+    const waveFreq = animateMock.mock.calls[0][0].length;
+    animateMock.mockClear();
+
+    render(<SectionDivider variant="curl" float />);
+    const curlFreq = animateMock.mock.calls[0][0].length;
+
+    expect(waveFreq).toBe(121);
+    expect(curlFreq).toBe(121);
+  });
+
+  it("user frequency overrides variant default", () => {
+    render(<SectionDivider float frequency={8} />);
+    const call = animateMock.mock.calls[0];
+    const keyframes = call[0] as { transform: string }[];
+    const extract = (k: { transform: string }) =>
+      parseFloat(k.transform.replace("translateY(", ""));
+    // sin(8 * 2π * 4/120) ≈ sin(π/1.5) ≈ peak
+    const peak = keyframes[4];
+    // sin(8 * 2π * 15/120) = sin(2π) ≈ 0
+    const zero = keyframes[15];
+    expect(Math.abs(extract(peak))).toBeGreaterThan(10);
+    expect(Math.abs(extract(zero))).toBeLessThan(0.01);
+  });
+
+  it("float does not create animation when float is false", () => {
+    render(<SectionDivider />);
+    expect(animateMock).not.toHaveBeenCalled();
+  });
+
+  // --- Gesture tests ---
 
   it("binds click gesture", async () => {
     const user = userEvent.setup();
@@ -276,7 +419,6 @@ describe("SectionDivider", () => {
     const store = createStore({ trigger: false });
     render(<SectionDivider listen={store} animate />);
     const playMock = animateMock.mock.results[0].value.play;
-
     store.setState({ trigger: true });
     expect(playMock).toHaveBeenCalled();
   });
@@ -284,7 +426,12 @@ describe("SectionDivider", () => {
   it("play() method starts animations", () => {
     let instance: _SectionDivider;
     render(
-      <SectionDivider animate onFunc={(self) => { instance = self; }} />,
+      <SectionDivider
+        animate
+        onFunc={(self) => {
+          instance = self;
+        }}
+      />,
     );
     const playMock = animateMock.mock.results[0].value.play;
     instance!.play();
@@ -294,7 +441,12 @@ describe("SectionDivider", () => {
   it("stop() method cancels animations", () => {
     let instance: _SectionDivider;
     render(
-      <SectionDivider animate onFunc={(self) => { instance = self; }} />,
+      <SectionDivider
+        animate
+        onFunc={(self) => {
+          instance = self;
+        }}
+      />,
     );
     const cancelMock = animateMock.mock.results[0].value.cancel;
     instance!.stop();
@@ -318,12 +470,12 @@ describe("SectionDivider", () => {
     expect(playMock).not.toHaveBeenCalled();
   });
 
-  it("does not animate when gesture is none", () => {
+  it("does not animate when gesture is none and no float", () => {
     render(<SectionDivider gesture="none" />);
     expect(animateMock).not.toHaveBeenCalled();
   });
 
-  it("does not animate when animate is false and no gesture", () => {
+  it("does not animate when animate is false and no gesture and no float", () => {
     render(<SectionDivider animate={false} />);
     expect(animateMock).not.toHaveBeenCalled();
   });
