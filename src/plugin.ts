@@ -8,7 +8,7 @@ const COMPONENTS = [
   'List', 'ListView', 'ListMenu',
   'BottomModal', 'SidePanel', 'Reabon',
   'Tab', 'TabView', 'Icon', 'IconNetwork', 'PageScrollView', 'Icons',
-  'Gap', 'Example', 'Padding', 'GridView'
+  'Gap', 'Example', 'Padding', 'GridView', 'Hover'
 ];
 
 const HOOKS = [

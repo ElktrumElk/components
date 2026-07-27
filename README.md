@@ -553,8 +553,8 @@ When you pass any motion prop (`initial`, `animate`, `exit`, `whileHover`, `whil
 | `whileInView` | `Record<string, any>` | No | — | State when entering viewport |
 | `transition` | `MotionTransition` | No | spring | Spring or tween config |
 | `variants` | `Record<string, any>` | No | — | Named animation states |
-| `layout` | `boolean \| "position" \| "size"` | No | — | Layout animations |
-| `viewport` | `{ once?: boolean; amount?: number }` | No | — | Viewport config for `whileInView` |
+| `layout` | `boolean \| "position" \| "size" \| "preserve"` | No | — | Layout animations |
+| `viewport` | `{ once?: boolean; amount?: number \| "some" \| "all" }` | No | — | Viewport config for `whileInView` |
 | `className` | `string` | No | — | CSS class |
 | `style` | `CSSProperties` | No | — | Inline styles |
 
@@ -660,6 +660,8 @@ Uses CSS transitions with 13 built-in effect presets.
 | `isAutomatic` | `boolean` | No | false | Transition on mount |
 | `gesture` | `"click" \| "hover" \| "focus" \| "scroll" \| "none"` | No | "none" | Trigger gesture |
 | `origin` | `string` | No | "top left" | Transform origin |
+| `threshold` | `number` | No | — | Threshold for gesture timing calculations |
+| `onTransitionEnd` | `() => void` | No | — | Callback fired when the transition animation ends |
 | `className` | `string` | No | — | CSS class |
 | `style` | `CSSProperties` | No | — | Inline styles |
 
@@ -756,6 +758,7 @@ Animates individual letters or words of a text string with 20 built-in presets, 
 | `direction` | `PlaybackDirection` | No | "normal" | Play direction |
 | `fill` | `FillMode` | No | "forwards" | Style retention |
 | `easing` | `string` | No | "ease" | CSS timing function |
+| `isOpacity` | `boolean` | No | — | Force opacity to 1 (transform-only animation, no fade) |
 | `className` | `string` | No | — | CSS class |
 | `style` | `CSSProperties` | No | — | Inline styles |
 

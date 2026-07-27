@@ -39,6 +39,7 @@ export {default as SectionDivider} from './lib/components/sectionDivider/Section
 export {default as Padding } from './lib/components/padding/Padding'
 export {default as GridView} from './lib/components/gridview/GridView'
 export {default as LetterAnimation} from './lib/components/letteranimation/LetterAnimation'
+export {default as Hover} from './lib/components/pseudo/hover/Hover'
 // icon
 export { default as Icons } from "./lib/utility/icon";
 
