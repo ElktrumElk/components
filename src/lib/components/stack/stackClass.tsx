@@ -5,6 +5,33 @@ type Align = 'stretch' | 'flex-start' | 'flex-end' | 'center' | 'baseline'
 type Justify = 'flex-start' | 'flex-end' | 'center' | 'space-between' | 'space-around' | 'space-evenly'
 type Position = 'static' | 'relative' | 'absolute' | 'fixed' | 'sticky'
 
+/**
+ * Props for the Stack component.
+ *
+ * Renders a flexbox `<div>` container with shorthand props for direction,
+ * alignment, spacing, sizing, and positioning.
+ *
+ * @property child - A React component type rendered as the stack's content.
+ * @property direction - Flex direction: `"column"`, `"row"`, `"row-reverse"`, or `"column-reverse"`. Defaults to `"column"`.
+ * @property gap - CSS gap between children (e.g. `"1rem"`, `"16px"`). Defaults to `"0"`.
+ * @property align - CSS `align-items` value. Defaults to `"stretch"`.
+ * @property justify - CSS `justify-content` value. Defaults to `"flex-start"`.
+ * @property wrap - If `true`, enables `flex-wrap: wrap`.
+ * @property width - CSS `width` of the container.
+ * @property height - CSS `height` of the container.
+ * @property padding - CSS `padding` shorthand.
+ * @property margin - CSS `margin` shorthand.
+ * @property position - CSS `position` value.
+ * @property top - CSS `top` offset (requires non-static `position`).
+ * @property right - CSS `right` offset (requires non-static `position`).
+ * @property bottom - CSS `bottom` offset (requires non-static `position`).
+ * @property left - CSS `left` offset (requires non-static `position`).
+ * @property zIndex - CSS `z-index` value.
+ * @property style - Inline styles merged onto the root `<div>` element.
+ * @property className - Additional CSS class names applied to the root `<div>` element.
+ * @property gest - Additional HTML attributes spread onto the root `<div>` element.
+ * @property onFunc - Callback invoked with the internal `_Stack` instance after initialization.
+ */
 export interface StackProp {
   child?: React.JSX.ElementType
   direction?: Direction

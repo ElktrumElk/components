@@ -10,20 +10,35 @@ const SIZE_MAP: Record<AvatarSize, string> = {
   xl: '5rem',
 }
 
+/**
+ * Props for the Avatar component.
+ * Displays an image, icon, or fallback element in a circular or rounded container.
+ */
 export interface AvatarProp {
+  /** URL of the avatar image. Falls back to icon or fallback if the image fails to load. */
   src?: string
+  /** Alt text for the avatar image. */
   alt?: string
+  /** Component type rendered when no image is provided or the image fails to load. */
   icon?: React.JSX.ElementType
+  /** Preset size of the avatar. One of "xs", "sm", "md", "lg", "xl". Defaults to "md". */
   size?: AvatarSize
+  /** CSS border-radius applied to the avatar container. Defaults to "50%" (circle). */
   borderRadius?: string
+  /** Background color of the avatar container when no image is visible. */
   backgroundColor?: string
+  /** Component type rendered as the final fallback when no image or icon is available. */
   fallback?: React.JSX.ElementType
+  /** Additional CSS class name for the avatar container. */
   className?: string
+  /** Custom inline styles applied to the avatar container. */
   style?: React.CSSProperties
+  /** Additional HTML attributes spread onto the wrapper div. */
   gest?: React.DetailedHTMLProps<
     React.HTMLAttributes<HTMLDivElement>,
     HTMLDivElement
   >
+  /** Callback invoked after mount, receiving the internal _Avatar instance. */
   onFunc?: (self: _Avatar) => void
 }
 

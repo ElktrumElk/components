@@ -1,5 +1,21 @@
 import type { ElementType } from "react";
 
+/**
+ * Props for the Panel component.
+ * @property {React.JSX.ElementType} [child] - Child component to render inside the panel
+ * @property {string} [width] - Width of the panel (default: '100%')
+ * @property {string} [height] - Height of the panel
+ * @property {string} [padding] - Inner padding of the panel
+ * @property {string} [margin] - Outer margin of the panel
+ * @property {string} [color] - Background color of the panel
+ * @property {string} [border] - Border style for the panel
+ * @property {string} [borderRadius] - Border radius of the panel
+ * @property {"visible" | "hidden" | "scroll" | "auto"} [overflow] - Overflow behavior
+ * @property {string} [className] - CSS class name
+ * @property {React.CSSProperties} [style] - Additional inline styles
+ * @property {React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>} [gest] - HTML attributes to spread onto the div
+ * @property {(self: _Panel) => void} [onFunc] - Callback that receives the Panel instance for imperative access
+ */
 export interface _PanelProp {
   child?: React.JSX.ElementType;
   width?: string;

@@ -1,5 +1,18 @@
 import type { ElementType } from "react";
 
+/**
+ * Props for the ScrollView component.
+ * @property {React.JSX.ElementType} [child] - Child component to render inside the scroll container
+ * @property {'vertical' | 'horizontal' | 'both'} [direction] - Scroll direction (default: 'vertical')
+ * @property {string} [width] - Width of the scroll container (default: '100%')
+ * @property {string} [height] - Height of the scroll container (default: '100%')
+ * @property {string} [padding] - Inner padding of the scroll container
+ * @property {boolean} [hideScrollbar] - Whether to hide the scrollbar visually
+ * @property {string} [className] - CSS class name
+ * @property {React.CSSProperties} [style] - Additional inline styles
+ * @property {React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>} [gest] - HTML attributes to spread onto the div
+ * @property {(self: _ScrollView) => void} [onFunc] - Callback that receives the ScrollView instance for imperative access
+ */
 export interface ScrollViewProp {
   child?: React.JSX.ElementType
   direction?: 'vertical' | 'horizontal' | 'both'

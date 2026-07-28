@@ -13,6 +13,17 @@ const InitializeCenter = () => {
     return {_center}
 }
 
+/**
+ * Centers a child component both horizontally and vertically using a
+ * full-width, full-height flex container.
+ *
+ * @example
+ * <Center child={MyContent} />
+ *
+ * @see {@link _CenterProp} for all available props.
+ *
+ * @param child - Component type to render as the centered content.
+ */
 export default function Center ({...a}: _CenterProp) {
     const {_center} = InitializeCenter()
     return _center.current?.build?.({...a})

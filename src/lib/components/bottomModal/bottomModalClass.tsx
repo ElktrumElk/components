@@ -1,16 +1,31 @@
 import type { ElementType } from "react";
 
+/**
+ * Props for the BottomModal component.
+ * A full-screen overlay that slides up from the bottom with a draggable handle.
+ */
 export interface BottomModalProp {
+  /** Component type rendered as the modal body content. */
   child?: React.JSX.ElementType
+  /** Component type rendered as the modal title above the body. */
   title?: React.JSX.ElementType
+  /** Controls whether the modal is visible. When false, nothing renders. */
   isOpen?: boolean
+  /** Callback invoked when the user clicks the overlay or handle to close the modal. */
   onClose?: () => void
+  /** Maximum height of the modal panel. Defaults to "80vh". */
   height?: string
+  /** CSS padding applied to the modal panel interior. Defaults to "1rem". */
   padding?: string
+  /** Whether to display the drag-handle indicator at the top of the panel. Defaults to true. */
   showHandle?: boolean
+  /** Background color of the overlay backdrop. Defaults to "rgba(0,0,0,0.8)". */
   backgroundColor?: string
+  /** Additional CSS class name for the overlay element. */
   className?: string
+  /** Custom inline styles applied to the overlay element. */
   style?: React.CSSProperties
+  /** Callback invoked after mount, receiving the internal _BottomModal instance. */
   onFunc?: (self: _BottomModal) => void
 }
 

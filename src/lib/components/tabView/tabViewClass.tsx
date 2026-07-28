@@ -6,6 +6,21 @@ export interface _TabViewTab {
   content: React.JSX.ElementType;
 }
 
+/**
+ * Props for the TabView component.
+ *
+ * A self-contained tabbed interface that renders a row of tab buttons and
+ * displays the content of the currently active tab.
+ *
+ * @property tabs - Array of tab definitions, each with `id`, `label` (component type), and `content` (component type).
+ * @property activeTab - The `id` of the currently active tab (controlled mode).
+ * @property defaultTab - The `id` of the tab shown on first render (uncontrolled mode). Falls back to the first tab.
+ * @property onChange - Callback fired when a tab is clicked, receiving the selected tab's `id`.
+ * @property gap - CSS gap between tab buttons.
+ * @property className - Additional CSS class names applied to the root container.
+ * @property style - Inline styles merged onto the root container.
+ * @property onFunc - Callback invoked with the internal `_TabView` instance after initialization.
+ */
 export interface _TabViewProp {
   tabs?: Array<_TabViewTab>;
   activeTab?: string;

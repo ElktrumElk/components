@@ -1,17 +1,31 @@
 import type { ElementType } from "react";
 
+/**
+ * Props for the Container component.
+ * A general-purpose layout wrapper that renders a styled `<div>` with
+ * configurable dimensions, padding, background, and child content.
+ */
 export interface ContainerProp {
+  /** CSS width of the container. Defaults to `'auto'`. */
   width?: string;
+  /** CSS height of the container. Defaults to `'auto'`. */
   height?: string;
+  /** Inline CSS styles applied to the container root element. */
   style?: React.CSSProperties;
+  /** Additional CSS class name(s) to apply. */
   className?: string;
+  /** CSS padding value. Defaults to `'1rem'`. */
   padding?: string;
-  color?: string
+  /** Background color of the container. */
+  color?: string;
+  /** Native HTML div props forwarded to the root element. */
   gest?: React.DetailedHTMLProps<
     React.HTMLAttributes<HTMLDivElement>,
     HTMLDivElement
   >;
+  /** Component type rendered as the container's child content. */
   child?: React.JSX.ElementType;
+  /** Callback invoked with the internal `_Container` instance after construction. */
   onFunc?: (self: _Container) => void
 }
 

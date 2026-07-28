@@ -2,9 +2,11 @@ interface IconProps {
   size?: number;
   color?: string;
   className?: string;
+  fill?: boolean;
+  fillColor?: string;
 }
 
-export default function RotateLeft({ size = 24, color = "currentColor", className }: IconProps) {
+export default function RotateLeft({ size = 24, color = "currentColor", className, fill: _fill = false, fillColor: _fillColor }: IconProps) {
   return (
     <svg
       width={size}

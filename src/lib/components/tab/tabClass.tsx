@@ -1,6 +1,23 @@
 import type { ElementType } from "react";
 import type React from "react";
 
+/**
+ * Props for the Tab component.
+ *
+ * Renders a transparent `<button>` styled as a tab indicator. Text color
+ * changes based on the active/inactive state.
+ *
+ * @property label - A React component type rendered as the tab's visible label. **Required.**
+ * @property isActive - Whether this tab is currently selected. Defaults to `false`.
+ * @property onClick - Callback invoked when the tab button is clicked.
+ * @property activeColor - Text color when `isActive` is `true`. Defaults to `"#fff"`.
+ * @property inactiveColor - Text color when `isActive` is `false`. Defaults to `"rgba(255,255,255,0.5)"`.
+ * @property padding - CSS padding around the tab. Defaults to `".5rem 1rem"`.
+ * @property className - Additional CSS class names applied to the `<button>` element.
+ * @property style - Inline styles merged onto the `<button>` element.
+ * @property gest - Additional HTML attributes spread onto the `<button>` element.
+ * @property onFunc - Callback invoked with the internal `_Tab` instance after initialization.
+ */
 export interface _TabProp {
   label: React.JSX.ElementType;
   isActive?: boolean;

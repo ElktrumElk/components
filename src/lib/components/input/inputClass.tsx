@@ -2,6 +2,30 @@ import type { ElementType } from "react";
 
 type InputType = 'text' | 'password' | 'email' | 'number' | 'tel' | 'url' | 'search'
 
+/**
+ * Props for the Input component, a styled text input with prefix/suffix slots.
+ *
+ * Renders an `<input>` wrapped in a flex container that supports leading
+ * and trailing element slots (e.g. icons, buttons).
+ *
+ * @property type - Input type: `"text"` (default) | `"password"` | `"email"` | `"number"` | `"tel"` | `"url"` | `"search"`.
+ * @property placeholder - Placeholder text shown when the input is empty.
+ * @property value - Default value of the input.
+ * @property disabled - Disables the input when `true`.
+ * @property readOnly - Makes the input read-only when `true`.
+ * @property prefix - Component rendered before (left of) the input.
+ * @property suffix - Component rendered after (right of) the input.
+ * @property width - CSS width value. Defaults to `"100%"`.
+ * @property height - CSS height value. Defaults to `"2.5rem"`.
+ * @property borderRadius - CSS border-radius. Defaults to `".5rem"`.
+ * @property backgroundColor - Input background color. Defaults to `"transparent"`.
+ * @property color - Input text color. Defaults to `"inherit"`.
+ * @property borderColor - Input border color. Defaults to `"rgba(255,255,255,0.15)"`.
+ * @property className - CSS class name(s) applied to the outer container `<div>`.
+ * @property style - Additional inline styles applied to the outer container `<div>`.
+ * @property gest - Additional HTML input props spread on the `<input>` element (e.g. event handlers, `name`, `autoComplete`).
+ * @property onFunc - Callback invoked with the internal `_Input` instance after mount.
+ */
 export interface InputProp {
   type?: InputType
   placeholder?: string
