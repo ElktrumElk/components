@@ -24,6 +24,8 @@ export interface ButtonProp {
   className?: string;
   /** Custom inline styles applied to the button element. */
   style?: React.CSSProperties;
+  /** Splash color when button is clicked */
+  splashColor?: string;
   /** Additional HTML attributes spread onto the <button> element. */
   gest?: React.DetailedHTMLProps<
     React.HTMLAttributes<HTMLButtonElement>,
@@ -37,10 +39,12 @@ export interface ButtonProp {
 export class _Button  {
   child!: JSX.ElementType;
   style?: React.CSSProperties;
+  savedIconBg!: string;
 
   build? = ({ ...a }: ButtonProp): React.JSX.Element => {
  
     this.style = a.style || {};
+
 
     this.child = a.child as ElementType;
 
@@ -55,8 +59,14 @@ export class _Button  {
             padding: a.padding,
             border: a.border,
             borderRadius: a.borderRadius,
+            cursor: 'pointer',
             ...this.style
           }}
+          onMouseDown={(e) => {this.savedIconBg = e.currentTarget.style.background; e.currentTarget.style.background = a.splashColor as string}}
+          onMouseUp={(e) => e.currentTarget.style.background = this.savedIconBg}
+          onTouchStart={(e) => {this.savedIconBg = e.currentTarget.style.background; e.currentTarget.style.background = a.splashColor as string}}
+          onTouchEnd={(e) => e.currentTarget.style.background = this.savedIconBg}
+
           {...a.gest}
         >
             {a.child && <this.child />}

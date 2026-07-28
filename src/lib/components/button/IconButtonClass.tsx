@@ -12,7 +12,8 @@ export interface IconButtonProp extends ButtonProp {
 
 export class _IconButton extends _Button {
   icon!: React.JSX.ElementType;
-
+  declare savedIconBg: string;
+  
   override build? = ({ ...a }: IconButtonProp): React.JSX.Element => {
     
     return (
@@ -30,6 +31,10 @@ export class _IconButton extends _Button {
             cursor: 'pointer',
             ...a?.style,
           }}
+          onMouseDown={(e) => {this.savedIconBg = e.currentTarget.style.background; e.currentTarget.style.background = a.splashColor as string}}
+          onMouseUp={(e) => e.currentTarget.style.background = this.savedIconBg}
+          onTouchStart={(e) => {this.savedIconBg = e.currentTarget.style.background; e.currentTarget.style.background = a.splashColor as string}}
+          onTouchEnd={(e) => e.currentTarget.style.background = this.savedIconBg}
           {...a?.gest}
         >
           {a.icon && <a.icon />}

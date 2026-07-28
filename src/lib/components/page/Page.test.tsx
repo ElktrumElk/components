@@ -62,11 +62,11 @@ describe('Page', () => {
     const { container } = render(
       <Page body={() => <div />} style={{ background: 'red' }} />
     )
-    const section = container.querySelector('section')
-    expect(section).toHaveStyle({ background: 'red' })
+    const div = container.querySelector('div')
+    expect(div).toHaveStyle({ background: 'red' })
   })
 
-  it('passes atrib to section element', () => {
+  it('passes atrib to div element', () => {
     const { container } = render(
       <Page body={() => <div />} atrib={{ id: 'my-page' }} />
     )

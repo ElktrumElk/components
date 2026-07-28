@@ -6,6 +6,7 @@ import {
   GridView,
   Hover,
   Icon,
+  IconButton,
   Icons,
   Main,
   Page,
@@ -129,6 +130,7 @@ export default function App() {
                                 )}
                                 footer={() => (
                                   <>
+                                  <IconButton icon={Icons.icon.Add} color="red" splashColor="grey" style={{background: 'rgba(255, 38, 0, 0.16)'}}/>
                                     <Hover
                                       transition="color .4s ease"
                                       style={{ color: "#a600ff" }}
