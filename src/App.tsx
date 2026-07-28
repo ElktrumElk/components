@@ -22,17 +22,7 @@ export default function App() {
       background="black"
       body={() => (
         <>
-          <SectionDivider
-            life
-            variant="tilde"
-            amplitude={30}
-            width="100vw"
-            style={{width: '100vw !important'}}
-            float={false}
-            flip
-            animate={false}
-            fillColor="#2f2f2f"
-          />
+          <SectionDivider variant="wave" frequency={5}  animate amplitude={20}  width="auto" style={{ width: 'auto', transform: 'scaleX(2.5) scaleY(-1)', }}/>
           <Container
             width="100%"
             height="100%"
@@ -176,6 +166,7 @@ export default function App() {
                               />
                               <Card
                                 width="100%"
+                                height="100%"
                                 header={() => (
                                   <>
                                     <Icon
@@ -189,9 +180,47 @@ export default function App() {
                                     />
                                   </>
                                 )}
+                                body={() => (
+                                  <Text
+                                    text="Get your own personal email with your unique domain name that is highly secure"
+                                    type="p"
+                                    color="#d2d9e2"
+                                  />
+                                )}
+                                footer={() => (
+                                  <>
+                                    <Hover
+                                      transition="color .4s ease"
+                                      style={{ color: "#19aeff" }}
+                                      child={() => (
+                                        <TextButton
+                                          color="blue"
+                                          text="Get Started"
+                                          activeColor="green"
+                                          style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                          }}
+                                          child={() => (
+                                            <>
+                                              <Text
+                                                text="Get Started"
+                                                type="p"
+                                              />
+                                              <Icon
+                                                icon={Icons.icon.ArrowRight}
+                                              />
+                                            </>
+                                          )}
+                                        />
+                                      )}
+                                    />
+                                  </>
+                                )}
                               />
                               <Card
                                 width="100%"
+                                height="100%"
                                 header={() => (
                                   <>
                                     <Icon
@@ -202,6 +231,43 @@ export default function App() {
                                       text="Ticket Booked"
                                       type="h3"
                                       color="white"
+                                    />
+                                  </>
+                                )}
+                                body={() => (
+                                  <Text
+                                    text="Get any event tiket at it real price quick and affordable."
+                                    type="p"
+                                    color="#d2d9e2"
+                                  />
+                                )}
+                                footer={() => (
+                                  <>
+                                    <Hover
+                                      transition="color .4s ease"
+                                      style={{ color: "#a600ff" }}
+                                      child={() => (
+                                        <TextButton
+                                          color="blue"
+                                          text="Get Started"
+                                          activeColor="green"
+                                          style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                          }}
+                                          child={() => (
+                                            <>
+                                              <Text
+                                                text="Get Started"
+                                                type="p"
+                                              />
+                                              <Icon
+                                                icon={Icons.icon.ArrowRight}
+                                              />
+                                            </>
+                                          )}
+                                        />
+                                      )}
                                     />
                                   </>
                                 )}
