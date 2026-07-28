@@ -11,7 +11,7 @@ export interface ListMenuProp {
   /** Component type rendered as the menu's content. */
   child?: React.JSX.ElementType
   /** Gap between stacked items. Accepts `rem`, `px`, or `em` values (e.g. `"0.5rem"`, `"8px"`). */
-  gap?: (string & `${string}rem`) | `${string}px` | `${string}em`
+  gap?: string
   /** Additional CSS class name on the container `<div>`. */
   className?: string
   /** Inline styles merged onto the container `<div>`. */
@@ -36,7 +36,7 @@ export class _ListMenu {
       <>
         {stack.build?.({
           direction: 'column',
-          gap: (a.gap || '0rem') as `${string}rem`,
+          gap: a.gap || '0rem',
           className: a.className,
           style: a.style,
           gest: a.gest as React.DetailedHTMLProps<

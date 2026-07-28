@@ -16,7 +16,7 @@ export interface ListViewProp {
   /** CSS `margin` applied to the `<ul>`. */
   margin?: string
   /** Gap between list items. Accepts `rem`, `px`, or `em` values (e.g. `"0.5rem"`). */
-  gap?: (string & `${string}rem`) | `${string}px` | `${string}em`
+  gap?: string
   /** Additional CSS class name on the `<ul>`. */
   className?: string
   /** Inline styles merged onto the `<ul>`. */

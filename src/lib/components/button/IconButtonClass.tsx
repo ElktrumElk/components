@@ -26,7 +26,7 @@ export class _IconButton extends _Button {
             color: a.color,
             border: a?.border || 'none',
             borderRadius: a?.borderRadius || '4rem',
-            background: 'transparent',
+            background: a.backgroundColor || 'transparent',
             padding: a.padding || '.3rem',
             cursor: 'pointer',
             ...a?.style,

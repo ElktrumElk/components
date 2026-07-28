@@ -24,6 +24,8 @@ export interface ButtonProp {
   className?: string;
   /** Custom inline styles applied to the button element. */
   style?: React.CSSProperties;
+  /** Background color of the button */
+  backgroundColor?: string;
   /** Splash color when button is clicked */
   splashColor?: string;
   /** Additional HTML attributes spread onto the <button> element. */
@@ -59,6 +61,7 @@ export class _Button  {
             padding: a.padding,
             border: a.border,
             borderRadius: a.borderRadius,
+            background: a.backgroundColor || undefined,
             cursor: 'pointer',
             ...this.style
           }}

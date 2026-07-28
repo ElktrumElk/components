@@ -85,7 +85,7 @@ App bar with leading element, title/subtitle, and action slot.
 | `title` | `ElementType` | Yes | — | Title content |
 | `subTitle` | `ElementType` | No | — | Subtitle below title |
 | `action` | `ElementType` | No | — | Right-side actions |
-| `titleGap` | `string` | No | — | Gap between title and subtitle. Typed: `${string}rem` / `${string}px` / `${string}em` |
+| `titleGap` | `string` | No | — | Gap between title and subtitle |
 | `className` | `string` | No | — | CSS class |
 | `style` | `CSSProperties` | No | — | Override default flex layout |
 
@@ -151,6 +151,7 @@ Clickable button with content slot.
 | Prop | Type | Required | Default | Description |
 |------|------|----------|---------|-------------|
 | `child` | `ElementType` | No | — | Button content |
+| `backgroundColor` | `string` | No | — | Background color |
 | `border` | `string` | No | — | Border |
 | `borderRadius` | `string` | No | — | Border radius |
 | `color` | `string` | No | — | Text color |
@@ -180,6 +181,7 @@ Button that renders an icon instead of text content. Extends Button.
 | Prop | Type | Required | Default | Description |
 |------|------|----------|---------|-------------|
 | `icon` | `ElementType` | No | — | Icon component to render |
+| `backgroundColor` | `string` | No | `"transparent"` | Background color |
 | `borderRadius` | `string` | No | — | Border radius |
 | `width` | `string` | No | — | Width |
 | `height` | `string` | No | — | Height |
@@ -218,7 +220,7 @@ Flex container with full direction/alignment/gap control.
 |------|------|----------|---------|-------------|
 | `child` | `ElementType` | No | — | Stacked content |
 | `direction` | `'column'\|'row'\|'row-reverse'\|'column-reverse'` | No | `"column"` | Flex direction |
-| `gap` | `string` | No | `"0"` | Gap between items. Typed: `${string}rem` / `${string}px` / `${string}em` |
+| `gap` | `string` | No | `"0"` | Gap between items |
 | `align` | `'stretch'\|'flex-start'\|'flex-end'\|'center'\|'baseline'` | No | `"stretch"` | Cross-axis alignment |
 | `justify` | `'flex-start'\|'flex-end'\|'center'\|'space-between'\|'space-around'\|'space-evenly'` | No | `"flex-start"` | Main-axis alignment |
 | `wrap` | `boolean` | No | — | Enable flex-wrap |
@@ -1065,7 +1067,7 @@ Unordered `<ul>` list container with `listStyle: none`. Use with `List` children
 | `child` | `ElementType` | No | — | List items content |
 | `padding` | `string` | No | — | Padding |
 | `margin` | `string` | No | — | Margin |
-| `gap` | `string` | No | — | Gap between items. Typed: `${string}rem` / `${string}px` / `${string}em` |
+| `gap` | `string` | No | — | Gap between items |
 | `className` | `string` | No | — | CSS class |
 | `style` | `CSSProperties` | No | — | Inline styles |
 | `onFunc` | `(self: _ListView) => void` | No | — | Instance callback |
@@ -1088,7 +1090,7 @@ Vertical menu container. Delegates to `Stack` with `direction: "column"`.
 | Prop | Type | Required | Default | Description |
 |------|------|----------|---------|-------------|
 | `child` | `ElementType` | No | — | Menu content |
-| `gap` | `string` | No | `"0rem"` | Gap between items. Typed: `${string}rem` / `${string}px` / `${string}em` |
+| `gap` | `string` | No | `"0rem"` | Gap between items |
 | `className` | `string` | No | — | CSS class |
 | `style` | `CSSProperties` | No | — | Inline styles |
 | `gest` | `HTMLAttributes<HTMLDivElement>` | No | — | Native div attributes |
@@ -1778,16 +1780,9 @@ function Content() {
 
 ## Advanced Prop Patterns
 
-### Typed CSS Units
+### CSS Values
 
-Props like `gap`, `titleGap`, and `borderRadius` use template literal types for autocomplete on valid CSS length values:
-
-```tsx
-// TypeScript autocompletes these patterns:
-gap=".5rem"
-gap="10px"
-gap="1.5em"
-```
+All style props accept any valid CSS string. Gap, margin, padding, and dimension props are typed as `string` and accept any CSS length value (`rem`, `px`, `em`, `%`, etc.).
 
 ### Enum-based Sizing
 
@@ -1845,4 +1840,113 @@ Avatar supports three content sources with a clear priority chain:
 
 // All three together — src takes priority
 <Avatar src="/user.jpg" icon={Lock} fallback={() => <Text text="JD" type="p" />} />
+```
+
+---
+
+## AI Agent Guidelines
+
+Strict rules for AI coding assistants when using elk-components:
+
+### Render Prop Pattern (MANDATORY)
+
+ALL content slots (`child`, `header`, `body`, `footer`, `title`, `subtitle`, `leading`, `trailing`, `icon`, `trigger`, `label`, etc.) accept `React.JSX.ElementType` — pass an arrow function, NEVER raw JSX.
+
+```tsx
+// CORRECT
+<Button child={() => <Text text="Click" type="p" />} />
+<Card header={() => <Text text="Title" type="h2" />} body={() => <Text text="Body" type="p" />} />
+<Stack direction="row" gap="1rem" child={() => (
+  <>
+    <Button child={() => <Text text="A" type="p" />} />
+    <Button child={() => <Text text="B" type="p" />} />
+  </>
+)} />
+
+// WRONG — will break
+<Button child={<Text text="Click" type="p" />} />
+<Card header={<Text text="Title" type="h2" />} />
+```
+
+### Event Handlers via `gest`
+
+All native DOM events MUST be passed through the `gest` prop, NOT as direct props.
+
+```tsx
+// CORRECT
+<Button gest={{ onClick: () => handleClick() }} />
+<Input gest={{ onChange: (e) => setValue(e.target.value) }} />
+<Container gest={{ onMouseEnter: () => setHover(true) }} />
+
+// WRONG
+<Button onClick={() => handleClick()} />
+<Input onChange={(e) => setValue(e.target.value)} />
+```
+
+### State Management via elk-components Hooks
+
+Use `elk-components/hooks` for state — not React's `useState`, `useEffect`, `useRef`, or `useCallback`.
+
+```tsx
+// CORRECT — import from elk-components/hooks
+import { useState, useRef, useEffect, useCallback, createStore } from "elk-components/hooks";
+
+// WRONG — do not import from React
+import { useState, useEffect } from "react";
+```
+
+### Component Naming (Case-Sensitive)
+
+Components must be referenced by their exact PascalCase names. The auto-import plugin injects them at build time — no manual imports needed.
+
+```tsx
+// These are auto-imported — just use them:
+<Page>, <Header>, <Text>, <Container>, <Stack>, <Center>, <Divider>,
+<Panel>, <Span>, <ScrollView>, <Section>, <Article>, <Navigator>,
+<Button>, <IconButton>, <TextButton>, <Card>, <Badge>, <Avatar>,
+<Image>, <Input>, <Tiles>, <List>, <ListView>, <ListMenu>,
+<BottomModal>, <SidePanel>, <Reabon>, <Tab>, <TabView>,
+<Icon>, <IconNetwork>, <Gap>, <Example>, <Padding>, <GridView>,
+<Hover>, <Main>, <Animation>, <Transition>, <LetterAnimation>,
+<SectionDivider>, <PageScrollView>
+```
+
+### Icons Usage
+
+Import icon components from the `elk-components` package or use as arrow functions.
+
+```tsx
+// With the Icon wrapper (recommended):
+<Icon icon={() => <Lock />} size="lg" color="white" />
+
+// In IconButton:
+<IconButton icon={() => <Search />} gest={{ onClick: search }} />
+
+// Direct usage (size/color forwarded automatically):
+<Lock size={24} color="currentColor" />
+```
+
+### Gap Prop
+
+The `gap` prop accepts any valid CSS length string (`string` type). No type enforcement on units.
+
+```tsx
+// All valid:
+gap="1rem"
+gap="8px"
+gap="1.5em"
+gap="10%"
+gap="0"
+```
+
+### Do NOT Use Regular JSX Children
+
+elk-components does NOT support `children` prop. Always use named render props.
+
+```tsx
+// CORRECT
+<Panel child={() => <Text text="Content" type="p" />} />
+
+// WRONG
+<Panel><Text text="Content" type="p" /></Panel>
 ```
