@@ -1,4 +1,18 @@
-
 * {
     font-family: sans-serif;
+}
+
+.grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)) !important;
+    gap: 1.5rem !important;
+    max-width: 800px;
+    
+}
+
+@media (max-width: 480px) {
+    .grid {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+    }
 }

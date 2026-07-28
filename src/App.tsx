@@ -6,7 +6,7 @@ import {
   GridView,
   Hover,
   Icon,
-  IconButton,
+
   Icons,
   Main,
   Page,
@@ -22,7 +22,15 @@ export default function App() {
       background="black"
       body={() => (
         <>
-          <SectionDivider variant="wave" frequency={5}  animate amplitude={20}  width="auto" style={{ width: 'auto', transform: 'scaleX(2.5) scaleY(-1)', }}/>
+          <SectionDivider
+            color="#6366f1"
+            variant="wave"
+            animate
+            float
+            amplitude={20}
+            frequency={4}
+            height={80}
+          />
           <Container
             width="100%"
             height="100%"
@@ -36,7 +44,7 @@ export default function App() {
                           type="h1"
                           text="Easy Service With High Security"
                           color="white"
-                          size="clamp(2rem, 3svw, 3.2svw  )"
+                          size="clamp(2rem, 3svw, 3.2svw)"
                         />
                         <Text
                           type="p"
@@ -47,13 +55,10 @@ export default function App() {
 
                         <Gap height="2rem" />
                         <GridView
+                          className="grid"
                           style={{
-                            width: "auto",
-                            height: "auto",
-                            gap: "6rem",
-                            maxWidth: "700px",
+                            gap: "1.5rem",
                           }}
-                          templateColumns="1fr 1fr"
                           child={() => (
                             <>
                               <Card
@@ -80,34 +85,32 @@ export default function App() {
                                   />
                                 )}
                                 footer={() => (
-                                  <>
-                                    <Hover
-                                      transition="color .4s ease"
-                                      style={{ color: "orange" }}
-                                      child={() => (
-                                        <TextButton
-                                          color="blue"
-                                          text="Get Started"
-                                          activeColor="green"
-                                          style={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                          }}
-                                          child={() => (
-                                            <>
-                                              <Text
-                                                text="Get Started"
-                                                type="p"
-                                              />
-                                              <Icon
-                                                icon={Icons.icon.ArrowRight}
-                                              />
-                                            </>
-                                          )}
-                                        />
-                                      )}
-                                    />
-                                  </>
+                                  <Hover
+                                    transition="color .4s ease"
+                                    style={{ color: "orange" }}
+                                    child={() => (
+                                      <TextButton
+                                        color="blue"
+                                        text="Get Started"
+                                        activeColor="green"
+                                        style={{
+                                          display: "flex",
+                                          alignItems: "center",
+                                        }}
+                                        child={() => (
+                                          <>
+                                            <Text
+                                              text="Get Started"
+                                              type="p"
+                                            />
+                                            <Icon
+                                              icon={Icons.icon.ArrowRight}
+                                            />
+                                          </>
+                                        )}
+                                      />
+                                    )}
+                                  />
                                 )}
                               />
                               <Card
@@ -134,34 +137,32 @@ export default function App() {
                                   />
                                 )}
                                 footer={() => (
-                                  <>
-                                    <Hover
-                                      transition="color .4s ease"
-                                      style={{ color: "#a600ff" }}
-                                      child={() => (
-                                        <TextButton
-                                          color="blue"
-                                          text="Get Started"
-                                          activeColor="green"
-                                          style={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                          }}
-                                          child={() => (
-                                            <>
-                                              <Text
-                                                text="Get Started"
-                                                type="p"
-                                              />
-                                              <Icon
-                                                icon={Icons.icon.ArrowRight}
-                                              />
-                                            </>
-                                          )}
-                                        />
-                                      )}
-                                    />
-                                  </>
+                                  <Hover
+                                    transition="color .4s ease"
+                                    style={{ color: "#a600ff" }}
+                                    child={() => (
+                                      <TextButton
+                                        color="blue"
+                                        text="Get Started"
+                                        activeColor="green"
+                                        style={{
+                                          display: "flex",
+                                          alignItems: "center",
+                                        }}
+                                        child={() => (
+                                          <>
+                                            <Text
+                                              text="Get Started"
+                                              type="p"
+                                            />
+                                            <Icon
+                                              icon={Icons.icon.ArrowRight}
+                                            />
+                                          </>
+                                        )}
+                                      />
+                                    )}
+                                  />
                                 )}
                               />
                               <Card
@@ -188,34 +189,32 @@ export default function App() {
                                   />
                                 )}
                                 footer={() => (
-                                  <>
-                                    <Hover
-                                      transition="color .4s ease"
-                                      style={{ color: "#19aeff" }}
-                                      child={() => (
-                                        <TextButton
-                                          color="blue"
-                                          text="Get Started"
-                                          activeColor="green"
-                                          style={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                          }}
-                                          child={() => (
-                                            <>
-                                              <Text
-                                                text="Get Started"
-                                                type="p"
-                                              />
-                                              <Icon
-                                                icon={Icons.icon.ArrowRight}
-                                              />
-                                            </>
-                                          )}
-                                        />
-                                      )}
-                                    />
-                                  </>
+                                  <Hover
+                                    transition="color .4s ease"
+                                    style={{ color: "#19aeff" }}
+                                    child={() => (
+                                      <TextButton
+                                        color="blue"
+                                        text="Get Started"
+                                        activeColor="green"
+                                        style={{
+                                          display: "flex",
+                                          alignItems: "center",
+                                        }}
+                                        child={() => (
+                                          <>
+                                            <Text
+                                              text="Get Started"
+                                              type="p"
+                                            />
+                                            <Icon
+                                              icon={Icons.icon.ArrowRight}
+                                            />
+                                          </>
+                                        )}
+                                      />
+                                    )}
+                                  />
                                 )}
                               />
                               <Card
@@ -242,34 +241,32 @@ export default function App() {
                                   />
                                 )}
                                 footer={() => (
-                                  <>
-                                    <Hover
-                                      transition="color .4s ease"
-                                      style={{ color: "#a600ff" }}
-                                      child={() => (
-                                        <TextButton
-                                          color="blue"
-                                          text="Get Started"
-                                          activeColor="green"
-                                          style={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                          }}
-                                          child={() => (
-                                            <>
-                                              <Text
-                                                text="Get Started"
-                                                type="p"
-                                              />
-                                              <Icon
-                                                icon={Icons.icon.ArrowRight}
-                                              />
-                                            </>
-                                          )}
-                                        />
-                                      )}
-                                    />
-                                  </>
+                                  <Hover
+                                    transition="color .4s ease"
+                                    style={{ color: "#a600ff" }}
+                                    child={() => (
+                                      <TextButton
+                                        color="blue"
+                                        text="Get Started"
+                                        activeColor="green"
+                                        style={{
+                                          display: "flex",
+                                          alignItems: "center",
+                                        }}
+                                        child={() => (
+                                          <>
+                                            <Text
+                                              text="Get Started"
+                                              type="p"
+                                            />
+                                            <Icon
+                                              icon={Icons.icon.ArrowRight}
+                                            />
+                                          </>
+                                        )}
+                                      />
+                                    )}
+                                  />
                                 )}
                               />
                             </>
