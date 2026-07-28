@@ -44,9 +44,8 @@ export default function App() {
                           size="clamp(1rem, 1svw, 1.5rem)"
                         />
                         <SectionDivider
-                          life
                           
-                          animate
+                          
                           variant="wave"
                           amplitude={30}
                           width="100%"
