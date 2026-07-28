@@ -10,6 +10,7 @@ import {
   Icons,
   Main,
   Page,
+  SectionDivider,
   Text,
   TextButton,
 } from "./components";
@@ -42,6 +43,16 @@ export default function App() {
                           color="#9cb6b5"
                           size="clamp(1rem, 1svw, 1.5rem)"
                         />
+                        <SectionDivider
+                          life
+                          
+                          animate
+                          variant="wave"
+                          amplitude={30}
+                          width="100%"
+                          float={true}
+                        />
+
                         <Gap height="2rem" />
                         <GridView
                           style={{
@@ -86,7 +97,10 @@ export default function App() {
                                           color="blue"
                                           text="Get Started"
                                           activeColor="green"
-                                          style={{display: 'flex', alignItems: 'center'}}
+                                          style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                          }}
                                           child={() => (
                                             <>
                                               <Text
@@ -95,7 +109,6 @@ export default function App() {
                                               />
                                               <Icon
                                                 icon={Icons.icon.ArrowRight}
-                                                
                                               />
                                             </>
                                           )}
@@ -130,7 +143,6 @@ export default function App() {
                                 )}
                                 footer={() => (
                                   <>
-                                  <IconButton icon={Icons.icon.Add} color="red" splashColor="grey" style={{background: 'rgba(255, 38, 0, 0.16)'}}/>
                                     <Hover
                                       transition="color .4s ease"
                                       style={{ color: "#a600ff" }}
@@ -139,7 +151,10 @@ export default function App() {
                                           color="blue"
                                           text="Get Started"
                                           activeColor="green"
-                                          style={{display: 'flex', alignItems: 'center'}}
+                                          style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                          }}
                                           child={() => (
                                             <>
                                               <Text
@@ -148,7 +163,6 @@ export default function App() {
                                               />
                                               <Icon
                                                 icon={Icons.icon.ArrowRight}
-                                                
                                               />
                                             </>
                                           )}

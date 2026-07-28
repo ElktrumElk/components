@@ -1381,6 +1381,7 @@ SVG-based decorative divider between content sections. 12 built-in visual varian
 | `float` | `boolean` | No | — | Enable continuous vertical undulation (bobbing on water) |
 | `amplitude` | `number` | No | `15` | Float distance in px from center. Higher = more dramatic |
 | `frequency` | `number` | No | variant-specific | Float oscillation cycles per animation duration |
+| `life` | `boolean` | No | — | Enable physics-based ripple animation. Uses multi-component wave interference with harmonic ripples and cross-frequency modulation to create organic water-like motion. Implies `animate` and `float`. |
 
 ```tsx
 static
@@ -1413,6 +1414,13 @@ combine scroll + float
 gesture-triggered
 <SectionDivider variant="dots" gesture="hover" animate float color="#6366f1" />
 <SectionDivider variant="wave" gesture="click" animate float />
+```
+
+```tsx
+life — physics-based ripple animation (implies animate + float)
+<SectionDivider variant="wave" life color="#6366f1" />
+<SectionDivider variant="curl" life amplitude={25} frequency={6} />
+<SectionDivider variant="wave" life animate color="#22c55e" />
 ```
 
 ---
