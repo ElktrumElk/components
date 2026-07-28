@@ -44,6 +44,7 @@ const InitializeGridView = () => {
  * @param autoFlow - CSS `grid-auto-flow` value.
  * @param justifyItems - CSS `justify-items` value (default `"center"`).
  * @param style - Additional inline styles.
+ * @param className - string.
  * @param child - Component rendered as the grid's children.
  * @param onFunc - Callback receiving the internal `_GridView` instance.
  */

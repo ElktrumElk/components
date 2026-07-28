@@ -12,6 +12,7 @@ import type React from "react";
  * @property autoFlow - CSS `grid-auto-flow` value (e.g. `"row"`, `"column"`, `"dense"`).
  * @property justifyItems - CSS `justify-items` value for child alignment. Defaults to `"center"`.
  * @property style - Additional inline styles applied to the grid container.
+ * @property className - string.
  * @property child - A React component type rendered as the grid's children.
  * @property onFunc - Callback invoked with the internal `_GridView` instance after mount.
  */
@@ -25,6 +26,7 @@ export interface GridViewProp {
   autoFlow?: string;
   justifyItems?: string
   style?: React.CSSProperties;
+  className?: string;
   
   child: React.JSX.ElementType;
   onFunc?: (self: _GridView) => void
@@ -36,6 +38,7 @@ export class _GridView {
       <>
         <div
           key={a.key}
+          className={a.className}
           style={{
             
             gridTemplateColumns: a.templateColumns || '1fr 1fr',
