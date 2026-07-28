@@ -43,6 +43,7 @@ const InitializeIconButton = () => {
  * @param child - (Inherited) Component type rendered as inner content.
  * @param border - (Inherited) CSS border value (default: "none").
  * @param color - (Inherited) Text/icon color of the button.
+ * @param splashColor - (Inherited) Text/icon color of the button.
  * @param borderRadius - (Inherited) CSS border-radius (default: "4rem").
  * @param padding - (Inherited) CSS padding (default: ".3rem").
  * @param width - (Inherited) CSS width of the button.

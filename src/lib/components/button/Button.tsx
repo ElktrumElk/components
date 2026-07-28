@@ -41,6 +41,7 @@ const InitializeButton = () => {
  * @param child - Component type rendered as the button's inner content.
  * @param border - CSS border value for the button.
  * @param color - Text color of the button.
+ * @param splashColor - Text color of the button.
  * @param borderRadius - CSS border-radius of the button.
  * @param padding - CSS padding inside the button.
  * @param width - CSS width of the button.
