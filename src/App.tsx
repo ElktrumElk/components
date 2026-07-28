@@ -22,6 +22,17 @@ export default function App() {
       background="black"
       body={() => (
         <>
+          <SectionDivider
+            life
+            variant="tilde"
+            amplitude={30}
+            width="100vw"
+            style={{width: '100vw !important'}}
+            float={false}
+            flip
+            animate={false}
+            fillColor="#2f2f2f"
+          />
           <Container
             width="100%"
             height="100%"
@@ -42,14 +53,6 @@ export default function App() {
                           text="Choose your service and get the job done with less wories and stress."
                           color="#9cb6b5"
                           size="clamp(1rem, 1svw, 1.5rem)"
-                        />
-                        <SectionDivider
-                          
-                          
-                          variant="wave"
-                          amplitude={30}
-                          width="100%"
-                          float={true}
                         />
 
                         <Gap height="2rem" />

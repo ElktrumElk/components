@@ -1354,14 +1354,14 @@ Lightweight placeholder `<span>` for prototyping. Renders HTML via `dangerouslyS
 
 ### SectionDivider
 
-SVG-based decorative divider between content sections. 12 built-in visual variants with continuous scroll animation and floating undulation.
+SVG-based decorative divider between content sections. 12 built-in visual variants with smooth path-morphing animation and vertical float undulation. Animations only run when explicitly enabled — component is static by default.
 
 | Prop | Type | Required | Default | Description |
 |------|------|----------|---------|-------------|
 | `variant` | `'wave'\|'curl'\|'zigzag'\|'dots'\|'tilde'\|'heart'\|'diamond'\|'leaf'\|'curve'\|'pulse'\|'loop'\|'scroll'` | No | `"wave"` | Visual style |
 | `color` | `string` | No | `"#e2e8f0"` | Stroke/fallback fill color |
-| `fillColor` | `string` | No | uses `color` | Fill color for filled variants |
-| `strokeWidth` | `number` | No | `2` | Stroke width in px |
+| `fillColor` | `string` | No | uses `color` | Fill color for filled variants (wave, curl, tilde, heart, leaf, curve, loop, scroll) |
+| `strokeWidth` | `number` | No | `2` | Stroke width in px for stroked variants (zigzag, diamond, pulse, dots) |
 | `height` | `number` | No | `80` | SVG height in px |
 | `width` | `string` | No | `"100%"` | CSS width |
 | `flip` | `boolean` | No | — | Mirror vertically |
@@ -1371,17 +1371,14 @@ SVG-based decorative divider between content sections. 12 built-in visual varian
 | `child` | `ElementType` | No | — | Child component |
 | `gest` | `SVGAttributes<SVGSVGElement>` | No | — | SVG attributes |
 | `onFunc` | `(self: _SectionDivider) => void` | No | — | Instance callback |
-| `animate` | `boolean` | No | — | Enable continuous scroll animation |
-| `duration` | `number` | No | variant-specific | Scroll animation duration per cycle in ms |
+| `animate` | `boolean` | No | — | Enable smooth path-morphing animation on the wave surface. Morphs the SVG path `d` attribute continuously. |
+| `duration` | `number` | No | `4000` | Animation duration per full cycle in ms |
 | `delay` | `number` | No | `0` | Delay before animation starts in ms |
-| `direction` | `'ltr'\|'rtl'\|'ttb'\|'btt'` | No | `"ltr"` | Scroll direction |
-| `easing` | `'linear'\|'ease'\|'ease-in'\|'ease-out'\|'ease-in-out'\|string` | No | `"linear"` | Scroll easing function |
-| `gesture` | `'click'\|'hover'\|'focus'\|'scroll'\|'none'` | No | — | Gesture that triggers the animation |
-| `listen` | `Store` | No | — | A store; when its state changes the animation replays |
-| `float` | `boolean` | No | — | Enable continuous vertical undulation (bobbing on water) |
-| `amplitude` | `number` | No | `15` | Float distance in px from center. Higher = more dramatic |
-| `frequency` | `number` | No | variant-specific | Float oscillation cycles per animation duration |
-| `life` | `boolean` | No | — | Enable physics-based ripple animation. Uses multi-component wave interference with harmonic ripples and cross-frequency modulation to create organic water-like motion. Implies `animate` and `float`. |
+| `easing` | `'linear'\|'ease'\|'ease-in'\|'ease-out'\|'ease-in-out'\|string` | No | `"linear"` | CSS easing function for path morphing |
+| `float` | `boolean` | No | — | Enable vertical undulation — the entire divider base moves up/down. Uses `amplitude` and `frequency`. |
+| `amplitude` | `number` | No | `15` | For `float`: vertical travel distance in px. For `life`: ripple energy intensity. |
+| `frequency` | `number` | No | `2` | For `float`: oscillation cycles per duration. For `life`: ripple density across the surface. |
+| `life` | `boolean` | No | — | Enable physics-based ripple animation. Simulates traveling wave packets with Gaussian envelopes, harmonic interference, and organic energy dispersal. Implies both `animate` + `float`. Uses elastic easing. |
 
 ```tsx
 static
@@ -1391,29 +1388,23 @@ static
 ```
 
 ```tsx
-continuous scroll animation
+continuous path-morphing animation (only when animate is true)
 <SectionDivider variant="wave" animate color="#6366f1" height={60} />
-<SectionDivider variant="curl" animate direction="rtl" easing="ease-in-out" />
-<SectionDivider variant="heart" fillColor="#ec4899" animate direction="ttb" />
+<SectionDivider variant="curl" animate easing="ease-in-out" />
+<SectionDivider variant="heart" fillColor="#ec4899" animate />
 ```
 
 ```tsx
-floating undulation (bobbing on water)
+floating undulation — entire base bobs up/down (only when float is true)
 <SectionDivider variant="wave" float color="#6366f1" height={60} />
 <SectionDivider variant="curl" float amplitude={25} frequency={6} />
 <SectionDivider variant="tilde" float amplitude={10} frequency={2} />
 ```
 
 ```tsx
-combine scroll + float
+combine animate + float
 <SectionDivider variant="wave" animate float color="#6366f1" />
-<SectionDivider variant="curl" animate float amplitude={20} frequency={4} direction="rtl" easing="ease-in-out" />
-```
-
-```tsx
-gesture-triggered
-<SectionDivider variant="dots" gesture="hover" animate float color="#6366f1" />
-<SectionDivider variant="wave" gesture="click" animate float />
+<SectionDivider variant="curl" animate float amplitude={20} frequency={4} easing="ease-in-out" />
 ```
 
 ```tsx

@@ -1,5 +1,4 @@
 import React from "react";
-import type { Store } from "../../../hooks/createStore";
 
 type DividerVariant =
   | "wave"
@@ -15,8 +14,6 @@ type DividerVariant =
   | "loop"
   | "scroll";
 
-type Gesture = "click" | "hover" | "focus" | "scroll" | "none";
-type Direction = "ltr" | "rtl" | "ttb" | "btt";
 type Easing =
   | "linear"
   | "ease"
@@ -25,7 +22,54 @@ type Easing =
   | "ease-in-out"
   | (string & {});
 
-const FILLED_VARIANTS = new Set(["wave", "curl", "tilde", "heart", "leaf", "curve", "loop", "scroll"]);
+const FILLED = new Set(["wave", "curl", "tilde", "heart", "leaf", "curve", "loop", "scroll"]);
+
+interface WavePacket {
+  speed: number;
+  amp: number;
+  width: number;
+  freq: number;
+  phase: number;
+}
+
+const PACKETS: WavePacket[] = (() => {
+  const p: WavePacket[] = [];
+  for (let i = 0; i < 5; i++) {
+    p.push({
+      speed: 0.6 + i * 0.15,
+      amp: 0.4 + i * 0.15,
+      width: 0.15 + i * 0.05,
+      freq: 0.5 + i * 0.35,
+      phase: i * 1.2,
+    });
+  }
+  return p;
+})();
+
+function sampleWave(nx: number, t: number, ampFact: number, freq: number): number {
+  let y = 0;
+  for (let k = 0; k < PACKETS.length; k++) {
+    const p = PACKETS[k];
+    const env = Math.exp(-Math.pow(nx - t * p.speed, 2) / (2 * p.width * p.width));
+    const osc = Math.sin((nx * p.freq * freq + t * p.speed * 3) * 2 * Math.PI + p.phase);
+    y += env * osc * p.amp;
+  }
+  y += Math.sin((nx * freq + t) * 2 * Math.PI) * 0.3;
+  return y * ampFact;
+}
+
+function pointsToSmoothPath(pts: { x: number; y: number }[]): string {
+  if (pts.length < 2) return "";
+  let d = `M${pts[0].x.toFixed(1)},${pts[0].y.toFixed(1)}`;
+  const sx = pts[1].x - pts[0].x;
+  for (let i = 1; i < pts.length - 1; i++) {
+    const p0 = pts[i - 1], p1 = pts[i], p2 = pts[i + 1];
+    const t = (p2.y - p0.y) / 6;
+    d += ` C${(p1.x - sx / 3).toFixed(1)},${(p1.y - t).toFixed(1)} ${(p1.x + sx / 3).toFixed(1)},${(p1.y + t).toFixed(1)} ${p1.x.toFixed(1)},${p1.y.toFixed(1)}`;
+  }
+  d += ` L${pts[pts.length - 1].x.toFixed(1)},${pts[pts.length - 1].y.toFixed(1)}`;
+  return d;
+}
 
 export interface SectionDividerProp {
   variant?: DividerVariant;
@@ -44,10 +88,7 @@ export interface SectionDividerProp {
   animate?: boolean;
   duration?: number;
   delay?: number;
-  direction?: Direction;
   easing?: Easing;
-  gesture?: Gesture;
-  listen?: Store<Record<string, unknown>>;
   float?: boolean;
   amplitude?: number;
   frequency?: number;
@@ -55,109 +96,104 @@ export interface SectionDividerProp {
 }
 
 export class _SectionDivider {
-  private element: SVGPathElement | null = null;
-  private animationInstance: Animation | null = null;
+  private svg: SVGSVGElement | null = null;
+  private pathAnim: Animation | null = null;
+  private floatAnim: Animation | null = null;
   private props: SectionDividerProp;
 
   constructor(props: SectionDividerProp) {
     this.props = props;
   }
 
-  public init(element: SVGPathElement) {
-    this.element = element;
-    if (this.props.animate || this.props.float || this.props.life) {
-      this.startAnimation();
-    }
+  public init(svg: SVGSVGElement) {
+    this.svg = svg;
+    this.startAnimations();
   }
 
-  private buildMorphedPath = (
+  private buildMorphedPath(
     progress: number,
-    amplitude: number,
-    frequency: number,
+    amp: number,
+    freq: number,
     variant: DividerVariant,
-    life?: boolean,
-  ): string => {
-    const totalPoints = 32;
-    const width = 1440;
-    const step = width / (totalPoints - 1);
+    life: boolean,
+  ): string {
+    const n = 80;
+    const w = 1440;
+    const step = w / (n - 1);
+    const base = 40;
+    const pts: { x: number; y: number }[] = [];
 
-    let pathString = "";
-
-    for (let i = 0; i < totalPoints; i++) {
+    for (let i = 0; i < n; i++) {
       const x = i * step;
-      const normalizedX = i / (totalPoints - 1);
-      const baseHeight = 40;
+      const nx = i / (n - 1);
+      const offset = life ? sampleWave(nx, progress, amp * 2, freq) : Math.sin((nx * freq + progress) * 2 * Math.PI) * amp;
+      pts.push({ x, y: Math.max(5, base + offset) });
+    }
 
-      let w1: number, w2: number, w3: number, w4: number, w5: number;
+    let d = pointsToSmoothPath(pts);
+    if (FILLED.has(variant)) d += ` L1440,120 L0,120 Z`;
+    return d;
+  }
 
-      if (life) {
-        const env = 0.5 + 0.5 * Math.sin(progress * 2 * Math.PI * 0.7 + 0.3);
-        const phaseDrift = Math.sin(progress * 2 * Math.PI * 0.4) * 0.8;
-        const ampMod = 0.7 + 0.3 * Math.sin(progress * 2 * Math.PI * 0.5 + 1.2);
+  private startAnimations() {
+    if (!this.svg) return;
 
-        w1 = Math.sin((normalizedX * frequency + progress) * 1 * 2 * Math.PI) * (0.8 + 0.2 * env);
-        w2 = Math.sin((normalizedX * frequency * 2.1 + progress * 1.5 + phaseDrift) * 2 * Math.PI) * 0.55 * ampMod;
-        w3 = Math.sin((normalizedX * frequency * 3.5 + progress * 0.8 - phaseDrift * 0.5) * 2 * Math.PI) * 0.35 * env;
-        w4 = Math.sin((normalizedX * frequency * 5.2 + progress * 2.2 + phaseDrift * 0.3) * 2 * Math.PI) * 0.20 * ampMod;
-        w5 = Math.sin((normalizedX * frequency * 7.0 + progress * 0.5 - phaseDrift * 0.2) * 2 * Math.PI) * 0.15 * env;
-      } else {
-        w1 = Math.sin((normalizedX * frequency + progress) * 1 * 2 * Math.PI);
-        w2 = Math.sin((normalizedX * frequency * 2.1 + progress * 1.5) * 2 * Math.PI) * 0.55;
-        w3 = Math.sin((normalizedX * frequency * 3.5 + progress * 0.8) * 2 * Math.PI) * 0.35;
-        w4 = Math.sin((normalizedX * frequency * 5.2 + progress * 2.2) * 2 * Math.PI) * 0.20;
-        w5 = Math.sin((normalizedX * frequency * 7.0 + progress * 0.5) * 2 * Math.PI) * 0.15;
+    const path = this.svg.querySelector("path");
+    const floatGroup = this.svg.querySelector("g[data-float]");
+    if (!path) return;
+
+    const { animate, float, life, variant, amplitude, frequency, duration, delay, easing } = this.props;
+    const amp = amplitude ?? 15;
+    const freq = frequency ?? 2;
+    const dur = duration ?? 4000;
+    const v = variant ?? "wave";
+
+    if (animate || life) {
+      const kfCount = 60;
+      const kfs: Keyframe[] = [];
+      for (let f = 0; f <= kfCount; f++) {
+        const t = f / kfCount;
+        kfs.push({ d: `path("${this.buildMorphedPath(t, amp, freq, v, !!life)}")` });
       }
+      if (this.pathAnim) this.pathAnim.cancel();
+      this.pathAnim = path.animate(kfs, {
+        duration: dur,
+        iterations: Infinity,
+        easing: life ? "cubic-bezier(0.33, 0.08, 0.63, 0.97)" : (easing as string) ?? "linear",
+        delay: delay ?? 0,
+      });
+    }
 
-      const waveOffset = (w1 + w2 + w3 + w4 + w5) * amplitude * 0.45;
-      const y = Math.max(5, baseHeight + waveOffset);
-
-      if (i === 0) {
-        pathString += `M${x.toFixed(1)},${y.toFixed(1)}`;
-      } else {
-        pathString += ` L${x.toFixed(1)},${y.toFixed(1)}`;
+    if ((float || life) && floatGroup) {
+      const floatSteps = 60;
+      const kfs: Keyframe[] = [];
+      for (let f = 0; f <= floatSteps; f++) {
+        const t = f / floatSteps;
+        if (life) {
+          let y = 0;
+          for (let k = 0; k < PACKETS.length; k++) {
+            const p = PACKETS[k];
+            y += Math.sin(t * p.speed * 3 * 2 * Math.PI + p.phase) * p.amp * amp * 0.15;
+          }
+          y += Math.sin(t * freq * 2 * Math.PI) * amp * 0.15;
+          kfs.push({ transform: `translateY(${y.toFixed(2)}px)` });
+        } else {
+          const y = Math.sin(t * freq * 2 * Math.PI) * amp;
+          kfs.push({ transform: `translateY(${y.toFixed(2)}px)` });
+        }
       }
+      if (this.floatAnim) this.floatAnim.cancel();
+      this.floatAnim = floatGroup.animate(kfs, {
+        duration: dur,
+        iterations: Infinity,
+        easing: life ? "cubic-bezier(0.33, 0.08, 0.63, 0.97)" : "ease-in-out",
+        delay: delay ?? 0,
+      });
     }
-
-    if (FILLED_VARIANTS.has(variant)) {
-      pathString += ` L1440,120 L0,120 Z`;
-    }
-
-    return pathString;
-  };
-
-  private startAnimation() {
-    if (!this.element) return;
-
-    const variant = this.props.variant ?? "wave";
-    const amplitude = this.props.amplitude ?? 15;
-    const frequency = this.props.frequency ?? 2;
-    const duration = this.props.duration ?? 4000;
-    const life = this.props.life;
-
-    const keyframesCount = 60;
-    const keyframes: Keyframe[] = [];
-
-    for (let f = 0; f <= keyframesCount; f++) {
-      const progress = f / keyframesCount;
-      const pathData = this.buildMorphedPath(progress, amplitude, frequency, variant, life);
-      keyframes.push({ d: `path("${pathData}")` });
-    }
-
-    if (this.animationInstance) {
-      this.animationInstance.cancel();
-    }
-
-    this.animationInstance = this.element.animate(keyframes, {
-      duration: duration,
-      iterations: Infinity,
-      easing: life ? 'cubic-bezier(0.33, 0.08, 0.63, 0.97)' : (this.props.easing as string) ?? "linear",
-      delay: this.props.delay ?? 0
-    });
   }
 
   public destroy() {
-    if (this.animationInstance) {
-      this.animationInstance.cancel();
-    }
+    if (this.pathAnim) this.pathAnim.cancel();
+    if (this.floatAnim) this.floatAnim.cancel();
   }
 }
