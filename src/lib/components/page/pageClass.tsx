@@ -20,7 +20,7 @@ export interface PageProp {
     background?: string
     className?: string
     style?: React.CSSProperties
-    atrib?: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
+    atrib?: React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>
     onFunc?: _Page
 
 }
@@ -40,13 +40,13 @@ export class _Page {
         this.style = style || {}
         return (
             <>
-                <section className={className} style={{background: background, height: '100%', display: 'flex', flexDirection: 'column', ...this.style}} {...atrib}>
+                <div className={className} style={{background: background, height: '100%', display: 'flex', flexDirection: 'column', ...this.style}} {...atrib}>
 
                     {this.Header && <this.Header />}
                     {this.Body && <this.Body />}
                     {this.Footer && <this.Footer />}
 
-                </section>
+                </div>
             </>
         )
     }
