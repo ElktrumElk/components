@@ -40,6 +40,7 @@ export {default as Padding } from './lib/components/padding/Padding'
 export {default as GridView} from './lib/components/gridview/GridView'
 export {default as LetterAnimation} from './lib/components/letteranimation/LetterAnimation'
 export {default as Hover} from './lib/components/pseudo/hover/Hover'
+export {default as Main} from './lib/components/main/Main'
 // icon
 export { default as Icons } from "./lib/utility/icon";
 

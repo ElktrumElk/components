@@ -8,7 +8,7 @@ const COMPONENTS = [
   'List', 'ListView', 'ListMenu',
   'BottomModal', 'SidePanel', 'Reabon',
   'Tab', 'TabView', 'Icon', 'IconNetwork', 'PageScrollView', 'Icons',
-  'Gap', 'Example', 'Padding', 'GridView', 'Hover'
+  'Gap', 'Example', 'Padding', 'GridView', 'Hover', 'Main'
 ];
 
 const HOOKS = [
@@ -20,12 +20,27 @@ const HOOKS = [
   'useCallback', 'useMemo', 'useMemoOnce', 'useStableCallback', 
 ];
 
-
-function findUsed(source: string, names: string[]): string[] {
+// Robust checker that looks up both casing variants and validates existing imports safely
+function findUsed(source: string, names: string[], checkKebabCase = false): string[] {
   const used: string[] = [];
+  
   for (const name of names) {
-    const regex = new RegExp(`\\b${name}\\b`, 'g');
-    if (regex.test(source) && !source.includes(`import.*${name}`)) {
+    // 1. Create a bulletproof RegExp to detect if the item is already explicitly imported
+    const importRegex = new RegExp(`import\\s+.*?\\b${name}\\b.*?\\s+from`, 's');
+    if (importRegex.test(source)) continue; // Skip if already present in file
+
+    // 2. Scan for either PascalCase (Stack) or lowercase/kebab-case tag match (stack / side-panel)
+    const pascalRegex = new RegExp(`\\b${name}\\b`);
+    let isUsed = pascalRegex.test(source);
+
+    if (!isUsed && checkKebabCase) {
+      // Convert 'SidePanel' -> 'side-panel' or 'Stack' -> 'stack'
+      const kebabName = name.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+      const kebabRegex = new RegExp(`\\b${kebabName}\\b`);
+      isUsed = kebabRegex.test(source);
+    }
+
+    if (isUsed) {
       used.push(name);
     }
   }
@@ -38,18 +53,21 @@ interface AutoImportOptions {
 }
 
 export function componentAutoImport(options: AutoImportOptions = {}): Plugin {
-  const compSource = options.componentsFrom ?? '@elk/components';
-  const hooksSource = options.hooksFrom ?? '@elk/components/hooks';
+  const compSource = options.componentsFrom ?? 'elk-components';
+  const hooksSource = options.hooksFrom ?? 'elk-components/hooks';
 
   return {
     name: 'component-auto-import',
-    enforce: 'pre',
+    enforce: 'pre', // Process source strings before Vite compiles JSX
     transform(code: string, id: string) {
+      // Intercept file extensions running JSX evaluations
       if (!id.endsWith('.tsx') && !id.endsWith('.jsx')) return null;
       if (id.includes('node_modules')) return null;
+      if (id.includes('/src/lib/') || id.includes('/src/icons/') || id.includes('/src/hooks/')) return null;
 
-      const usedComponents = findUsed(code, COMPONENTS);
-      const usedHooks = findUsed(code, HOOKS);
+      // Scan components passing 'true' to translate kebab-casing mutations automatically
+      const usedComponents = findUsed(code, COMPONENTS, true);
+      const usedHooks = findUsed(code, HOOKS, false);
 
       if (usedComponents.length === 0 && usedHooks.length === 0) return null;
 
@@ -64,7 +82,7 @@ export function componentAutoImport(options: AutoImportOptions = {}): Plugin {
 
       return {
         code: imports.join('\n') + '\n' + code,
-        map: null,
+        map: null, // Avoid breaking source maps in dev tools
       };
     },
   };
