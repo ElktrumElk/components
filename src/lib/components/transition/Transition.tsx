@@ -46,7 +46,8 @@ export default function Transition({ ...a }: TransitionProp) {
   const { _transition } = InitializeTransition();
   const self = _transition.current;
   const [, rerender] = useState(0);
-  const [s, setSwitch] = useState(false);
+  const [, setSwitch] = useState(false);
+  const playsRef = useRef(0);
   const {isGestureActivate} = useStore(rrender)
 
   const trigger = useCallback(() => {
@@ -66,15 +67,18 @@ export default function Transition({ ...a }: TransitionProp) {
   useEffect(() => {
     if (!self) return;
 
+    const maxPlays = a.renderAmount ?? Infinity;
+
     if (a.active !== undefined) {
       // if active is true and switched is equals to false
-      if (a.active && !self.isBasehide) {
+      if (a.active && !self.isBasehide && playsRef.current < maxPlays) {
         // the delay before the transition take place if not given then the transition start immediately
         const delay = a.delay ?? 0;
 
         // start the timmer
         self.startTimer(delay, () => {
-          setSwitch(!s);
+          playsRef.current += 1;
+          setSwitch(prev => !prev);
           trigger(); // triggers the display from flex to none vice versa
           setTimeout(
             () => {
@@ -106,7 +110,7 @@ export default function Transition({ ...a }: TransitionProp) {
     }
 
     return () => self.disposeTimer();
-  }, [a.active, a.isAutomatic, s]);
+  }, [a.active, a.isAutomatic]);
 
   return self?.build?.({ ...a });
 }

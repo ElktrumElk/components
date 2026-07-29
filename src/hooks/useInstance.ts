@@ -1,4 +1,4 @@
-import { useRef, useCallback, useEffect } from "react";
+import { useRef, useCallback, useEffect, useState } from "react";
 
 type ComponentId = string;
 
@@ -37,6 +37,22 @@ interface UseInstanceReturn {
 }
 
 const componentRegistry = new Map<ComponentId, ComponentInstance>();
+
+const listeners = new Map<string, Set<() => void>>();
+
+function subscribe(componentKey: string, listener: () => void): () => void {
+  if (!listeners.has(componentKey)) {
+    listeners.set(componentKey, new Set());
+  }
+  listeners.get(componentKey)!.add(listener);
+  return () => {
+    listeners.get(componentKey)?.delete(listener);
+  };
+}
+
+function notify(componentKey: string) {
+  listeners.get(componentKey)?.forEach(l => l());
+}
 
 let nextId = 0;
 
@@ -77,6 +93,7 @@ export function useInstance(componentKey?: string): UseInstanceReturn {
       mounted: true,
       data: dataRef.current,
     });
+    notify(idRef.current);
 
     return () => {
       mountedRef.current = false;
@@ -85,8 +102,9 @@ export function useInstance(componentKey?: string): UseInstanceReturn {
         instance.mounted = false;
       }
       componentRegistry.delete(idRef.current);
+      notify(idRef.current);
     };
-  });
+  }, []);
 
   const registerElement = useCallback((el: HTMLElement | null) => {
     elementRef.current = el;
@@ -107,6 +125,7 @@ export function useInstance(componentKey?: string): UseInstanceReturn {
     const instance = componentRegistry.get(idRef.current);
     if (instance) {
       instance.data[key] = value;
+      notify(idRef.current);
     }
   }, []);
 
@@ -140,6 +159,12 @@ export function useComponentData<T>(
   componentKey: string,
   dataKey: string
 ): T | undefined {
+  const [, forceUpdate] = useState(0);
+
+  useEffect(() => {
+    return subscribe(componentKey, () => forceUpdate(n => n + 1));
+  }, [componentKey]);
+
   const instance = componentRegistry.get(componentKey);
 
   if (!instance || !instance.mounted) {

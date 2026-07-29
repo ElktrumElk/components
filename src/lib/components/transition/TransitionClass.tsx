@@ -66,6 +66,8 @@ export interface TransitionProp {
   origin?: string;
   /** Threshold for gesture timing calculations. */
   threshold?: number;
+  /** Maximum number of times the transition can play. Defaults to Infinity. */
+  renderAmount?: number;
   /** Callback receiving the _Transition instance for imperative control. */
   onFunc?: (self: _Transition) => void;
   /** Callback fired when the transition animation ends. */
