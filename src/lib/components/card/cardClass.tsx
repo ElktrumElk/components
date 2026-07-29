@@ -23,6 +23,8 @@ const RADIUS_MAP: Record<CardRadius, string> = {
  * Renders a styled card container with optional header, body, and footer sections.
  */
 export interface CardProp {
+  /**React key */
+  key?: React.Key;
   /** Component rendered in the header section of the card. */
   header?: React.JSX.ElementType;
   /** Component rendered in the body section of the card. */
@@ -80,6 +82,7 @@ export class _Card {
     return (
       <>
         <article
+          key={a.key}
           className={a.className}
           style={{
             width: a.width || "10rem",
@@ -126,6 +129,7 @@ export class _Card {
                 display: "flex",
                 alignItems: "center",
                 gap: ".5rem",
+                
                 ...a.footerStyle,
               }}
             >

@@ -28,7 +28,7 @@ const InitializeCard = () => {
  * />
  *
  * @see {@link CardProp} for all available props.
- *
+ * @param key     - React key
  * @param header  - Component rendered in the card header.
  * @param headerStyle  - Component rendered in the card header.
  * @param body    - Component rendered in the card body.

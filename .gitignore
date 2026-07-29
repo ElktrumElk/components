@@ -23,5 +23,7 @@ dist-ssr
 *.sln
 *.sw?
 
-./App.css
-./App.tsx
+src/App.css
+src/App.tsx
+store
+cmp

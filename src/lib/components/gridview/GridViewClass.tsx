@@ -26,6 +26,7 @@ export interface GridViewProp {
   autoFlow?: string;
   justifyItems?: string
   style?: React.CSSProperties;
+  gap?: string;
   className?: string;
   
   child: React.JSX.ElementType;
@@ -48,7 +49,8 @@ export class _GridView {
             gridArea: a.area,
             gridAutoFlow: a.autoFlow,
             width: "100%",
-            height: "100%",
+            height: "fit-content",
+            gap: a.gap || '1rem',
             justifyItems: a.justifyItems || 'center',
             ...a.style,
             display: 'grid'

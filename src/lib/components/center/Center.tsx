@@ -22,6 +22,8 @@ const InitializeCenter = () => {
  *
  * @see {@link _CenterProp} for all available props.
  *
+ * @param justifyContent - Justify Content.
+ * @param alignItems - align items.
  * @param child - Component type to render as the centered content.
  */
 export default function Center ({...a}: _CenterProp) {
