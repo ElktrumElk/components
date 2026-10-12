@@ -171,6 +171,7 @@ export default function App() {
                   <>
                     <Text type="p" text="View plan" />
                     <Icon icon={ArrowRight} size={16} />
+
                   </>
                 )}
               />
