@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { _TextButton, type _TextButtonProp } from "./textButtonClass";
 
 const InitializeTextButton = () => {
@@ -30,6 +30,9 @@ const InitializeTextButton = () => {
  */
 export default function TextButton({ ...a }: _TextButtonProp) {
   const { _textButton } = InitializeTextButton();
-  a?.onFunc?.(_textButton?.current as _TextButton);
+  const onFunc = a.onFunc;
+  useEffect(() => {
+    onFunc?.(_textButton.current as _TextButton);
+  }, [onFunc, _textButton]);
   return _textButton.current?.build?.({ ...a });
 }

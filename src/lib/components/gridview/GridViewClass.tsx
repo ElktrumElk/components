@@ -49,7 +49,7 @@ export class _GridView {
             gridArea: a.area,
             gridAutoFlow: a.autoFlow,
             width: "100%",
-            height: "fit-content",
+            height: "100%",
             gap: a.gap || '1rem',
             justifyItems: a.justifyItems || 'center',
             ...a.style,

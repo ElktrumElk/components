@@ -31,6 +31,7 @@ export default defineConfig(({ command }) => ({
       entry: {
         index: resolve(__dirname, 'src/components.ts'),
         hooks: resolve(__dirname, 'src/hooks/index.ts'),
+        'style-rule': resolve(__dirname, 'src/rule/index.ts'),
         icons: resolve(__dirname, 'src/icons/index.ts'),
         plugin: resolve(__dirname, 'src/plugin.ts'), // Bundles your plugin for users
       },

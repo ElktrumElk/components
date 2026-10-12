@@ -44,24 +44,36 @@ const InitializeReabon = () => {
 export default function Reabon({ ...a }: ReabonProp) {
   const { _reabon } = InitializeReabon();
   const wrapperRef = useRef<HTMLDivElement>(null);
-
-  a?.onFunc?.(_reabon?.current as _Reabon);
+  const { isOpen, onClose, onFunc } = a;
 
   useEffect(() => {
-    if (!a.isOpen) return;
+    onFunc?.(_reabon.current as _Reabon);
+  }, [onFunc, _reabon]);
+
+  useEffect(() => {
+    if (!isOpen) return;
 
     const handleClickOutside = (e: MouseEvent) => {
       if (
         wrapperRef.current &&
         !wrapperRef.current.contains(e.target as Node)
       ) {
-        a.onClose?.();
+        onClose?.();
       }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [a.isOpen, a.onClose]);
+  }, [isOpen, onClose]);
+
+  useEffect(() => {
+    if (!isOpen || !onClose) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", closeOnEscape);
+    return () => document.removeEventListener("keydown", closeOnEscape);
+  }, [isOpen, onClose]);
 
   return (
     <div ref={wrapperRef}>

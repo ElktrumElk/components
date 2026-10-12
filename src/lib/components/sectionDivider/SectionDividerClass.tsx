@@ -9,43 +9,26 @@ type Easing =
   | "linear" | "ease" | "ease-in" | "ease-out" | "ease-in-out"
   | (string & {});
 
-const WAVE_VARIANTS = new Set(["wave", "curl", "tilde", "heart", "leaf", "curve", "loop", "scroll"]);
-const FILLED = new Set(["wave", "curl", "tilde", "heart", "leaf", "curve", "loop", "scroll"]);
+type Direction = "ltr" | "rtl" | "ttb" | "btt";
+type Gesture = "click" | "hover" | "focus" | "none";
+type Subscribable = {
+  subscribe: (listener: () => void) => () => void;
+};
 
-const PACKETS: { speed: number; amp: number; width: number; freq: number; phase: number }[] = [];
-for (let i = 0; i < 5; i++) {
-  PACKETS.push({
-    speed: 0.6 + i * 0.15,
-    amp: 0.4 + i * 0.15,
-    width: 0.15 + i * 0.05,
-    freq: 0.5 + i * 0.35,
-    phase: i * 1.2,
-  });
-}
-
-function sampleWave(nx: number, t: number, ampFact: number, freq: number): number {
-  let y = 0;
-  for (let k = 0; k < PACKETS.length; k++) {
-    const p = PACKETS[k];
-    const env = Math.exp(-Math.pow(nx - t * p.speed, 2) / (2 * p.width * p.width));
-    const osc = Math.sin((nx * p.freq * freq + t * p.speed * 3) * 2 * Math.PI + p.phase);
-    y += env * osc * p.amp;
-  }
-  y += Math.sin((nx * freq + t) * 2 * Math.PI) * 0.3;
-  return y * ampFact;
-}
-
-function pointsToSmoothPath(pts: { x: number; y: number }[]): string {
-  if (pts.length < 2) return "";
-  let d = `M${pts[0].x.toFixed(1)},${pts[0].y.toFixed(1)}`;
-  const sx = pts[1].x - pts[0].x;
-  for (let i = 1; i < pts.length - 1; i++) {
-    const p0 = pts[i - 1], p1 = pts[i], p2 = pts[i + 1];
-    const t = (p2.y - p0.y) / 6;
-    d += ` C${(p1.x - sx / 3).toFixed(1)},${(p1.y - t).toFixed(1)} ${(p1.x + sx / 3).toFixed(1)},${(p1.y + t).toFixed(1)} ${p1.x.toFixed(1)},${p1.y.toFixed(1)}`;
-  }
-  return d;
-}
+const DEFAULT_DURATION: Record<DividerVariant, number> = {
+  wave: 5000,
+  curl: 4500,
+  zigzag: 3000,
+  dots: 3500,
+  tilde: 4500,
+  heart: 4000,
+  diamond: 3000,
+  leaf: 4500,
+  curve: 5000,
+  pulse: 2500,
+  loop: 4000,
+  scroll: 5000,
+};
 
 export interface SectionDividerProp {
   variant?: DividerVariant;
@@ -59,12 +42,15 @@ export interface SectionDividerProp {
   className?: string;
   style?: React.CSSProperties;
   child?: React.JSX.ElementType;
-  gest?: React.DetailedHTMLProps<React.SVGAttributes<SVGSVGElement>, SVGSVGElement>;
+  gest?: React.SVGProps<SVGSVGElement>;
   onFunc?: (self: _SectionDivider) => void;
   animate?: boolean;
   duration?: number;
   delay?: number;
   easing?: Easing;
+  direction?: Direction;
+  gesture?: Gesture;
+  listen?: Subscribable;
   float?: boolean;
   amplitude?: number;
   frequency?: number;
@@ -73,120 +59,158 @@ export interface SectionDividerProp {
 
 export class _SectionDivider {
   private svg: SVGSVGElement | null = null;
-  private pathAnim: Animation | null = null;
+  private scrollAnim: Animation | null = null;
   private floatAnim: Animation | null = null;
+  private gestureCleanups: (() => void)[] = [];
+  private unsubscribe: (() => void) | null = null;
 
   public attach(svg: SVGSVGElement) {
     this.svg = svg;
   }
 
   public update(props: SectionDividerProp) {
-    const { animate, float, life, variant } = props;
-    const isWave = WAVE_VARIANTS.has(variant ?? "wave");
+    this.bindGesture(props.gesture);
+    this.bindStore(props.listen);
 
-    if ((animate || life) && isWave) {
-      this.startPathAnimation(props);
+    if (props.animate || props.life || (props.gesture && props.gesture !== "none") || props.listen) {
+      this.startScrollAnimation(props);
     } else {
-      this.stopPathAnimation();
+      this.stopScrollAnimation();
     }
 
-    if (float || life) {
+    if (props.float || props.life) {
       this.startFloatAnimation(props);
     } else {
       this.stopFloatAnimation();
     }
   }
 
-  public destroy() {
-    this.stopPathAnimation();
+  public play = () => {
+    this.scrollAnim?.play();
+    this.floatAnim?.play();
+  };
+
+  public pause = () => {
+    this.scrollAnim?.pause();
+    this.floatAnim?.pause();
+  };
+
+  public reverse = () => {
+    this.scrollAnim?.reverse();
+    this.floatAnim?.reverse();
+  };
+
+  public stop = () => {
+    this.stopScrollAnimation();
     this.stopFloatAnimation();
+  };
+
+  public destroy() {
+    this.stop();
+    this.clearBindings();
+    this.svg = null;
   }
 
-  private stopPathAnimation() {
-    if (this.pathAnim) {
-      this.pathAnim.cancel();
-      this.pathAnim = null;
+  private prefersReducedMotion() {
+    return typeof window !== "undefined"
+      && typeof window.matchMedia === "function"
+      && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }
+
+  private bindGesture(gesture?: Gesture) {
+    this.gestureCleanups.forEach((cleanup) => cleanup());
+    this.gestureCleanups = [];
+    if (!this.svg || !gesture || gesture === "none") return;
+
+    const eventName = gesture === "hover" ? "mouseenter" : gesture === "focus" ? "focusin" : "click";
+    const play = () => this.play();
+    this.svg.addEventListener(eventName, play);
+    this.gestureCleanups.push(() => this.svg?.removeEventListener(eventName, play));
+
+    if (gesture === "click") {
+      const keydown = (event: KeyboardEvent) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          this.play();
+        }
+      };
+      this.svg.addEventListener("keydown", keydown);
+      this.gestureCleanups.push(() => this.svg?.removeEventListener("keydown", keydown));
     }
+  }
+
+  private bindStore(store?: Subscribable) {
+    this.unsubscribe?.();
+    this.unsubscribe = store?.subscribe(() => this.play()) ?? null;
+  }
+
+  private clearBindings() {
+    this.gestureCleanups.forEach((cleanup) => cleanup());
+    this.gestureCleanups = [];
+    this.unsubscribe?.();
+    this.unsubscribe = null;
+  }
+
+  private stopScrollAnimation() {
+    this.scrollAnim?.cancel();
+    this.scrollAnim = null;
   }
 
   private stopFloatAnimation() {
-    if (this.floatAnim) {
-      this.floatAnim.cancel();
-      this.floatAnim = null;
-    }
+    this.floatAnim?.cancel();
+    this.floatAnim = null;
   }
 
-  private startPathAnimation(props: SectionDividerProp) {
-    if (!this.svg) return;
-    const path = this.svg.querySelector("path");
-    if (!path) return;
+  private startScrollAnimation(props: SectionDividerProp) {
+    const group = this.svg?.querySelector<SVGGElement>("g[data-scroll]");
+    if (!group) return;
+    this.stopScrollAnimation();
 
-    const { variant, amplitude, frequency, duration, delay, easing, life } = props;
-    const amp = amplitude ?? 15;
-    const freq = frequency ?? 2;
-    const dur = duration ?? 4000;
-    const v = variant ?? "wave";
+    const direction = props.direction ?? "ltr";
+    const endpoints: Record<Direction, [string, string]> = {
+      ltr: ["translateX(-1440px)", "translateX(0px)"],
+      rtl: ["translateX(0px)", "translateX(-1440px)"],
+      ttb: ["translateY(-1440px)", "translateY(0px)"],
+      btt: ["translateY(1440px)", "translateY(0px)"],
+    };
+    const [start, end] = endpoints[direction];
+    const axis = direction === "ltr" || direction === "rtl" ? "X" : "Y";
+    const startValue = Number(start.match(/-?\d+/)?.[0] ?? 0);
+    const endValue = Number(end.match(/-?\d+/)?.[0] ?? 0);
+    const keyframes = Array.from({ length: 61 }, (_, index) => ({
+      transform: `translate${axis}(${startValue + (endValue - startValue) * index / 60}px)`,
+    }));
 
-    this.stopPathAnimation();
-
-    const n = 80;
-    const step = 1440 / (n - 1);
-    const base = 40;
-    const kfs: Keyframe[] = [];
-    for (let f = 0; f <= 60; f++) {
-      const t = f / 60;
-      const pts: { x: number; y: number }[] = [];
-      for (let i = 0; i < n; i++) {
-        const nx = i / (n - 1);
-        const offset = life
-          ? sampleWave(nx, t, amp * 2, freq)
-          : Math.sin((nx * freq + t) * 2 * Math.PI) * amp;
-        pts.push({ x: i * step, y: Math.max(5, base + offset) });
-      }
-      let d = pointsToSmoothPath(pts);
-      if (FILLED.has(v)) d += " L1440,120 L0,120 Z";
-      kfs.push({ d: `path("${d}")` });
-    }
-    this.pathAnim = path.animate(kfs, {
-      duration: dur,
+    this.scrollAnim = group.animate(keyframes, {
+      duration: props.duration ?? DEFAULT_DURATION[props.variant ?? "wave"],
       iterations: Infinity,
-      easing: life ? "cubic-bezier(0.33, 0.08, 0.63, 0.97)" : (easing as string) ?? "linear",
-      delay: delay ?? 0,
+      easing: props.easing ?? "linear",
+      delay: props.delay ?? 0,
     });
+
+    if (this.prefersReducedMotion()) this.scrollAnim.pause();
+    if (!props.animate && !props.life) this.scrollAnim.pause();
   }
 
   private startFloatAnimation(props: SectionDividerProp) {
-    if (!this.svg) return;
-    const g = this.svg.querySelector("g[data-float]");
-    if (!g) return;
-
-    const { amplitude, frequency, duration, delay, life } = props;
-    const amp = amplitude ?? 15;
-    const freq = frequency ?? 2;
-    const dur = duration ?? 4000;
-
+    const group = this.svg?.querySelector<SVGGElement>("g[data-float]");
+    if (!group) return;
     this.stopFloatAnimation();
 
-    const kfs: Keyframe[] = [];
-    for (let f = 0; f <= 60; f++) {
-      const t = f / 60;
-      if (life) {
-        let y = 0;
-        for (let k = 0; k < PACKETS.length; k++) {
-          const p = PACKETS[k];
-          y += Math.sin(t * p.speed * 3 * 2 * Math.PI + p.phase) * p.amp * amp * 0.15;
-        }
-        y += Math.sin(t * freq * 2 * Math.PI) * amp * 0.3;
-        kfs.push({ transform: `translateY(${y.toFixed(2)}px)` });
-      } else {
-        kfs.push({ transform: `translateY(${(Math.sin(t * freq * 2 * Math.PI) * amp).toFixed(2)}px)` });
-      }
-    }
-    this.floatAnim = g.animate(kfs, {
-      duration: dur,
-      iterations: Infinity,
-      easing: life ? "cubic-bezier(0.33, 0.08, 0.63, 0.97)" : "ease-in-out",
-      delay: delay ?? 0,
+    const amplitude = props.amplitude ?? 15;
+    const frequency = props.frequency ?? 2;
+    const keyframes = Array.from({ length: 121 }, (_, index) => {
+      const raw = Math.sin(index / 120 * frequency * 2 * Math.PI) * amplitude;
+      const value = Math.abs(raw) < 0.0001 ? 0 : raw;
+      return { transform: `translateY(${value.toFixed(2)}px)` };
     });
+
+    this.floatAnim = group.animate(keyframes, {
+      duration: props.duration ?? DEFAULT_DURATION[props.variant ?? "wave"],
+      iterations: Infinity,
+      easing: props.life ? "cubic-bezier(0.33, 0.08, 0.63, 0.97)" : "ease-in-out",
+      delay: props.delay ?? 0,
+    });
+    if (this.prefersReducedMotion()) this.floatAnim.pause();
   }
 }

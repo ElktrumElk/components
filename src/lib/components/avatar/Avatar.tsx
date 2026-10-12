@@ -1,4 +1,4 @@
-import { useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { _Avatar, type AvatarProp } from "./avatarClass"
 
 const InitializeAvatar = () => {
@@ -44,6 +44,13 @@ const InitializeAvatar = () => {
  */
 export default function Avatar({ ...a }: AvatarProp) {
   const { _avatar } = InitializeAvatar()
-  a?.onFunc?.(_avatar?.current as _Avatar)
-  return _avatar.current?.build?.({ ...a })
+  const { onFunc } = a
+  const [hasError, setHasError] = useState(false)
+
+  useEffect(() => setHasError(false), [a.src])
+
+  useEffect(() => {
+    if (_avatar.current) onFunc?.(_avatar.current)
+  }, [onFunc, _avatar])
+  return _avatar.current?.build?.({ ...a }, hasError, () => setHasError(true))
 }

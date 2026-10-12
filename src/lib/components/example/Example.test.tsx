@@ -4,11 +4,12 @@ import Example from "./Example";
 import { _Example } from "./ExampleClass";
 
 describe("Example", () => {
-  it("should render innerHTML from text prop", () => {
+  it("should render text without interpreting HTML", () => {
     const { container } = render(<Example text="<b>Bold</b>" />);
     const span = container.querySelector("span");
     expect(span).not.toBeNull();
-    expect(span!.innerHTML).toBe("<b>Bold</b>");
+    expect(span!.innerHTML).toBe("&lt;b&gt;Bold&lt;/b&gt;");
+    expect(span!.querySelector("b")).not.toBeInTheDocument();
   });
 
   it("should render empty span when text is not provided", () => {

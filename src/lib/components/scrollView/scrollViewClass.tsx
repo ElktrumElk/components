@@ -47,10 +47,15 @@ export class _ScrollView {
         }
       : {}
 
+    const className = [a.className, a.gest?.className, a.hideScrollbar && 'hide-scrollbar']
+      .filter(Boolean)
+      .join(' ') || undefined
+
     return (
       <>
         <div
-          className={a.className}
+          {...a.gest}
+          className={className}
           style={{
             width: a.width || '100%',
             height: a.height || '100%',
@@ -58,14 +63,11 @@ export class _ScrollView {
             overflowX,
             overflowY,
             ...scrollbarHide,
+            ...a.gest?.style,
             ...a.style,
           }}
-          {...a.gest}
         >
-          <style>{a.hideScrollbar ? `
-            .hide-scrollbar::-webkit-scrollbar { display: none; }
-          ` : ''}</style>
-          <div className={a.hideScrollbar ? 'hide-scrollbar' : undefined} style={{ width: '100%', height: '100%' }}>
+          <div style={{ width: '100%', height: '100%' }}>
             {this.child && <this.child />}
           </div>
         </div>

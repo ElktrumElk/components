@@ -182,7 +182,7 @@ const PRESETS: Record<AnimationPreset, Keyframe[]> = {
 };
 
 export function getPresetKeyframes(name: AnimationPreset): Keyframe[] {
-  return PRESETS[name];
+  return PRESETS[name].map((frame) => ({ ...frame }));
 }
 
 const DEFAULT_KEYFRAMES: Keyframe[] = PRESETS.fadeUp;
@@ -204,13 +204,15 @@ export class _LetterAnimation {
     props: LetterAnimationProp,
   ): Keyframe[] => {
     const mode = props.type ?? "letters";
-    if (mode === "letters" && props.letterKeyframes?.[index]) {
-      return props.letterKeyframes[index];
-    }
-    if (props.animation) {
-      return PRESETS[props.animation];
-    }
-    return props.keyframes ?? DEFAULT_KEYFRAMES;
+    const keyframes = mode === "letters" && props.letterKeyframes?.[index]
+      ? props.letterKeyframes[index]
+      : props.animation
+        ? PRESETS[props.animation]
+        : props.keyframes ?? DEFAULT_KEYFRAMES;
+
+    return props.isOpacity
+      ? keyframes.map((frame) => ({ ...frame, opacity: 1 }))
+      : keyframes;
   };
 
   apply = (props: LetterAnimationProp) => {
@@ -234,6 +236,9 @@ export class _LetterAnimation {
       let keyframes: Keyframe[];
       if (mode === "words" && props.words?.[animIndex]?.keyframes) {
         keyframes = props.words[animIndex].keyframes!;
+        if (props.isOpacity) {
+          keyframes = keyframes.map((frame) => ({ ...frame, opacity: 1 }));
+        }
       } else {
         keyframes = this.resolveKeyframes(animIndex, props);
       }
@@ -257,9 +262,6 @@ export class _LetterAnimation {
 
   build? = ({ ...a }: LetterAnimationProp): React.JSX.Element => {
     const mode = a.type ?? "letters";
-    if (a.isOpacity && a.animation) {
-      PRESETS[a.animation].forEach(x => x!.opacity = 1)
-    }
     const containerStyle: React.CSSProperties = {
       display: "inline-flex",
       flexWrap: "wrap",
@@ -272,6 +274,7 @@ export class _LetterAnimation {
 
     const containerProps = {
       ref: this.containerRef,
+      "aria-label": a.text,
       className: a.className,
       style: containerStyle,
       ...gestRest,
@@ -283,6 +286,7 @@ export class _LetterAnimation {
           <span
             key={i}
             data-letter
+            aria-hidden="true"
             style={{
               display: "inline-block",
               whiteSpace: "pre",
@@ -301,7 +305,7 @@ export class _LetterAnimation {
           const isSpace = /^\s+$/.test(token);
           if (isSpace) {
             return (
-              <span key={i} data-space style={{ whiteSpace: "pre" }}>
+              <span key={i} data-space aria-hidden="true" style={{ whiteSpace: "pre" }}>
                 {token}
               </span>
             );
@@ -310,6 +314,7 @@ export class _LetterAnimation {
             <span
               key={i}
               data-letter
+              aria-hidden="true"
               style={{ display: "inline-block", whiteSpace: "pre" }}
             >
               {token}
@@ -318,10 +323,15 @@ export class _LetterAnimation {
         });
       }
 
-      return a.text.split("").map((char, i) => {
+      const graphemes = Array.from(
+        new Intl.Segmenter(undefined, { granularity: "grapheme" }).segment(a.text),
+        ({ segment }) => segment,
+      );
+
+      return graphemes.map((char, i) => {
         if (char === " ") {
           return (
-            <span key={i} data-space style={{ whiteSpace: "pre" }}>
+            <span key={i} data-space aria-hidden="true" style={{ whiteSpace: "pre" }}>
               {char}
             </span>
           );
@@ -330,6 +340,7 @@ export class _LetterAnimation {
           <span
             key={i}
             data-letter
+            aria-hidden="true"
             style={{ display: "inline-block", whiteSpace: "pre" }}
           >
             {char}

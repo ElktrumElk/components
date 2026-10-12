@@ -1,4 +1,4 @@
-import { useRef } from "react"
+import { useEffect, useRef } from "react"
 import { _List, type ListProp } from "./listClass"
 
 const InitializeList = () => {
@@ -38,6 +38,9 @@ const InitializeList = () => {
  */
 export default function List({ ...a }: ListProp) {
   const { _list } = InitializeList()
-  a?.onFunc?.(_list?.current as _List)
+  const { onFunc } = a
+  useEffect(() => {
+    if (_list.current) onFunc?.(_list.current)
+  }, [onFunc, _list])
   return _list.current?.build?.({ ...a })
 }

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import Button from './Button'
 
@@ -14,6 +14,19 @@ describe('Button', () => {
   it('renders as a button element', () => {
     render(<Button child={() => <span>OK</span>} />)
     expect(screen.getByRole('button')).toBeInTheDocument()
+  })
+
+  it('defaults to type button', () => {
+    render(<Button child={() => <span>OK</span>} />)
+    expect(screen.getByRole('button')).toHaveAttribute('type', 'button')
+  })
+
+  it('composes gesture handlers with splash handling', () => {
+    const onMouseDown = vi.fn()
+    render(<Button splashColor="red" gest={{ onMouseDown }} child={() => <span />} />)
+    fireEvent.mouseDown(screen.getByRole('button'))
+    expect(onMouseDown).toHaveBeenCalledOnce()
+    expect(screen.getByRole('button')).toHaveStyle({ background: 'red' })
   })
 
   it('applies padding', () => {

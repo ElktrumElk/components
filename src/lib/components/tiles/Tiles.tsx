@@ -1,4 +1,4 @@
-import { useRef } from "react"
+import { useEffect, useRef } from "react"
 import { _Tiles, type TilesProp } from "./tilesClass"
 
 const InitializeTiles = () => {
@@ -30,6 +30,9 @@ const InitializeTiles = () => {
  */
 export default function Tiles({ ...a }: TilesProp) {
   const { _tiles } = InitializeTiles()
-  a?.onFunc?.(_tiles?.current as _Tiles)
+  const onFunc = a.onFunc
+  useEffect(() => {
+    onFunc?.(_tiles.current as _Tiles)
+  }, [onFunc, _tiles])
   return _tiles.current?.build?.({ ...a })
 }

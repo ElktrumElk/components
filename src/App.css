@@ -1,19 +1,15 @@
-* {
-    font-family: sans-serif;
-    box-sizing: border-box;
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap");
+
+:root {
+  color: #173f36;
+  background: #f4f0e6;
+  font-family: "DM Sans", sans-serif;
+  font-synthesis: none;
 }
 
-.grid {
-    display: grid !important;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)) !important;
-    gap: 1.5rem !important;
-    max-width: 800px;
-    
-}
-
-@media (max-width: 480px) {
-    .grid {
-        grid-template-columns: 1fr !important;
-        gap: 1rem !important;
-    }
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: #f4f0e6;
 }

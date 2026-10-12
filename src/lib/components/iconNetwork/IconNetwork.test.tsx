@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import IconNetwork from './IconNetwork'
 
 describe('IconNetwork', () => {
@@ -94,6 +94,17 @@ describe('IconNetwork', () => {
       />
     )
     expect(screen.queryByText('FB')).not.toBeInTheDocument()
+  })
+
+  it('reactively shows fallback after an error and retries a new source', () => {
+    const { container, rerender } = render(
+      <IconNetwork src="/bad.png" fallback={() => <span>FB</span>} />
+    )
+    fireEvent.error(container.querySelector('img')!)
+    expect(screen.getByText('FB')).toBeInTheDocument()
+
+    rerender(<IconNetwork src="/new.png" fallback={() => <span>FB</span>} />)
+    expect(container.querySelector('img')).toHaveAttribute('src', '/new.png')
   })
 
   it('applies className', () => {

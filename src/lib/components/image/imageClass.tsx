@@ -47,7 +47,11 @@ export class _Image {
   fallback!: ElementType
   hasError = false
 
-  build? = ({ ...a }: ImageProp): React.JSX.Element => {
+  build? = (
+    { ...a }: ImageProp,
+    hasError = this.hasError,
+    onError?: () => void,
+  ): React.JSX.Element => {
     this.fallback = a.fallback as ElementType
 
     const imgStyle: React.CSSProperties = {
@@ -80,13 +84,13 @@ export class _Image {
           }}
           {...a.gest}
         >
-          {a.src && !this.hasError ? (
+          {a.src && !hasError ? (
             <img
               src={a.src}
               alt={a.alt || ''}
               style={imgStyle}
               loading={a.loading || 'lazy'}
-              onError={() => { this.hasError = true }}
+              onError={onError ?? (() => { this.hasError = true })}
             />
           ) : this.fallback ? (
             <div style={placeholderStyle}>

@@ -1,5 +1,4 @@
-import { useRef } from "react"
-import { _Button} from "./_buttonClass"
+import { useEffect, useRef } from "react"
 import { _IconButton, type IconButtonProp } from "./IconButtonClass"
 
 
@@ -56,6 +55,9 @@ const InitializeIconButton = () => {
 export default function IconButton ({...a}: IconButtonProp) {
 
     const {_button} = InitializeIconButton()
-    a?.onFunc?.(_button?.current as _Button);
+    const {onFunc} = a
+    useEffect(() => {
+        if (_button.current) onFunc?.(_button.current)
+    }, [onFunc, _button])
     return _button.current?.build?.({...a})
 }

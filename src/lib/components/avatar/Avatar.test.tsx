@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import Avatar from './Avatar'
 
@@ -76,6 +76,15 @@ describe('Avatar', () => {
   it('does not show icon when src is provided', () => {
     render(<Avatar src="/pic.jpg" icon={() => <MockIcon />} />)
     expect(screen.queryByTestId('mock-icon')).not.toBeInTheDocument()
+  })
+
+  it('reactively shows the icon after an image error and resets for a new source', () => {
+    const { container, rerender } = render(<Avatar src="/bad.jpg" icon={() => <MockIcon />} />)
+    fireEvent.error(container.querySelector('img')!)
+    expect(screen.getByTestId('mock-icon')).toBeInTheDocument()
+
+    rerender(<Avatar src="/new.jpg" icon={() => <MockIcon />} />)
+    expect(container.querySelector('img')).toHaveAttribute('src', '/new.jpg')
   })
 
   it('shows fallback when no src and no icon', () => {

@@ -84,25 +84,26 @@ export function useInstance(componentKey?: string): UseInstanceReturn {
   const mountedRef = useRef(false);
 
   useEffect(() => {
+    const id = idRef.current;
     mountedRef.current = true;
 
     // Register in global registry
-    componentRegistry.set(idRef.current, {
-      id: idRef.current,
+    componentRegistry.set(id, {
+      id,
       element: elementRef.current,
       mounted: true,
       data: dataRef.current,
     });
-    notify(idRef.current);
+    notify(id);
 
     return () => {
       mountedRef.current = false;
-      const instance = componentRegistry.get(idRef.current);
+      const instance = componentRegistry.get(id);
       if (instance) {
         instance.mounted = false;
       }
-      componentRegistry.delete(idRef.current);
-      notify(idRef.current);
+      componentRegistry.delete(id);
+      notify(id);
     };
   }, []);
 

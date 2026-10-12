@@ -1,4 +1,4 @@
-import { useRef } from "react"
+import { useEffect, useRef } from "react"
 import { _Main, type MainProp } from "./MainClass"
 
 
@@ -23,6 +23,9 @@ const InitializeMain = () => {
  */
 export default function Main ({...a}: MainProp): React.JSX.Element {
     const {_main} = InitializeMain()
-    a?.onFunc?.(_main?.current as _Main)
+    const onFunc = a.onFunc
+    useEffect(() => {
+        onFunc?.(_main.current as _Main)
+    }, [onFunc, _main])
     return _main?.current?.build?.({...a}) as React.JSX.Element
 }

@@ -1,4 +1,4 @@
-import { useRef } from "react"
+import { useEffect, useRef } from "react"
 import { _Span, type _SpanProp } from "./spanClass"
 
 const InitializeSpan = () => {
@@ -42,6 +42,9 @@ const InitializeSpan = () => {
  */
 export default function Span({ ...a }: _SpanProp) {
     const { _span } = InitializeSpan()
-    a?.onFunc?.(_span?.current as _Span);
+    const onFunc = a.onFunc
+    useEffect(() => {
+        onFunc?.(_span.current as _Span)
+    }, [onFunc, _span])
     return _span.current?.build?.({ ...a })
 }

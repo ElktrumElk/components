@@ -47,6 +47,14 @@ describe('Input', () => {
     expect(onChange).toHaveBeenCalled()
   })
 
+  it('updates when the controlled value changes', () => {
+    const { rerender } = render(<Input value="first" readOnly />)
+    expect(screen.getByRole('textbox')).toHaveValue('first')
+
+    rerender(<Input value="second" readOnly />)
+    expect(screen.getByRole('textbox')).toHaveValue('second')
+  })
+
   it('applies custom width', () => {
     const { container } = render(<Input width="300px" />)
     const wrapper = container.querySelector('div')

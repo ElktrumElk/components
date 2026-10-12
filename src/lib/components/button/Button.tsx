@@ -1,4 +1,4 @@
-import { useRef } from "react"
+import { useEffect, useRef } from "react"
 import { _Button, type ButtonProp } from "./_buttonClass"
 
 
@@ -54,6 +54,9 @@ const InitializeButton = () => {
 export default function Button ({...a}: ButtonProp) {
 
     const {_button} = InitializeButton()
-    a?.onFunc?.(_button?.current as _Button);
+    const {onFunc} = a
+    useEffect(() => {
+        if (_button.current) onFunc?.(_button.current)
+    }, [onFunc, _button])
     return _button.current?.build?.({...a})
 }

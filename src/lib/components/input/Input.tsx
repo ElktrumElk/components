@@ -1,4 +1,4 @@
-import { useRef } from "react"
+import { useEffect, useRef } from "react"
 import { _Input, type InputProp } from "./inputClass"
 
 const InitializeInput = () => {
@@ -34,7 +34,7 @@ const InitializeInput = () => {
  *
  * @param type - Input type (default `"text"`).
  * @param placeholder - Placeholder text.
- * @param value - Default input value.
+ * @param value - Controlled input value.
  * @param disabled - Whether the input is disabled.
  * @param readOnly - Whether the input is read-only.
  * @param prefix - Component rendered before the input.
@@ -52,6 +52,9 @@ const InitializeInput = () => {
  */
 export default function Input({ ...a }: InputProp) {
   const { _input } = InitializeInput()
-  a?.onFunc?.(_input?.current as _Input)
+  const { onFunc } = a
+  useEffect(() => {
+    if (_input.current) onFunc?.(_input.current)
+  }, [onFunc, _input])
   return _input.current?.build?.({ ...a })
 }

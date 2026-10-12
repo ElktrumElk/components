@@ -1,4 +1,4 @@
-import { useRef } from "react"
+import { useEffect, useRef } from "react"
 import { _Page, type PageProp } from "./pageClass"
 import './__page.css'
 
@@ -42,6 +42,11 @@ const InitializePage = () => {
 export default function Page({...a}: PageProp) {
 
     const {__page} = InitializePage() 
+    const onFunc = a.onFunc
+
+    useEffect(() => {
+        onFunc?.(__page.current as _Page)
+    }, [onFunc, __page])
 
     return __page.current?.build?.({...a})
 }

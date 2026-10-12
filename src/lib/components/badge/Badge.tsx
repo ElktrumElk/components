@@ -1,4 +1,4 @@
-import { useRef } from "react"
+import { useEffect, useRef } from "react"
 import { _Badge, type BadgeProp } from "./badgeClass"
 
 const InitializeBadge = () => {
@@ -45,6 +45,9 @@ const InitializeBadge = () => {
  */
 export default function Badge({ ...a }: BadgeProp) {
   const { _badge } = InitializeBadge()
-  a?.onFunc?.(_badge?.current as _Badge)
+  const { onFunc } = a
+  useEffect(() => {
+    if (_badge.current) onFunc?.(_badge.current)
+  }, [onFunc, _badge])
   return _badge.current?.build?.({ ...a })
 }

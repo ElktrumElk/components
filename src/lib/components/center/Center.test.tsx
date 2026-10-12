@@ -38,4 +38,13 @@ describe('Center', () => {
     expect(screen.getByText('Nested A')).toBeInTheDocument()
     expect(screen.getByText('Nested B')).toBeInTheDocument()
   })
+
+  it('allows each centering axis to be disabled', () => {
+    const { container } = render(
+      <Center justifyContent={false} alignItems={false} child={() => <div />} />
+    )
+    const wrapper = container.querySelector('div')!
+    expect(wrapper.style.justifyContent).toBe('')
+    expect(wrapper.style.alignItems).toBe('')
+  })
 })

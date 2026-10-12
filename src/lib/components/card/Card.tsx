@@ -1,4 +1,4 @@
-import { useRef } from "react"
+import { useEffect, useRef } from "react"
 import { _Card, type CardProp } from "./cardClass"
 
 const InitializeCard = () => {
@@ -50,6 +50,9 @@ const InitializeCard = () => {
  */
 export default function Card({ ...a }: CardProp) {
   const { _card } = InitializeCard()
-  a?.onFunc?.(_card?.current as _Card)
+  const { onFunc } = a
+  useEffect(() => {
+    if (_card.current) onFunc?.(_card.current)
+  }, [onFunc, _card])
   return _card.current?.build?.({ ...a })
 }

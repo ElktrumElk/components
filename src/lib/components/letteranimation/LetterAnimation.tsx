@@ -1,9 +1,8 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import {
   _LetterAnimation,
   type LetterAnimationProp,
 } from "./LetterAnimationClass";
-import { useMountEffect } from "../../../components";
 
 const InitializeLetterAnimation = () => {
   const _letterAnimation = useRef<_LetterAnimation>(null);
@@ -55,14 +54,67 @@ const InitializeLetterAnimation = () => {
 export default function LetterAnimation({ ...a }: LetterAnimationProp) {
   const { _letterAnimation } = InitializeLetterAnimation();
   const self = _letterAnimation.current;
+  const {
+    onFunc,
+    text,
+    type,
+    animation,
+    keyframes,
+    letterKeyframes,
+    words,
+    duration,
+    delay,
+    stagger,
+    iterations,
+    direction,
+    fill,
+    easing,
+    isOpacity,
+    textType,
+  } = a;
 
-  a?.onFunc?.(self as _LetterAnimation);
+  useEffect(() => {
+    if (self) onFunc?.(self);
+  }, [onFunc, self]);
 
-  useMountEffect(() => {
+  useEffect(() => {
     if (!self) return;
-    self.apply(a);
+    self.apply({
+      text,
+      type,
+      animation,
+      keyframes,
+      letterKeyframes,
+      words,
+      duration,
+      delay,
+      stagger,
+      iterations,
+      direction,
+      fill,
+      easing,
+      isOpacity,
+      textType,
+    });
     return () => self.dispose();
-  });
+  }, [
+    self,
+    text,
+    type,
+    animation,
+    keyframes,
+    letterKeyframes,
+    words,
+    duration,
+    delay,
+    stagger,
+    iterations,
+    direction,
+    fill,
+    easing,
+    isOpacity,
+    textType,
+  ]);
 
   return self?.build?.({ ...a });
 }

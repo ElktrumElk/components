@@ -1,6 +1,5 @@
 import React from "react";
 import { createStore } from "../../../hooks/createStore";
-import { rrender } from "../../utility/lib";
 
 type Gesture = "click" | "hover" | "focus" | "scroll" | "none";
 
@@ -212,9 +211,23 @@ export class _Transition {
   timer: ReturnType<typeof setTimeout> | null = null;
   private gestureCleanups: (() => void)[] = [];
   private transformOrigin: string = "top left";
+  private onChange: (() => void) | null = null;
+
+  setOnChange = (onChange: () => void) => {
+    this.onChange = onChange;
+  };
 
   trigger = () => {
     this.isBaseTransition = !this.isBaseTransition;
+    this.isBasehide = this.isBaseTransition;
+    this.onChange?.();
+  };
+
+  setActive = (active: boolean) => {
+    if (this.isBaseTransition === active) return;
+    this.isBaseTransition = active;
+    this.isBasehide = active;
+    this.onChange?.();
   };
 
   startTimer = (duration: number, cb?: () => void) => {
@@ -226,7 +239,7 @@ export class _Transition {
   };
 
   disposeTimer = () => {
-    if (this.timer) {
+    if (this.timer !== null) {
       clearTimeout(this.timer);
       this.timer = null;
     }
@@ -234,12 +247,11 @@ export class _Transition {
 
   bindGestures = (
     gesture?: Gesture,
-    delay?: number,
-    threshold?: number,
+    _delay?: number,
+    _threshold?: number,
     onTrigger?: () => void,
   ) => {
-    this.gestureCleanups.forEach((fn) => fn());
-    this.gestureCleanups = [];
+    this.clearGestures();
 
     const el = this.containerRef.current;
 
@@ -247,16 +259,13 @@ export class _Transition {
 
     const handler = () => {
       onTrigger?.();
+    };
 
-      const id = setTimeout(
-        () => {
-          this.isBasehide = !this.isBasehide;
-          rrender.setState({ isGestureActivate: true });
-        },
-        delay! / (threshold || 2),
-      );
-
-      return () => clearTimeout(id);
+    const keyHandler = (event: KeyboardEvent) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        onTrigger?.();
+      }
     };
 
     const eventMap: Record<string, string> = {
@@ -272,16 +281,25 @@ export class _Transition {
       this.gestureCleanups.push(() => {
         el.removeEventListener(eventName, handler);
       });
+      if (gesture === "click") {
+        el.addEventListener("keydown", keyHandler);
+        this.gestureCleanups.push(() => el.removeEventListener("keydown", keyHandler));
+      }
     }
   };
 
-  dispose = () => {
-    this.disposeTimer();
+  clearGestures = () => {
     this.gestureCleanups.forEach((fn) => fn());
     this.gestureCleanups = [];
   };
 
-  build? = ({ ...a }: TransitionProp): React.JSX.Element => {
+  dispose = () => {
+    this.disposeTimer();
+    this.clearGestures();
+    this.onChange = null;
+  };
+
+  build = ({ ...a }: TransitionProp): React.JSX.Element => {
     if (a.useMotion) {
       return this.buildMotion({ ...a });
     }
@@ -291,8 +309,9 @@ export class _Transition {
   private buildMotion = (a: TransitionProp): React.JSX.Element => {
     const effect = a.effect ?? "fade";
     const motionAnim = effectToMotion(effect);
-    const duration = (a.duration ?? 300) / 1000;
-    const delay = (a.delay ?? 0) / 1000;
+    const reducedMotion = this.prefersReducedMotion();
+    const duration = reducedMotion ? 0 : (a.duration ?? 300) / 1000;
+    const delay = reducedMotion ? 0 : (a.delay ?? 0) / 1000;
 
     const initial = a.motionInitial ?? motionAnim.initial;
     const exit = a.motionExit ?? motionAnim.exit;
@@ -322,6 +341,8 @@ export class _Transition {
       <div
         ref={this.containerRef}
         className={a.className}
+        role={a.gesture === "click" ? "button" : undefined}
+        tabIndex={a.gesture === "click" ? 0 : undefined}
         style={{
           position: "relative",
           overflow: "visible",
@@ -349,6 +370,7 @@ export class _Transition {
                 zIndex: showTo ? 0 : 1,
                 pointerEvents: showTo ? "none" : "auto",
               }}
+              aria-hidden={showTo}
             >
               <a.from />
             </MotionDiv>
@@ -367,6 +389,7 @@ export class _Transition {
                 zIndex: 1,
                 pointerEvents: "auto",
               }}
+              aria-hidden={false}
             >
               <a.to />
             </MotionDiv>
@@ -381,7 +404,7 @@ export class _Transition {
 
     this.transformOrigin = a.origin || "top left";
 
-    const duration = a.duration ?? 300;
+    const duration = this.prefersReducedMotion() ? 0 : (a.duration ?? 300);
     const easing = a.easing ?? "cubic-bezier(0.4, 0, 0.2, 1)";
 
     const transition = `opacity ${duration}ms ${easing}, transform ${duration}ms ${easing}, filter ${duration}ms ${easing}, clip-path ${duration}ms ${easing}, border-radius ${duration}ms ${easing}`;
@@ -390,29 +413,29 @@ export class _Transition {
 
     const fromStyle: React.CSSProperties = {
       transformOrigin: this.transformOrigin,
-      position: LAYER_BASE.getState().position,
-      backfaceVisibility: LAYER_BASE.getState().backfaceVisibility,
-      willChange: LAYER_BASE.getState().willChange,
+      position: "absolute",
+      backfaceVisibility: "hidden",
+      willChange: "opacity, transform, filter",
       transition,
       ...(showTo ? effect.exit : effect.enter),
       width: "max-content",
       height: "max-content",
       zIndex: showTo ? 0 : 1,
       pointerEvents: showTo ? "none" : "auto",
-      display: this.isBasehide ? "none" : "flex",
+      display: showTo ? "none" : "flex",
     };
 
     const toStyle: React.CSSProperties = {
       transformOrigin: this.transformOrigin,
-      position: LAYER_BASE.getState().position,
-      backfaceVisibility: LAYER_BASE.getState().backfaceVisibility,
-      willChange: LAYER_BASE.getState().willChange,
+      position: "absolute",
+      backfaceVisibility: "hidden",
+      willChange: "opacity, transform, filter",
       transition,
-      ...(this.isBasehide ? effect.enter : effect.exit),
+      ...(showTo ? effect.enter : effect.exit),
       width: "max-content",
       height: "max-content",
-      zIndex: this.isBasehide ? 1 : 0,
-      pointerEvents: this.isBasehide ? "auto" : "none",
+      zIndex: showTo ? 1 : 0,
+      pointerEvents: showTo ? "auto" : "none",
       display: showTo ? "flex" : "none",
     };
 
@@ -420,6 +443,8 @@ export class _Transition {
       <div
         ref={this.containerRef}
         className={a.className}
+        role={a.gesture === "click" ? "button" : undefined}
+        tabIndex={a.gesture === "click" ? 0 : undefined}
         style={{
           position: "relative",
           overflow: "visible",
@@ -433,16 +458,21 @@ export class _Transition {
         {...a.gest}
       >
         {a.from && (
-          <div style={fromStyle}>
+          <div style={fromStyle} aria-hidden={showTo}>
             <a.from />
           </div>
         )}
         {a.to && (
-          <div style={toStyle}>
+          <div style={toStyle} aria-hidden={!showTo}>
             <a.to />
           </div>
         )}
       </div>
     );
   };
+
+  private prefersReducedMotion = () =>
+    typeof window !== "undefined"
+    && typeof window.matchMedia === "function"
+    && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }

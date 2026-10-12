@@ -179,14 +179,13 @@ describe("Animation", () => {
     const playMock = vi.fn();
     animateMock.mockReturnValueOnce({ play: playMock, pause: vi.fn(), reverse: vi.fn(), cancel: vi.fn() });
 
-    const { container } = render(
+    render(
       <Animation
         child={() => <button>Focus me</button>}
         isAutomatic={false}
         gesture="focus"
       />,
     );
-    const button = screen.getByRole("button");
     await user.tab();
     expect(playMock).toHaveBeenCalledOnce();
   });

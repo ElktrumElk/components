@@ -43,7 +43,11 @@ export class _IconNetwork {
   fallback!: React.JSX.ElementType
   private _hasError = false
 
-  build? = ({ ...a }: IconNetworkProp): React.JSX.Element => {
+  build? = (
+    { ...a }: IconNetworkProp,
+    hasError = this._hasError,
+    onError?: () => void,
+  ): React.JSX.Element => {
     this.fallback = a.fallback as React.JSX.ElementType
     const dim = typeof a.size === 'string' && SIZE_MAP[a.size as IconNetworkSize]
       ? SIZE_MAP[a.size as IconNetworkSize]
@@ -69,7 +73,7 @@ export class _IconNetwork {
           className={a.className}
           style={containerStyle}
         >
-          {!this._hasError ? (
+          {!hasError ? (
             <img
               src={a.src}
               alt={a.alt || ''}
@@ -79,7 +83,7 @@ export class _IconNetwork {
                 objectFit: 'cover',
               }}
               loading={a.loading || 'lazy'}
-              onError={() => { this._hasError = true }}
+              onError={onError ?? (() => { this._hasError = true })}
             />
           ) : this.fallback ? (
             <this.fallback />

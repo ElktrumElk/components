@@ -1,116 +1,47 @@
-import { useRef, useEffect, useCallback, useState } from "react";
-import {
-
-  _Transition,
-  LAYER_BASE,
-  type TransitionProp,
-} from "./TransitionClass";
-import {  useSetState, useStore } from "../../../components";
-import { rrender } from "../../utility/lib";
-
-const InitializeTransition = () => {
-  const _transition = useRef<_Transition>(null);
-
-  if (!_transition.current) {
-    _transition.current = new _Transition();
-  }
-
-  return { _transition };
-};
-
+import { useCallback, useEffect, useRef, useState } from "react";
+import { _Transition, type TransitionProp } from "./TransitionClass";
 
 /**
- * Transition component animates between two states using configurable effects.
- * @example
- * <Transition from={ComponentA} to={ComponentB} effect="fade" duration={500} active={true} />
- * @see TransitionProp
- * @prop from - Optional React element type for the initial state.
- * @prop to - Optional React element type for the final state.
- * @prop active - Optional boolean to manually control transition state.
- * @prop effect - Transition effect type (e.g., "fade", "slide-left", "zoom").
- * @prop duration - Transition duration in milliseconds (default: 300).
- * @prop delay - Delay before transition starts in milliseconds.
- * @prop easing - CSS easing function.
- * @prop isAutomatic - If true, transition starts automatically on mount.
- * @prop gesture - Gesture type to trigger transition.
- * @prop className - Optional CSS class name.
- * @prop style - Optional inline CSS styles.
- * @prop gest - Optional HTML div attributes.
- * @prop origin - Transform origin.
- * @prop threshold - Threshold for gesture timing calculations.
- * @prop onFunc - Callback receiving the _Transition instance.
- * @prop onTransitionEnd - Callback when transition animation ends.
+ * Transition component animates between two component states using CSS or Motion presets.
  */
-export default function Transition({ ...a }: TransitionProp) {
-  const setLayerBase = useSetState(LAYER_BASE);
-  const { _transition } = InitializeTransition();
-  const self = _transition.current;
+export default function Transition(a: TransitionProp) {
+  const instanceRef = useRef<_Transition | null>(null);
+  if (!instanceRef.current) instanceRef.current = new _Transition();
+  const self = instanceRef.current;
   const [, rerender] = useState(0);
-  const [, setSwitch] = useState(false);
   const playsRef = useRef(0);
-  const {isGestureActivate} = useStore(rrender)
+  const callbackRef = useRef(a.onTransitionEnd);
+  const onFunc = a.onFunc;
+  callbackRef.current = a.onTransitionEnd;
 
-  const trigger = useCallback(() => {
-    if (!self) return;
-    self.trigger();
-    rerender((n) => n + 1);
-  }, [self]);
-
-  a?.onFunc?.(self as _Transition);
+  const update = useCallback(() => rerender((value) => value + 1), []);
 
   useEffect(() => {
-    if (!self) return;
-    self.bindGestures(a.gesture, a.delay, a.threshold,  trigger);
+    self.setOnChange(update);
     return () => self.dispose();
-  }, [a.gesture, isGestureActivate]);
+  }, [self, update]);
 
   useEffect(() => {
-    if (!self) return;
+    onFunc?.(self);
+  }, [onFunc, self]);
 
-    const maxPlays = a.renderAmount ?? Infinity;
+  useEffect(() => {
+    self.bindGestures(a.gesture, a.delay, a.threshold, self.trigger);
+    return () => self.clearGestures();
+  }, [a.gesture, a.delay, a.threshold, self]);
 
-    if (a.active !== undefined) {
-      // if active is true and switched is equals to false
-      if (a.active && !self.isBasehide && playsRef.current < maxPlays) {
-        // the delay before the transition take place if not given then the transition start immediately
-        const delay = a.delay ?? 0;
+  useEffect(() => {
+    const requested = a.active ?? (a.isAutomatic ? true : undefined);
+    if (requested === undefined || requested === self.isBaseTransition) return;
 
-        // start the timmer
-        self.startTimer(delay, () => {
-          playsRef.current += 1;
-          setSwitch(prev => !prev);
-          trigger(); // triggers the display from flex to none vice versa
-          setTimeout(
-            () => {
-              self.isBasehide = true;
-             setLayerBase({ position: "relative" });
-              setSwitch(false);
-            },
-            delay / (a.threshold || 2),
-          );
-
-          a.onTransitionEnd?.();
-        });
-      } else if (!a.active && self.isBasehide) {
-        const delay = a.delay ?? 0;
-        self.startTimer(delay, () => {
-          trigger();
-          a.onTransitionEnd?.();
-        });
-      }
-      return () => self.disposeTimer();
-    }
-
-    if (a.isAutomatic && !self.isBasehide) {
-      const delay = a.delay ?? 0;
-      self.startTimer(delay, () => {
-        trigger();
-        a.onTransitionEnd?.();
-      });
-    }
-
+    if (requested && playsRef.current >= (a.renderAmount ?? Infinity)) return;
+    self.startTimer(a.delay ?? 0, () => {
+      if (requested) playsRef.current += 1;
+      self.setActive(requested);
+      callbackRef.current?.();
+    });
     return () => self.disposeTimer();
-  }, [a.active, a.isAutomatic]);
+  }, [a.active, a.isAutomatic, a.delay, a.renderAmount, self]);
 
-  return self?.build?.({ ...a });
+  return self.build({ ...a });
 }

@@ -1,4 +1,4 @@
-import { useRef } from "react"
+import { useEffect, useRef } from "react"
 import { _Icon, type IconProp } from "./iconClass"
 
 const InitializeIcon = () => {
@@ -38,6 +38,9 @@ const InitializeIcon = () => {
  */
 export default function Icon({ name, ...a }: IconProp) {
   const { _icon } = InitializeIcon()
-  a?.onFunc?.(_icon?.current as _Icon)
+  const { onFunc } = a
+  useEffect(() => {
+    if (_icon.current) onFunc?.(_icon.current)
+  }, [onFunc, _icon])
   return _icon.current?.build?.({ ...a, name })
 }

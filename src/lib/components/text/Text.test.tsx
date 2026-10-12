@@ -43,4 +43,9 @@ describe('Text', () => {
     render(<Text text="Hello" type="p" className="my-text" />)
     expect(screen.getByText('Hello')).toHaveClass('my-text')
   })
+
+  it('renders the requested element for an empty string', () => {
+    const { container } = render(<Text text="" type="p" />)
+    expect(container.querySelector('p')).toBeInTheDocument()
+  })
 })

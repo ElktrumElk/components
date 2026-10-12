@@ -27,10 +27,7 @@ export interface _TabProp {
   padding?: string;
   className?: string;
   style?: React.CSSProperties;
-  gest?: React.DetailedHTMLProps<
-    React.HTMLAttributes<HTMLButtonElement>,
-    HTMLButtonElement
-  >;
+  gest?: React.ButtonHTMLAttributes<HTMLButtonElement>;
   onFunc?: (self: _Tab) => void;
 }
 
@@ -43,10 +40,7 @@ export class _Tab {
   padding?: string;
   className?: string;
   style?: React.CSSProperties;
-  gest?: React.DetailedHTMLProps<
-    React.HTMLAttributes<HTMLButtonElement>,
-    HTMLButtonElement
-  >;
+  gest?: React.ButtonHTMLAttributes<HTMLButtonElement>;
 
   build? = ({ ...a }: _TabProp): React.JSX.Element => {
     this.label = a.label as ElementType;
@@ -75,6 +69,7 @@ export class _Tab {
           }}
           onClick={this.onClick}
           {...this.gest}
+          type={this.gest?.type ?? "button"}
         >
           {a.label && <this.label />}
         </button>

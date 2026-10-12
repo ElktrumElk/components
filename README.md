@@ -16,6 +16,92 @@ npx create-elk-component@latest
 
 ## Conventions
 
+### Class Controllers And Reactors
+
+Every stateful Elk component can keep its behavior in a plain TypeScript class
+that extends `Components<State>`. This is a controller class, not
+`React.Component`: React hooks remain in the small wrapper while the class owns
+an isolated reactor with `get`, `set`, `reset`, and `subscribe`.
+
+Use `useComponent` to create one controller per mounted component, subscribe to
+its state with `useSyncExternalStore`, and expose it through `onFunc` only after
+React commits the render.
+
+```tsx
+import { Components, useComponent } from "elk-components";
+
+class CounterController extends Components<{ count: number }> {
+  constructor() {
+    super({ count: 0 });
+  }
+
+  increment = () =>
+    this.set((state) => ({ count: state.count + 1 }));
+}
+
+function Counter() {
+  const [controller, state] = useComponent(
+    () => new CounterController(),
+  );
+
+  return (
+    <button type="button" onClick={controller.increment}>
+      {state.count}
+    </button>
+  );
+}
+```
+
+React hooks must not be called inside controller classes. Use the class reactor
+for component-local state, and `createStore` for deliberately shared state.
+
+### Typed Style Rules
+
+`Estyle` creates typed inline rules and stable generated classes from the same
+definition. Nested selectors begin with `&`, so hover, active, focus, attribute,
+and descendant states stay beside the component's base design. `defineMedia`
+adds responsive rules without manual stylesheet bookkeeping.
+
+It is available from either the main package or its dedicated entrypoint:
+
+```ts
+import { Estyle } from "elk-components";
+// or
+import { Estyle } from "elk-components/style-rule";
+```
+
+```tsx
+const styles = new Estyle()
+  .defineRules({
+    action: {
+      padding: ".75rem 1rem",
+      background: "#173f36",
+      color: "white",
+      "&:hover": { background: "#d75632" },
+      "&:active": { transform: "scale(.98)" },
+      "&:focus-visible": { outline: "3px solid #4668df" },
+      "& .icon": { marginRight: ".5rem" },
+    },
+  })
+  .defineMedia({
+    "(max-width: 600px)": {
+      action: { width: "100%" },
+    },
+  })
+  .mount("account-screen");
+
+<Button
+  className={styles.classes.action}
+  padding=".75rem 1rem"
+  child={() => <Text type="p" text="Continue" />}
+/>
+```
+
+Use `styles.rule.action()` when inline styles are needed. Nested selectors are
+automatically omitted from inline output. Call `styles.destroy()` when a
+dynamically-created sheet is no longer needed; module-level app sheets can stay
+mounted for the lifetime of the application.
+
 ### Render Props (`child`, `header`, `body`, etc.)
 
 Every slot that accepts content uses `React.JSX.ElementType` — pass an **arrow function returning JSX**, not raw JSX children:
@@ -49,6 +135,41 @@ Components that expose imperative control accept `onFunc`, which receives the in
 ---
 
 ## Components
+
+### BottomNavigationBar
+
+A semantic, safe-area-aware app navigation bar. It supports fixed and floating
+Flutter-style placement, controlled or controller-owned selection, active
+indicators, links, buttons, disabled items, and custom content.
+
+| Prop | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `items` | `BottomNavigationBarItem[]` | No | `[]` | Navigation destinations |
+| `activeIndex` | `number` | No | - | Controlled active destination |
+| `defaultActiveIndex` | `number` | No | `0` | Initial uncontrolled destination |
+| `onChange` | `(index, item) => void` | No | - | Selection callback |
+| `mode` | `"fixed" \| "floating"` | No | `"fixed"` | Shell placement |
+| `isGlider` | `boolean` | No | `true` | Show the active pill |
+| `links` | `ReactNode` | No | - | Custom content when items are omitted |
+| `ariaLabel` | `string` | No | `"Primary navigation"` | Navigation label |
+
+```tsx
+<BottomNavigationBar
+  mode="floating"
+  items={[
+    { id: "home", label: "Home", icon: <Home /> },
+    { id: "library", label: "Library", icon: <Layers /> },
+  ]}
+  defaultActiveIndex={0}
+  onChange={(index) => console.log(index)}
+/>
+```
+
+Import the packaged component styles once in an application entrypoint:
+
+```tsx
+import "elk-components/styles.css";
+```
 
 ### Page
 

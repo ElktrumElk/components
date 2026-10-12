@@ -68,6 +68,16 @@ describe('Card', () => {
     expect(card).toHaveStyle({ padding: '1.5rem' })
   })
 
+  it('applies custom padding and radius values', () => {
+    const { container } = render(
+      <Card body={() => <div />} padding="2.25rem" radius="12px" />
+    )
+    expect(container.querySelector('article')).toHaveStyle({
+      padding: '2.25rem',
+      borderRadius: '12px',
+    })
+  })
+
   it('applies default radius md', () => {
     const { container } = render(<Card body={() => <div />} />)
     const card = container.querySelector('article')

@@ -62,6 +62,11 @@ describe('Header', () => {
     expect(container.querySelector('.my-header')).toBeInTheDocument()
   })
 
+  it('forwards id to the header', () => {
+    const { container } = render(<Header id="site-header" title={() => <h1>Title</h1>} />)
+    expect(container.querySelector('header')).toHaveAttribute('id', 'site-header')
+  })
+
   it('applies titleGap', () => {
     const { container } = render(
       <Header

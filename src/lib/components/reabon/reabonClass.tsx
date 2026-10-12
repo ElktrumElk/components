@@ -58,6 +58,7 @@ export class _Reabon {
           {this.trigger && <this.trigger />}
           {this.open && (
             <div
+              role="dialog"
               style={{
                 position: "absolute",
                 top: "100%",

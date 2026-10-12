@@ -25,10 +25,7 @@ export interface _TextButtonProp {
   padding?: string;
   className?: string;
   style?: React.CSSProperties;
-  gest?: React.DetailedHTMLProps<
-    React.HTMLAttributes<HTMLButtonElement>,
-    HTMLButtonElement
-  >;
+  gest?: React.ButtonHTMLAttributes<HTMLButtonElement>;
   onFunc?: (self: _TextButton) => void;
 }
 
@@ -42,10 +39,7 @@ export class _TextButton {
   padding?: string;
   className?: string;
   style?: React.CSSProperties;
-  gest?: React.DetailedHTMLProps<
-    React.HTMLAttributes<HTMLButtonElement>,
-    HTMLButtonElement
-  >;
+  gest?: React.ButtonHTMLAttributes<HTMLButtonElement>;
 
   build? = ({ ...a }: _TextButtonProp): React.JSX.Element => {
     this.child = a.child as ElementType;
@@ -73,6 +67,7 @@ export class _TextButton {
             ...this.style,
           }}
           {...this.gest}
+          type={this.gest?.type ?? "button"}
         >
           {this.child ? <this.child /> : this.text}
         </button>

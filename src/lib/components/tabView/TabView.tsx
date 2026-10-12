@@ -1,15 +1,6 @@
-import { useRef } from "react";
+import { useId } from "react";
+import { useComponent } from "../../../hooks/useComponent";
 import { _TabView, type _TabViewProp } from "./tabViewClass";
-
-const InitializeTabView = () => {
-  const _tabView = useRef<_TabView | null>(null);
-
-  if (!_tabView.current) {
-    _tabView.current = new _TabView();
-  }
-
-  return { _tabView };
-}
 
 /**
  * A self-contained tabbed view component.
@@ -48,7 +39,7 @@ const InitializeTabView = () => {
  * @param onFunc - Callback receiving the internal class instance
  */
 export default function TabView({ ...a }: _TabViewProp) {
-  const { _tabView } = InitializeTabView();
-  a?.onFunc?.(_tabView?.current as _TabView);
-  return _tabView.current?.build?.({ ...a });
+  const [_tabView, state] = useComponent(() => new _TabView(), a.onFunc);
+  const idPrefix = useId();
+  return _tabView.build?.({ ...a }, state.activeTab, idPrefix);
 }

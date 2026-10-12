@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { _Tab, type _TabProp } from "./tabClass";
 
 const InitializeTab = () => {
@@ -44,6 +44,9 @@ const InitializeTab = () => {
  */
 export default function Tab({ ...a }: _TabProp) {
   const { _tab } = InitializeTab();
-  a?.onFunc?.(_tab?.current as _Tab);
+  const onFunc = a.onFunc;
+  useEffect(() => {
+    onFunc?.(_tab.current as _Tab);
+  }, [onFunc, _tab]);
   return _tab.current?.build?.({ ...a });
 }

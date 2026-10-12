@@ -76,8 +76,10 @@ export class _Card {
     this.body = a.body as ElementType;
     this.footer = a.footer as ElementType;
 
-    const pad = PADDING_MAP[a.padding || "md"];
-    const rad = RADIUS_MAP[a.radius || "md"];
+    const padding = a.padding || "md";
+    const radius = a.radius || "md";
+    const pad = PADDING_MAP[padding] ?? padding;
+    const rad = RADIUS_MAP[radius] ?? radius;
 
     return (
       <>

@@ -1,4 +1,4 @@
-import { useRef } from "react"
+import { useEffect, useRef } from "react"
 import { _Container, type ContainerProp } from "./containerClass"
 
 
@@ -41,6 +41,9 @@ const InitializeContainer = () => {
 export default function Container ({...a}: ContainerProp) {
 
     const {_container} = InitializeContainer()
-    a?.onFunc?.(_container?.current as _Container);
+    const {onFunc} = a
+    useEffect(() => {
+        if (_container.current) onFunc?.(_container.current)
+    }, [onFunc, _container])
     return _container.current?.build?.({...a})
 }

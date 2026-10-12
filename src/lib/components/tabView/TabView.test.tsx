@@ -38,4 +38,33 @@ describe('TabView', () => {
     fireEvent.click(screen.getByText('Tab Two'))
     expect(onChange).toHaveBeenCalledWith('tab2')
   })
+
+  it('changes content when uncontrolled', () => {
+    render(<TabView tabs={tabs} />)
+    fireEvent.click(screen.getByRole('tab', { name: 'Tab Two' }))
+    expect(screen.getByText('Content Two')).toBeInTheDocument()
+    expect(screen.queryByText('Content One')).not.toBeInTheDocument()
+  })
+
+  it('leaves content controlled by activeTab', () => {
+    const onChange = vi.fn()
+    render(<TabView tabs={tabs} activeTab="tab1" onChange={onChange} />)
+    fireEvent.click(screen.getByRole('tab', { name: 'Tab Two' }))
+    expect(onChange).toHaveBeenCalledWith('tab2')
+    expect(screen.getByText('Content One')).toBeInTheDocument()
+  })
+
+  it('provides tab semantics and keyboard navigation', () => {
+    render(<TabView tabs={tabs} />)
+    const first = screen.getByRole('tab', { name: 'Tab One' })
+    const second = screen.getByRole('tab', { name: 'Tab Two' })
+    expect(first).toHaveAttribute('aria-selected', 'true')
+    expect(screen.getByRole('tabpanel')).toHaveAttribute('aria-labelledby', first.id)
+
+    first.focus()
+    fireEvent.keyDown(first, { key: 'ArrowRight' })
+    expect(second).toHaveFocus()
+    expect(second).toHaveAttribute('aria-selected', 'true')
+    expect(screen.getByText('Content Two')).toBeInTheDocument()
+  })
 })

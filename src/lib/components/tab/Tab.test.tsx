@@ -5,7 +5,7 @@ import Tab from './Tab'
 describe('Tab', () => {
   it('renders a button element', () => {
     render(<Tab label={() => <span>Tab One</span>} />)
-    expect(screen.getByRole('button')).toBeInTheDocument()
+    expect(screen.getByRole('button')).toHaveAttribute('type', 'button')
   })
 
   it('renders the label content', () => {

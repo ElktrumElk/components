@@ -8,15 +8,18 @@ const COMPONENTS = [
   'List', 'ListView', 'ListMenu',
   'BottomModal', 'SidePanel', 'Reabon',
   'Tab', 'TabView', 'Icon', 'IconNetwork', 'PageScrollView', 'Icons',
-  'Gap', 'Example', 'Padding', 'GridView', 'Hover', 'Main'
+  'Gap', 'Example', 'Animation', 'Transition', 'SectionDivider',
+  'LetterAnimation', 'Padding', 'GridView', 'Hover', 'Main',
+  'BottomNavigationBar'
 ];
 
 const HOOKS = [
   'createStore', 'useStore', 'useSetState',
   'useState', 'useStateLazy',
   'useRef', 'usePreviousValue',
-  'useInstance', 'useComponentData',
-  'useEffect', 'useMountEffect', 'useUpdateEffect',
+  'useInstance', 'useComponentData', 'useComponent',
+  'useEffect', 'useMountEffect', 'useUpdateEffect', 'usePreviousEffect',
+  'useDebounceEffect',
   'useCallback', 'useMemo', 'useMemoOnce', 'useStableCallback', 
 ];
 

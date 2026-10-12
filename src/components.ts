@@ -41,6 +41,11 @@ export {default as GridView} from './lib/components/gridview/GridView'
 export {default as LetterAnimation} from './lib/components/letteranimation/LetterAnimation'
 export {default as Hover} from './lib/components/pseudo/hover/Hover'
 export {default as Main} from './lib/components/main/Main'
+export { default as BottomNavigationBar } from "./lib/components/bottomNavBar/BottomNavigationBar";
+export type {
+  BottomNavigationBarItem,
+  BottomNavigationBarProp,
+} from "./lib/components/bottomNavBar/BottomNavigationBar";
 // icon
 export { default as Icons } from "./lib/utility/icon";
 
@@ -49,6 +54,14 @@ export { createStore, useStore, useSetState } from "./hooks/createStore";
 export { useState, useStateLazy } from "./hooks/useState";
 export { useRef, usePreviousValue } from "./hooks/useRef";
 export { useInstance, useComponentData } from "./hooks/useInstance";
+export { useComponent, Components } from "./hooks/useComponent";
+export type {
+  ComponentListener,
+  ComponentState,
+  ComponentStateUpdate,
+} from "./hooks/useComponent";
+export { Estyle } from "./rule";
+export type { StyleDeclaration } from "./rule";
 export {
   useEffect,
   useMountEffect,

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import Image from './Image'
 
 describe('Image', () => {
@@ -49,6 +49,17 @@ describe('Image', () => {
   it('shows fallback when no src', () => {
     render(<Image fallback={() => <span>No Image</span>} />)
     expect(screen.getByText('No Image')).toBeInTheDocument()
+  })
+
+  it('reactively shows fallback after an error and retries a new source', () => {
+    const { container, rerender } = render(
+      <Image src="/bad.jpg" fallback={() => <span>No Image</span>} />
+    )
+    fireEvent.error(container.querySelector('img')!)
+    expect(screen.getByText('No Image')).toBeInTheDocument()
+
+    rerender(<Image src="/new.jpg" fallback={() => <span>No Image</span>} />)
+    expect(container.querySelector('img')).toHaveAttribute('src', '/new.jpg')
   })
 
   it('shows placeholder div when no src and no fallback', () => {

@@ -11,7 +11,7 @@ export interface HoverProp {
 export const __hoverStore = createStore({ isHover: false });
 
 export class _Hover {
-  savedStyle: string[];
+  savedStyle: Array<string | null> = [];
 
   build? = ({ ...a }: HoverProp): React.JSX.Element => {
     const __key = Object.keys(a.style);
@@ -22,7 +22,7 @@ export class _Hover {
           key={a.key}
           style={{
             display: 'flex',
-            pointerEvents: 'none',
+            pointerEvents: 'auto',
             height: "fit-content",
             width: "fit-content",
             padding: "0",
@@ -32,7 +32,7 @@ export class _Hover {
           onMouseEnter={(e) => {
             const target = e.currentTarget as HTMLElement;
             this.savedStyle = [];
-            Array.from(target.children).map((child) => { 
+            Array.from(target.children).forEach((child) => {
 
               const __child = child as HTMLElement
               this.savedStyle.push(__child?.getAttribute("style"))
@@ -48,7 +48,7 @@ export class _Hover {
 
           onMouseLeave={(e) => {
             const target = e.currentTarget as HTMLElement;
-            Array.from(target.children).map((child, idx) => {
+            Array.from(target.children).forEach((child, idx) => {
               const __child = child as HTMLElement
               __child.setAttribute("style", this.savedStyle[idx] ?? "")
               __child.style.transition = a.transition ?? "";

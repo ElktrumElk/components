@@ -11,8 +11,12 @@
       "types": "./dist/components.d.ts"
     },
     "./hooks": {
-      "import": "./dist/hooks/index.js",
-      "types": "./dist/hooks/index.d.ts"
+      "import": "./dist/hooks.js",
+      "types": "./dist/hooks.d.ts"
+    },
+    "./style-rule": {
+      "import": "./dist/style-rule.js",
+      "types": "./dist/style-rule.d.ts"
     },
     "./icons": {
       "import": "./dist/icons.js",
@@ -21,7 +25,8 @@
     "./plugin": {
       "import": "./dist/plugin.js",
       "types": "./dist/plugin.d.ts"
-    }
+    },
+    "./styles.css": "./dist/elk-components.css"
   },
   "files": [
     "dist"

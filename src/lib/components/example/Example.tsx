@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { _Example, type ExampleProp } from "./ExampleClass";
 
 const InitializeExample = () => {
@@ -13,7 +13,7 @@ const InitializeExample = () => {
 
 /**
  * A lightweight demo/placeholder component that renders a `<span>` with
- * configurable inline styles and HTML content.
+ * configurable inline styles and text content.
  *
  * @example
  * <Example
@@ -22,7 +22,7 @@ const InitializeExample = () => {
  *   background="#222"
  *   border="1px solid #444"
  *   borderRadius="4px"
- *   text="<strong>Hello</strong>"
+ *   text="Hello"
  * />
  *
  * @see {@link ExampleProp} for all available props.
@@ -32,11 +32,14 @@ const InitializeExample = () => {
  * @param background  - Background color.
  * @param border      - CSS border value.
  * @param borderRadius - CSS border-radius value.
- * @param text        - HTML string rendered inside the span.
+ * @param text        - Text rendered inside the span.
  * @param onFunc      - Callback with the internal `_Example` instance.
  */
 export default function Example({ ...a }: ExampleProp) {
   const { _example } = InitializeExample();
-  a?.onFunc?.(_example?.current as _Example);
+  const { onFunc } = a;
+  useEffect(() => {
+    if (_example.current) onFunc?.(_example.current);
+  }, [onFunc, _example]);
   return _example?.current?.build?.({ ...a });
 }

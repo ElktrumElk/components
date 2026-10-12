@@ -15,6 +15,12 @@ export type { MutableRefObject, UseRefReturn } from "./useRef";
 // Component Instances
 export { useInstance, useComponentData, componentRegistry } from "./useInstance";
 export type { ComponentId, ComponentInstance, UseInstanceReturn } from "./useInstance";
+export { useComponent, Components } from "./useComponent";
+export type {
+  ComponentListener,
+  ComponentState,
+  ComponentStateUpdate,
+} from "./useComponent";
 
 // Enhanced useEffect
 export {

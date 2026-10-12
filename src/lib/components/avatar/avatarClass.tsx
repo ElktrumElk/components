@@ -47,7 +47,11 @@ export class _Avatar {
   icon!: ElementType
   private _hasError = false
 
-  build? = ({ ...a }: AvatarProp): React.JSX.Element => {
+  build? = (
+    { ...a }: AvatarProp,
+    hasError = this._hasError,
+    onError?: () => void,
+  ): React.JSX.Element => {
     this.fallback = a.fallback as ElementType
     this.icon = a.icon as ElementType
     const dim = SIZE_MAP[a.size || 'md']
@@ -73,7 +77,7 @@ export class _Avatar {
           style={containerStyle}
           {...a.gest}
         >
-          {a.src && !this._hasError ? (
+          {a.src && !hasError ? (
             <img
               src={a.src}
               alt={a.alt || ''}
@@ -82,7 +86,7 @@ export class _Avatar {
                 height: '100%',
                 objectFit: 'cover',
               }}
-              onError={() => { this._hasError = true }}
+              onError={onError ?? (() => { this._hasError = true })}
             />
           ) : this.icon ? (
             <this.icon />

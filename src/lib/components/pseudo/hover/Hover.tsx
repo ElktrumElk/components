@@ -1,6 +1,5 @@
 import { useRef } from "react"
-import { __hoverStore, _Hover, type HoverProp } from "./HoverClass";
-import { useStore } from "../../../../hooks/createStore";
+import { _Hover, type HoverProp } from "./HoverClass";
 
 
 const InitializeHover = () => {
@@ -13,7 +12,6 @@ const InitializeHover = () => {
 }
 
 export default function Hover ({...a}: HoverProp) {
-    useStore(__hoverStore)
     const {_hover} = InitializeHover()
     return _hover?.current?.build?.({...a}) ?? <></>
 

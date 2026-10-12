@@ -58,6 +58,7 @@ export class _PageScrollView {
               key={section.id}
               ref={(el) => {
                 if (el) this.sectionRefs.set(section.id, el);
+                else this.sectionRefs.delete(section.id);
               }}
               data-section-id={section.id}
               style={{
@@ -69,7 +70,7 @@ export class _PageScrollView {
               <section.child />
             </div>
           ))}
-          {a.child && !a.sections && <this.child />}
+          {a.child && !a.sections?.length && <this.child />}
         </div>
       </>
     );

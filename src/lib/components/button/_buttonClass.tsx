@@ -1,4 +1,4 @@
-import type { ElementType} from "react";
+import type { ElementType } from "react";
 import type { JSX } from "react/jsx-runtime";
 
 /**
@@ -6,6 +6,9 @@ import type { JSX } from "react/jsx-runtime";
  * A standard HTML <button> with customizable styling and child content.
  */
 export interface ButtonProp {
+  id?: string;
+  /** Native button behavior. Defaults to `button` to avoid accidental form submission. */
+  type?: React.ButtonHTMLAttributes<HTMLButtonElement>["type"];
   /** Component type rendered as the button's inner content. */
   child?: React.JSX.ElementType;
   /** CSS border value for the button. */
@@ -30,29 +33,35 @@ export interface ButtonProp {
   splashColor?: string;
   /** Additional HTML attributes spread onto the <button> element. */
   gest?: React.DetailedHTMLProps<
-    React.HTMLAttributes<HTMLButtonElement>,
+    React.ButtonHTMLAttributes<HTMLButtonElement>,
     HTMLButtonElement
   >;
   /** Callback invoked after mount, receiving the internal _Button instance. */
-  onFunc?: (self: _Button) => void
-
+  onFunc?: (self: _Button) => void;
 }
 
-export class _Button  {
+export class _Button {
   child!: JSX.ElementType;
   style?: React.CSSProperties;
   savedIconBg!: string;
 
   build? = ({ ...a }: ButtonProp): React.JSX.Element => {
- 
     this.style = a.style || {};
 
-
     this.child = a.child as ElementType;
+    const {
+      onMouseDown,
+      onMouseUp,
+      onTouchStart,
+      onTouchEnd,
+      ...gest
+    } = a.gest ?? {};
 
     return (
       <>
         <button
+          id={a.id}
+          type={a.type ?? "button"}
           className={a.className}
           style={{
             color: a.color,
@@ -62,17 +71,41 @@ export class _Button  {
             border: a.border,
             borderRadius: a.borderRadius,
             background: a.backgroundColor || undefined,
-            cursor: 'pointer',
-            ...this.style
+            cursor: "pointer",
+            transition: "background .4s ease",
+            ...this.style,
           }}
-          onMouseDown={(e) => {this.savedIconBg = e.currentTarget.style.background; e.currentTarget.style.background = a.splashColor as string}}
-          onMouseUp={(e) => e.currentTarget.style.background = this.savedIconBg}
-          onTouchStart={(e) => {this.savedIconBg = e.currentTarget.style.background; e.currentTarget.style.background = a.splashColor as string}}
-          onTouchEnd={(e) => e.currentTarget.style.background = this.savedIconBg}
+          {...gest}
+          onMouseDown={(e) => {
+            onMouseDown?.(e);
+            if (!a.splashColor) return;
+            this.savedIconBg = e.currentTarget.style.background;
 
-          {...a.gest}
+            e.currentTarget.style.background = this.savedIconBg;
+            e.currentTarget.style.transition = "background .1s ease";
+            e.currentTarget.style.background = a.splashColor as string;
+          }}
+          onMouseUp={(e) => {
+            onMouseUp?.(e);
+            if (!a.splashColor) return;
+            const target = e.currentTarget as HTMLButtonElement;
+            setTimeout(() => {
+              target.style.transition = "background .1s ease";
+              target.style.background = this.savedIconBg;
+            }, 100);
+          }}
+          onTouchStart={(e) => {
+            onTouchStart?.(e);
+            if (!a.splashColor) return;
+            this.savedIconBg = e.currentTarget.style.background;
+            e.currentTarget.style.background = a.splashColor as string;
+          }}
+          onTouchEnd={(e) => {
+            onTouchEnd?.(e);
+            if (a.splashColor) e.currentTarget.style.background = this.savedIconBg;
+          }}
         >
-            {a.child && <this.child />}
+          {a.child && <this.child />}
         </button>
       </>
     );

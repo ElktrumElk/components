@@ -29,14 +29,14 @@ export class _Center {
 
   build? = ({ ...a }: _CenterProp) => {
     this.child = a.child;
-    this.justifyConetent = a.justifyContent || true 
-    this.alignItems = a.alignItems || true 
+    this.justifyConetent = a.justifyContent ?? true
+    this.alignItems = a.alignItems ?? true
     return (
       <>
         <div
           style={{
-            justifyContent: this.justifyConetent && "center",
-            alignItems: this.alignItems && 'center',
+            justifyContent: this.justifyConetent ? "center" : undefined,
+            alignItems: this.alignItems ? 'center' : undefined,
             ...this._style,
           }}
         >

@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { _Section, type _SectionProp } from "./sectionClass";
 
 /**
@@ -35,6 +35,9 @@ const InitializeSection = () => {
 
 export default function Section({ ...a }: _SectionProp) {
   const { _section } = InitializeSection();
-  a?.onFunc?.(_section?.current as _Section);
+  const onFunc = a.onFunc;
+  useEffect(() => {
+    onFunc?.(_section.current as _Section);
+  }, [onFunc, _section]);
   return _section.current?.build?.({ ...a });
 }

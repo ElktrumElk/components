@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { _GridView, type GridViewProp } from "./GridViewClass";
 
 const InitializeGridView = () => {
@@ -50,7 +50,10 @@ const InitializeGridView = () => {
  */
 export default function GridView({ ...a }: GridViewProp) {
   const { _gridView } = InitializeGridView();
+  const { onFunc } = a;
 
-  a?.onFunc?.(_gridView?.current as _GridView)
+  useEffect(() => {
+    if (_gridView.current) onFunc?.(_gridView.current);
+  }, [onFunc, _gridView]);
   return _gridView?.current?.build?.({ ...a });
 }

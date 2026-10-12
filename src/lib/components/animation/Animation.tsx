@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { _Animation, type AnimationProp } from "./AnimationClass";
 import { useMountEffect } from "../../../components";
 
@@ -79,8 +79,11 @@ const InitializeAnimation = () => {
 export default function Animation({ ...a }: AnimationProp) {
   const { _animation } = InitializeAnimation();
   const self = _animation.current;
+  const onFunc = a.onFunc;
 
-  a?.onFunc?.(self as _Animation);
+  useEffect(() => {
+    if (self) onFunc?.(self);
+  }, [onFunc, self]);
   useMountEffect(() => {
     if (!self) return;
     self.applyAnimation(a);

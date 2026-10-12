@@ -50,8 +50,8 @@ export class _Tiles {
           style={{
             display: 'flex',
             alignItems: 'center',
-            padding: a.padding || '.75rem 1rem',
-            gap: a.gap || '.75rem',
+            padding: a.padding ?? '.75rem 1rem',
+            gap: a.gap ?? '.75rem',
             borderBottom: a.borderBottom,
             ...a.style,
           }}
