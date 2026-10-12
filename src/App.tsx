@@ -169,8 +169,53 @@ export default function App() {
                 align="center"
                 child={() => (
                   <>
+<<<<<<< HEAD
                     <Text type="p" text="View plan" />
                     <Icon icon={ArrowRight} size={16} />
+=======
+                    <Hover
+                      transition="transform .3s ease"
+                      style={{ color: "orange", transform: "scale(1.3)" }}
+                      child={() => (
+                        <Text text="Hover Wassup" type="h1" color="white" />
+                      )}
+                    />
+                    <SectionDivider
+                      animate
+                      variant="wave"
+                      direction="ltr"
+                      duration={1000}
+                      flip
+                      fillColor="#02c8ff"
+                    />
+
+                    <Animation
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      transition={{ type: "spring", stiffness: 200 }}
+                      style={{ width: "auto", height: "max-content" }}
+                      child={() => (
+                        <>
+                          <Hover
+                            style={{ color: "blue" }}
+                            transition="color 1s ease"
+                            child={() => (
+                              <LetterAnimation
+                                animation="glitch"
+                                textType="h1"
+                                text="Hello how are you doing"
+                                style={{ color: "red" }}
+                                iterations={Infinity}
+                                duration={3000}
+                              />
+                            )}
+                          />
+                        </>
+                      )}
+                    />
+                    <Card />
+>>>>>>> 8c8675eee0dd53ac0d8a00ef5fd622fe91b9c596
                   </>
                 )}
               />
