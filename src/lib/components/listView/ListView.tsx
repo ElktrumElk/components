@@ -1,4 +1,4 @@
-import { useRef } from "react"
+import { useEffect, useRef } from "react"
 import { _ListView, type ListViewProp } from "./listViewClass"
 
 const InitializeListView = () => {
@@ -14,7 +14,7 @@ const InitializeListView = () => {
 /**
  * ListView
  *
- * Renders an unordered `<ul>` list container with built-in spacing controls.
+ * Renders an ordered or unordered list container with built-in spacing controls.
  * Use with `List` children to build structured list layouts.
  *
  * @example
@@ -35,7 +35,7 @@ const InitializeListView = () => {
  * @see {@link ListViewProp} for the full list of accepted props.
  *
  * @param child - Component type rendered inside the `<ul>`.
- * @param ordered - Currently unused (always renders `<ul>`).
+ * @param ordered - Renders an `<ol>` when true, otherwise a `<ul>`.
  * @param padding - CSS `padding` on the `<ul>`.
  * @param margin - CSS `margin` on the `<ul>`.
  * @param gap - Gap between items (`rem`, `px`, or `em`).
@@ -45,6 +45,9 @@ const InitializeListView = () => {
  */
 export default function ListView({ ...a }: ListViewProp) {
   const { _listView } = InitializeListView()
-  a?.onFunc?.(_listView?.current as _ListView)
+  const { onFunc } = a
+  useEffect(() => {
+    if (_listView.current) onFunc?.(_listView.current)
+  }, [onFunc, _listView])
   return _listView.current?.build?.({ ...a })
 }

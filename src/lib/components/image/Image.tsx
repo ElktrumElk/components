@@ -1,4 +1,4 @@
-import { useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { _Image, type ImageProp } from "./imageClass"
 
 const InitializeImage = () => {
@@ -51,6 +51,13 @@ const InitializeImage = () => {
  */
 export default function Image({ ...a }: ImageProp) {
   const { _image } = InitializeImage()
-  a?.onFunc?.(_image?.current as _Image)
-  return _image.current?.build?.({ ...a })
+  const { onFunc } = a
+  const [hasError, setHasError] = useState(false)
+
+  useEffect(() => setHasError(false), [a.src])
+
+  useEffect(() => {
+    if (_image.current) onFunc?.(_image.current)
+  }, [onFunc, _image])
+  return _image.current?.build?.({ ...a }, hasError, () => setHasError(true))
 }

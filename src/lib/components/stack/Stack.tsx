@@ -1,4 +1,4 @@
-import { useRef } from "react"
+import { useEffect, useRef } from "react"
 import { _Stack, type StackProp } from "./stackClass"
 
 const InitializeStack = () => {
@@ -54,6 +54,9 @@ const InitializeStack = () => {
  */
 export default function Stack({ ...a }: StackProp) {
   const { _stack } = InitializeStack()
-  a?.onFunc?.(_stack?.current as _Stack)
+  const onFunc = a.onFunc
+  useEffect(() => {
+    onFunc?.(_stack.current as _Stack)
+  }, [onFunc, _stack])
   return _stack.current?.build?.({ ...a })
 }

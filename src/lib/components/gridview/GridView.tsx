@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { _GridView, type GridViewProp } from "./GridViewClass";
 
 const InitializeGridView = () => {
@@ -44,12 +44,16 @@ const InitializeGridView = () => {
  * @param autoFlow - CSS `grid-auto-flow` value.
  * @param justifyItems - CSS `justify-items` value (default `"center"`).
  * @param style - Additional inline styles.
+ * @param className - string.
  * @param child - Component rendered as the grid's children.
  * @param onFunc - Callback receiving the internal `_GridView` instance.
  */
 export default function GridView({ ...a }: GridViewProp) {
   const { _gridView } = InitializeGridView();
+  const { onFunc } = a;
 
-  a?.onFunc?.(_gridView?.current as _GridView)
+  useEffect(() => {
+    if (_gridView.current) onFunc?.(_gridView.current);
+  }, [onFunc, _gridView]);
   return _gridView?.current?.build?.({ ...a });
 }

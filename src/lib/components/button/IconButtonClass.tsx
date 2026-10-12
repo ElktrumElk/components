@@ -12,12 +12,22 @@ export interface IconButtonProp extends ButtonProp {
 
 export class _IconButton extends _Button {
   icon!: React.JSX.ElementType;
-
+  declare savedIconBg: string;
+  
   override build? = ({ ...a }: IconButtonProp): React.JSX.Element => {
-    
+    const {
+      onMouseDown,
+      onMouseUp,
+      onTouchStart,
+      onTouchEnd,
+      ...gest
+    } = a.gest ?? {};
+
     return (
       <>
         <button
+          id={a.id}
+          type={a.type ?? "button"}
           className={a?.className || '---icon-btn'}
           style={{
             width: a?.width,
@@ -25,12 +35,32 @@ export class _IconButton extends _Button {
             color: a.color,
             border: a?.border || 'none',
             borderRadius: a?.borderRadius || '4rem',
-            background: 'transparent',
+            background: a.backgroundColor || 'transparent',
             padding: a.padding || '.3rem',
             cursor: 'pointer',
             ...a?.style,
           }}
-          {...a?.gest}
+          {...gest}
+          onMouseDown={(e) => {
+            onMouseDown?.(e);
+            if (!a.splashColor) return;
+            this.savedIconBg = e.currentTarget.style.background;
+            e.currentTarget.style.background = a.splashColor;
+          }}
+          onMouseUp={(e) => {
+            onMouseUp?.(e);
+            if (a.splashColor) e.currentTarget.style.background = this.savedIconBg;
+          }}
+          onTouchStart={(e) => {
+            onTouchStart?.(e);
+            if (!a.splashColor) return;
+            this.savedIconBg = e.currentTarget.style.background;
+            e.currentTarget.style.background = a.splashColor;
+          }}
+          onTouchEnd={(e) => {
+            onTouchEnd?.(e);
+            if (a.splashColor) e.currentTarget.style.background = this.savedIconBg;
+          }}
         >
           {a.icon && <a.icon />}
         </button>

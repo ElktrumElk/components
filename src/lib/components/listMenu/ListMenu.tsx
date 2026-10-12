@@ -1,4 +1,4 @@
-import { useRef } from "react"
+import { useEffect, useRef } from "react"
 import { _ListMenu, type ListMenuProp } from "./listMenuClass"
 
 const InitializeListMenu = () => {
@@ -37,6 +37,9 @@ const InitializeListMenu = () => {
  */
 export default function ListMenu({ ...a }: ListMenuProp) {
   const { _listMenu } = InitializeListMenu()
-  a?.onFunc?.(_listMenu?.current as _ListMenu)
+  const { onFunc } = a
+  useEffect(() => {
+    if (_listMenu.current) onFunc?.(_listMenu.current)
+  }, [onFunc, _listMenu])
   return _listMenu.current?.build?.({ ...a })
 }

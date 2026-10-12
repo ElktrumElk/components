@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { _Article, type _ArticleProp } from "./articleClass";
 
 const InitializeArticle = () => {
@@ -43,6 +43,9 @@ const InitializeArticle = () => {
  */
 export default function Article({ ...a }: _ArticleProp) {
   const { _article } = InitializeArticle();
-  a?.onFunc?.(_article?.current as _Article);
+  const { onFunc } = a;
+  useEffect(() => {
+    if (_article.current) onFunc?.(_article.current);
+  }, [onFunc, _article]);
   return _article.current?.build?.({ ...a });
 }

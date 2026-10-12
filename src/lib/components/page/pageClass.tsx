@@ -20,8 +20,9 @@ export interface PageProp {
     background?: string
     className?: string
     style?: React.CSSProperties
-    atrib?: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
-    onFunc?: _Page
+    atrib?: React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>
+    onFunc?: (self: _Page) => void,
+    id?: string
 
 }
 
@@ -32,7 +33,7 @@ export class _Page {
     style?: React.CSSProperties = {}
     
 
-    build? = ({header, body, footer, background, className = 'page', style, atrib}: PageProp): React.JSX.Element => {
+    build? = ({header, id, body, footer, background, className = 'page', style, atrib}: PageProp): React.JSX.Element => {
 
         this.Header = header || null
         this.Body = body 
@@ -40,13 +41,13 @@ export class _Page {
         this.style = style || {}
         return (
             <>
-                <section className={className} style={{background: background, height: '100%', display: 'flex', flexDirection: 'column', ...this.style}} {...atrib}>
+                <div id={id} className={className} style={{background: background, height: '100%', display: 'flex', flexDirection: 'column', ...this.style}} {...atrib}>
 
                     {this.Header && <this.Header />}
                     {this.Body && <this.Body />}
                     {this.Footer && <this.Footer />}
 
-                </section>
+                </div>
             </>
         )
     }

@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import Page from './Page'
 
@@ -62,14 +62,23 @@ describe('Page', () => {
     const { container } = render(
       <Page body={() => <div />} style={{ background: 'red' }} />
     )
-    const section = container.querySelector('section')
-    expect(section).toHaveStyle({ background: 'red' })
+    const div = container.querySelector('div')
+    expect(div).toHaveStyle({ background: 'red' })
   })
 
-  it('passes atrib to section element', () => {
+  it('passes atrib to div element', () => {
     const { container } = render(
       <Page body={() => <div />} atrib={{ id: 'my-page' }} />
     )
     expect(container.querySelector('#my-page')).toBeInTheDocument()
+  })
+
+  it('preserves the top-level id and exposes the instance after commit', () => {
+    const onFunc = vi.fn()
+    const { container } = render(
+      <Page id="page-id" body={() => <div />} onFunc={onFunc} />
+    )
+    expect(container.querySelector('#page-id')).toBeInTheDocument()
+    expect(onFunc).toHaveBeenCalledOnce()
   })
 })

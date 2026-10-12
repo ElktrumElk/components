@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { _SidePanel } from "./sidePanelClass";
+import SidePanel from "./SidePanel";
 
 const PanelChild = () => <div>Panel Content</div>;
 
@@ -41,5 +42,13 @@ describe("SidePanel", () => {
     const overlay = container.firstElementChild!;
     fireEvent.click(overlay);
     expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it("exposes dialog semantics and closes on Escape", () => {
+    const onClose = vi.fn();
+    render(<SidePanel child={PanelChild} isOpen onClose={onClose} />);
+    expect(screen.getByRole("dialog")).toHaveAttribute("aria-modal", "true");
+    fireEvent.keyDown(document, { key: "Escape" });
+    expect(onClose).toHaveBeenCalledOnce();
   });
 });

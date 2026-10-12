@@ -1,4 +1,4 @@
-import { useRef } from "react"
+import { useEffect, useRef } from "react"
 import { _Panel, type _PanelProp } from "./panelClass"
 
 /**
@@ -43,6 +43,9 @@ const InitializePanel = () => {
 
 export default function Panel({ ...a }: _PanelProp) {
     const { _panel } = InitializePanel()
-    a?.onFunc?.(_panel?.current as _Panel);
+    const onFunc = a.onFunc
+    useEffect(() => {
+        onFunc?.(_panel.current as _Panel)
+    }, [onFunc, _panel])
     return _panel.current?.build?.({ ...a })
 }

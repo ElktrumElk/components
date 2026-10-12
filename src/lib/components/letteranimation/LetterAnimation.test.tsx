@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import LetterAnimation from "./LetterAnimation";
 import { _LetterAnimation, getPresetKeyframes } from "./LetterAnimationClass";
@@ -64,6 +64,13 @@ describe("LetterAnimation", () => {
       expect(all[0].textContent).toBe("A");
       expect(all[1].textContent).toBe(" ");
       expect(all[2].textContent).toBe("B");
+    });
+
+    it("splits user-perceived graphemes rather than UTF-16 code units", () => {
+      const { container } = render(<LetterAnimation text="👨‍👩‍👧‍👦A" />);
+      const spans = container.querySelectorAll("[data-letter]");
+      expect(spans).toHaveLength(2);
+      expect(spans[0]).toHaveTextContent("👨‍👩‍👧‍👦");
     });
   });
 
@@ -164,6 +171,15 @@ describe("LetterAnimation", () => {
         expect.any(Object),
       );
     });
+
+    it("does not mutate shared preset keyframes when forcing opacity", () => {
+      const before = getPresetKeyframes("fadeUp");
+      render(<LetterAnimation text="X" animation="fadeUp" isOpacity />);
+      expect(getPresetKeyframes("fadeUp")).toEqual(before);
+      expect(animateMock.mock.calls[0][0]).toEqual(
+        before.map((frame) => ({ ...frame, opacity: 1 })),
+      );
+    });
   });
 
   describe("per-letter keyframes", () => {
@@ -237,9 +253,25 @@ describe("LetterAnimation", () => {
       render(<LetterAnimation text="A B" type="words" />);
       expect(animateMock).toHaveBeenCalledTimes(2);
     });
+
+    it("re-applies animations when props update", () => {
+      const { rerender } = render(<LetterAnimation text="A" duration={100} />);
+      rerender(<LetterAnimation text="AB" duration={200} />);
+      expect(animateMock).toHaveBeenCalledTimes(3);
+      expect(animateMock.mock.calls[1][1].duration).toBe(200);
+    });
   });
 
   describe("styling", () => {
+    it("exposes the full text once to assistive technology", () => {
+      const { container } = render(<LetterAnimation text="Hi" />);
+      const wrapper = container.firstElementChild!;
+      expect(wrapper).toHaveAttribute("aria-label", "Hi");
+      wrapper.querySelectorAll("[data-letter]").forEach((span) => {
+        expect(span).toHaveAttribute("aria-hidden", "true");
+      });
+    });
+
     it("applies className", () => {
       const { container } = render(
         <LetterAnimation text="Hi" className="my-anim" />,

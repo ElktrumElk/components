@@ -17,7 +17,7 @@ export interface ExampleProp {
     border?: string
     /** CSS border-radius value. */
     borderRadius?: string
-    /** HTML string injected via `dangerouslySetInnerHTML`. */
+    /** Text rendered inside the span. */
     text?: string,
     /** Callback invoked with the internal `_Example` instance after construction. */
     onFunc?: (self: _Example) => void
@@ -26,9 +26,9 @@ export interface ExampleProp {
 export class _Example {
     text: React.RefObject<HTMLSpanElement | null> = React.createRef<HTMLSpanElement>();
 
-    build? = ({...a}: ExampleProp): React.JSX.Element => {
+    build? = ({ text, onFunc: _onFunc, ...style }: ExampleProp): React.JSX.Element => {
         return (
-            <span ref={this.text} style={{...a}} dangerouslySetInnerHTML={{ __html: a.text ?? "" }} />
+            <span ref={this.text} style={style}>{text}</span>
         )
     }
 }

@@ -14,6 +14,7 @@ import type React from "react";
  * @property titleGap - Gap between title and subtitle (e.g. `"0.5rem"`, `"8px"`, `"0.25em"`).
  */
 export interface _HeaderProp {
+  id?: string;
   style?: React.CSSProperties;
   className?: string;
   underLine?: string;
@@ -43,6 +44,7 @@ export class _Header {
     return (
       <>
         <header
+          id={a.id}
           style={{
             display: "flex",
             justifyContent: "space-between",

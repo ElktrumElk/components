@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { _Navigator, type _NavigatorProp } from "./navigatorClass";
 
 const InitializeNavigator = () => {
@@ -39,6 +39,9 @@ const InitializeNavigator = () => {
  */
 export default function Navigator({ ...a }: _NavigatorProp) {
   const { _navigator } = InitializeNavigator();
-  a?.onFunc?.(_navigator?.current as _Navigator);
+  const onFunc = a.onFunc;
+  useEffect(() => {
+    onFunc?.(_navigator.current as _Navigator);
+  }, [onFunc, _navigator]);
   return _navigator.current?.build?.({ ...a });
 }

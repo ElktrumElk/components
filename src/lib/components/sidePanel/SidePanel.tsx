@@ -1,4 +1,4 @@
-import { useRef } from "react"
+import { useEffect, useRef } from "react"
 import { _SidePanel, type SidePanelProp } from "./sidePanelClass"
 
 const InitializeSidePanel = () => {
@@ -43,6 +43,18 @@ const InitializeSidePanel = () => {
  */
 export default function SidePanel({ ...a }: SidePanelProp) {
   const { _sidePanel } = InitializeSidePanel()
-  a?.onFunc?.(_sidePanel?.current as _SidePanel)
+  const { isOpen, onClose, onFunc } = a
+  useEffect(() => {
+    onFunc?.(_sidePanel.current as _SidePanel)
+  }, [onFunc, _sidePanel])
+
+  useEffect(() => {
+    if (!isOpen || !onClose) return
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose()
+    }
+    document.addEventListener('keydown', closeOnEscape)
+    return () => document.removeEventListener('keydown', closeOnEscape)
+  }, [isOpen, onClose])
   return _sidePanel.current?.build?.({ ...a })
 }

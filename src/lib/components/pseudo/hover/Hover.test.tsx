@@ -22,6 +22,7 @@ describe("Hover", () => {
     );
     const wrapper = container.firstElementChild as HTMLElement;
     expect(wrapper).toHaveStyle({
+      pointerEvents: "auto",
       height: "fit-content",
       width: "fit-content",
       padding: "0",

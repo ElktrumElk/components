@@ -1,4 +1,4 @@
-import { useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { _IconNetwork, type IconNetworkProp } from "./iconNetworkClass"
 
 const InitializeIconNetwork = () => {
@@ -43,6 +43,13 @@ const InitializeIconNetwork = () => {
  */
 export default function IconNetwork({ ...a }: IconNetworkProp) {
   const { _iconNetwork } = InitializeIconNetwork()
-  a?.onFunc?.(_iconNetwork?.current as _IconNetwork)
-  return _iconNetwork.current?.build?.({ ...a })
+  const { onFunc } = a
+  const [hasError, setHasError] = useState(false)
+
+  useEffect(() => setHasError(false), [a.src])
+
+  useEffect(() => {
+    if (_iconNetwork.current) onFunc?.(_iconNetwork.current)
+  }, [onFunc, _iconNetwork])
+  return _iconNetwork.current?.build?.({ ...a }, hasError, () => setHasError(true))
 }

@@ -27,7 +27,7 @@ export class _Text {
         return (
             <>
                 {
-                    a.type && a.text && <a.type className={a.className} style={{fontSize: a.size, color: a.color,...a.style}}>{a.text}</a.type>
+                    a.type && <a.type className={a.className} style={{fontSize: a.size, color: a.color,...a.style}}>{a.text}</a.type>
                 }
             </>
         )

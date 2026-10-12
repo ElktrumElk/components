@@ -35,7 +35,7 @@ type Position = 'static' | 'relative' | 'absolute' | 'fixed' | 'sticky'
 export interface StackProp {
   child?: React.JSX.ElementType
   direction?: Direction
-  gap?: (string & `${string}rem`) | `${string}px` | `${string}em`
+  gap?: string
   align?: Align
   justify?: Justify
   wrap?: boolean

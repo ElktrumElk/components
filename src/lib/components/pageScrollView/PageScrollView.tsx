@@ -48,14 +48,17 @@ const InitializePageScrollView = () => {
 export default function PageScrollView({ ...a }: PageScrollViewProp) {
   const { _pageScrollView } = InitializePageScrollView();
   const observerRef = useRef<IntersectionObserver | null>(null);
+  const { activeSection, onFunc, onSectionChange, sections } = a;
 
-  a?.onFunc?.(_pageScrollView?.current as _PageScrollView);
+  useEffect(() => {
+    onFunc?.(_pageScrollView.current as _PageScrollView);
+  }, [onFunc, _pageScrollView]);
 
   useEffect(() => {
     const instance = _pageScrollView.current;
-    if (!instance || !a.sections?.length) return;
-
     observerRef.current?.disconnect();
+    observerRef.current = null;
+    if (!instance || !sections?.length) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -64,7 +67,7 @@ export default function PageScrollView({ ...a }: PageScrollViewProp) {
             const id = entry.target.getAttribute("data-section-id");
             if (id) {
               instance.currentSection = id;
-              a.onSectionChange?.(id);
+              onSectionChange?.(id);
             }
           }
         }
@@ -72,21 +75,24 @@ export default function PageScrollView({ ...a }: PageScrollViewProp) {
       { threshold: 0.6 }
     );
 
-    for (const section of a.sections) {
+    for (const section of sections) {
       const el = instance.sectionRefs.get(section.id);
       if (el) observer.observe(el);
     }
 
     observerRef.current = observer;
 
-    return () => observer.disconnect();
-  }, [a.sections, a.onSectionChange]);
+    return () => {
+      observer.disconnect();
+      if (observerRef.current === observer) observerRef.current = null;
+    };
+  }, [_pageScrollView, sections, onSectionChange]);
 
   useEffect(() => {
-    if (a.activeSection) {
-      _pageScrollView.current?.scrollToSection(a.activeSection);
+    if (activeSection) {
+      _pageScrollView.current?.scrollToSection(activeSection);
     }
-  }, [a.activeSection]);
+  }, [_pageScrollView, activeSection]);
 
   return _pageScrollView.current?.build?.({ ...a });
 }

@@ -46,61 +46,71 @@ describe('Card', () => {
 
   it('applies default padding md', () => {
     const { container } = render(<Card body={() => <div />} />)
-    const card = container.querySelector('div > div')
+    const card = container.querySelector('article')
     expect(card).toHaveStyle({ padding: '1rem' })
   })
 
   it('applies padding none', () => {
     const { container } = render(<Card body={() => <div />} padding="none" />)
-    const card = container.querySelector('div > div')
+    const card = container.querySelector('article')
     expect(card).toHaveStyle({ padding: '0' })
   })
 
   it('applies padding sm', () => {
     const { container } = render(<Card body={() => <div />} padding="sm" />)
-    const card = container.querySelector('div > div')
+    const card = container.querySelector('article')
     expect(card).toHaveStyle({ padding: '.5rem' })
   })
 
   it('applies padding lg', () => {
     const { container } = render(<Card body={() => <div />} padding="lg" />)
-    const card = container.querySelector('div > div')
+    const card = container.querySelector('article')
     expect(card).toHaveStyle({ padding: '1.5rem' })
+  })
+
+  it('applies custom padding and radius values', () => {
+    const { container } = render(
+      <Card body={() => <div />} padding="2.25rem" radius="12px" />
+    )
+    expect(container.querySelector('article')).toHaveStyle({
+      padding: '2.25rem',
+      borderRadius: '12px',
+    })
   })
 
   it('applies default radius md', () => {
     const { container } = render(<Card body={() => <div />} />)
-    const card = container.querySelector('div > div')
+    const card = container.querySelector('article')
     expect(card).toHaveStyle({ borderRadius: '.5rem' })
   })
 
   it('applies radius xl', () => {
     const { container } = render(<Card body={() => <div />} radius="xl" />)
-    const card = container.querySelector('div > div')
+    const card = container.querySelector('article')
     expect(card).toHaveStyle({ borderRadius: '1rem' })
   })
 
   it('applies shadow', () => {
     const { container } = render(<Card body={() => <div />} shadow />)
-    const card = container.querySelector('div > div')
+    const card = container.querySelector('article')
     expect(card).toHaveStyle({ boxShadow: '0 2px 8px rgba(0,0,0,0.2)' })
   })
 
   it('does not apply shadow by default', () => {
     const { container } = render(<Card body={() => <div />} />)
-    const card = container.querySelector('div > div')
+    const card = container.querySelector('article')
     expect(card?.getAttribute('style')).not.toContain('boxShadow')
   })
 
   it('applies custom backgroundColor', () => {
     const { container } = render(<Card body={() => <div />} backgroundColor="rgb(0, 0, 0)" />)
-    const card = container.querySelector('div > div')
+    const card = container.querySelector('article')
     expect(card).toHaveStyle({ backgroundColor: 'rgb(0, 0, 0)' })
   })
 
   it('applies width and height', () => {
     const { container } = render(<Card body={() => <div />} width="300px" height="200px" />)
-    const card = container.querySelector('div > div')
+    const card = container.querySelector('article')
     expect(card).toHaveStyle({ width: '300px', height: '200px' })
   })
 
@@ -111,14 +121,14 @@ describe('Card', () => {
 
   it('applies custom style', () => {
     const { container } = render(<Card body={() => <div />} style={{ opacity: 0.5 }} />)
-    const card = container.querySelector('div > div')
+    const card = container.querySelector('article')
     expect(card).toHaveStyle({ opacity: 0.5 })
   })
 
   it('handles click via gest', async () => {
     const onClick = vi.fn()
     const { container } = render(<Card body={() => <div />} gest={{ onClick }} />)
-    const card = container.querySelector('div > div')!
+    const card = container.querySelector('article')!
     await userEvent.click(card)
     expect(onClick).toHaveBeenCalledOnce()
   })

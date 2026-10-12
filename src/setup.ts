@@ -44,7 +44,8 @@ declare global {
       transition: React.JSX.Element;
       "section-divider": React.JSX.Element;
       padding: React.JSX.Element;
-      gridView: React.JSX.Element
+      gridView: React.JSX.Element;
+      Main: React.JSX.Element
     }
   }
 }

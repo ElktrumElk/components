@@ -46,4 +46,10 @@ describe('Tiles', () => {
     const style = root.getAttribute('style')!
     expect(style).toContain('border-bottom: 1px solid gray')
   })
+
+  it('does not replace empty padding and gap with defaults', () => {
+    const { container } = render(<Tiles padding="" gap="" />)
+    const style = container.firstElementChild?.getAttribute('style') ?? ''
+    expect(style).not.toContain('0.75rem')
+  })
 })

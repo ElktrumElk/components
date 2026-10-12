@@ -1,4 +1,4 @@
-import { useRef } from "react"
+import { useEffect, useRef } from "react"
 import { _Button, type ButtonProp } from "./_buttonClass"
 
 
@@ -41,6 +41,7 @@ const InitializeButton = () => {
  * @param child - Component type rendered as the button's inner content.
  * @param border - CSS border value for the button.
  * @param color - Text color of the button.
+ * @param splashColor - Text color of the button.
  * @param borderRadius - CSS border-radius of the button.
  * @param padding - CSS padding inside the button.
  * @param width - CSS width of the button.
@@ -53,6 +54,9 @@ const InitializeButton = () => {
 export default function Button ({...a}: ButtonProp) {
 
     const {_button} = InitializeButton()
-    a?.onFunc?.(_button?.current as _Button);
+    const {onFunc} = a
+    useEffect(() => {
+        if (_button.current) onFunc?.(_button.current)
+    }, [onFunc, _button])
     return _button.current?.build?.({...a})
 }

@@ -1,0 +1,160 @@
+# elk-components strict usage contract
+
+Package: `elk-components`
+Purpose: React 18+ class-controller-backed UI, layout, animation, style, and icon primitives.
+Repository documentation: ./docs/AI_COMPONENT_RULES.md
+General API reference: ./README.md
+Contributor architecture: ./AIAgent.md
+
+## Public entrypoints
+
+- `elk-components`: components, class reactor, stores, hooks, and EStyle
+- `elk-components/hooks`: hook and store APIs
+- `elk-components/icons`: individual icon components
+- `elk-components/style-rule`: EStyle CSS-in-JS engine
+- `elk-components/plugin`: Vite auto-import plugin
+- `elk-components/styles.css`: packaged component CSS
+
+## Highest priority rules
+
+1. Content slots use `React.JSX.ElementType`. Pass `child={() => <Text ... />}`.
+   Never pass `child={<Text ... />}` and do not use conventional nested children
+   unless that component explicitly documents support.
+2. Named slots such as `header`, `body`, `footer`, `title`, `leading`, `trailing`,
+   and `action` also receive zero-argument component functions.
+3. Native events and attributes belong in `gest`, for example
+   `gest={{ onClick, "aria-label": "Save" }}`.
+4. Use top-level `className` and `style`; do not hide those in `gest`.
+5. Declare owned structure through component props: `padding`, `width`, `height`,
+   `gap`, `direction`, `align`, and `justify`.
+6. Use EStyle classes for pseudo states, descendant selectors, attributes, and
+   media rules. Call `.mount("stable-namespace")` once at module scope when using
+   `styles.classes.*`. Mount is not needed for inline-only `styles.rule.*()`.
+7. `Components<State>` is a plain TypeScript reactor controller, not
+   `React.Component`. Never call React hooks inside it.
+8. Use `useComponent(() => new Controller())` to create and subscribe to one
+   controller per wrapper instance.
+9. State updates must return a new snapshot:
+   `this.set(state => ({ ...state, count: state.count + 1 }))`.
+10. Never import internal underscore classes, instantiate them in application
+    code, or call their `build()` methods.
+11. Use `onFunc` only for documented imperative controls, not normal rendering
+    or state flow.
+12. Every icon-only button requires an accessible name.
+13. Prefer semantic Button/anchor behavior over clickable layout containers.
+14. Import `elk-components/styles.css` once when packaged CSS components are used.
+15. Do not mix controlled props with competing uncontrolled defaults.
+
+## Correct minimal example
+
+```tsx
+import {
+  Button,
+  Container,
+  Icon,
+  Stack,
+  Text,
+} from "elk-components";
+import { ArrowRight } from "elk-components/icons";
+import "elk-components/styles.css";
+
+export function WelcomeCard() {
+  return (
+    <Container
+      width="100%"
+      padding="1.5rem"
+      gest={{ role: "region", "aria-label": "Welcome" }}
+      child={() => (
+        <Stack
+          gap="1rem"
+          child={() => (
+            <>
+              <Text type="h2" text="Welcome" />
+              <Text type="p" text="Continue setting up your workspace." />
+              <Button
+                padding=".75rem 1rem"
+                gest={{ onClick: continueSetup }}
+                child={() => (
+                  <Stack
+                    direction="row"
+                    align="center"
+                    gap=".5rem"
+                    child={() => (
+                      <>
+                        <Text type="p" text="Continue" />
+                        <Icon icon={ArrowRight} size="sm" />
+                      </>
+                    )}
+                  />
+                )}
+              />
+            </>
+          )}
+        />
+      )}
+    />
+  );
+}
+```
+
+## Correct reactor example
+
+```tsx
+class CounterController extends Components<{ count: number }> {
+  constructor() {
+    super({ count: 0 });
+  }
+
+  increment = () =>
+    this.set(state => ({ ...state, count: state.count + 1 }));
+}
+
+function Counter() {
+  const [controller, state] = useComponent(() => new CounterController());
+  return (
+    <Button
+      gest={{ onClick: controller.increment }}
+      child={() => <Text type="p" text={`Count: ${state.count}`} />}
+    />
+  );
+}
+```
+
+## Correct EStyle example
+
+```tsx
+const styles = new Estyle()
+  .defineRules({
+    action: {
+      color: "white",
+      backgroundColor: "#173f36",
+      "&:hover": { backgroundColor: "#d75632" },
+      "&:focus-visible": { outline: "3px solid #4668df" },
+    },
+  })
+  .defineMedia({
+    "(max-width: 600px)": { action: { width: "100%" } },
+  })
+  .mount("account-action");
+
+<Button
+  className={styles.classes.action}
+  padding=".75rem 1rem"
+  child={() => <Text type="p" text="Save" />}
+/>;
+```
+
+## Forbidden patterns
+
+- raw JSX in ElementType slots
+- conventional children on slot-based components
+- hooks inside controller classes
+- direct imports from `src/lib/components`
+- manually calling controller `build()`
+- module-global stores for local rerender state
+- unlabelled icon buttons
+- unsupported top-level native event props
+- generated class usage without mounting the EStyle sheet
+- mounting a new EStyle sheet during every render
+
+Read `docs/AI_COMPONENT_RULES.md` before generating non-trivial code.

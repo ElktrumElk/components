@@ -1,4 +1,4 @@
-import { useRef } from "react"
+import { useEffect, useRef } from "react"
 import { _BottomModal, type BottomModalProp } from "./bottomModalClass"
 
 const InitializeBottomModal = () => {
@@ -51,6 +51,9 @@ const InitializeBottomModal = () => {
  */
 export default function BottomModal({ ...a }: BottomModalProp) {
   const { _bottomModal } = InitializeBottomModal()
-  a?.onFunc?.(_bottomModal?.current as _BottomModal)
+  const onFunc = a.onFunc
+  useEffect(() => {
+    onFunc?.(_bottomModal.current as _BottomModal)
+  }, [onFunc, _bottomModal])
   return _bottomModal.current?.build?.({ ...a })
 }

@@ -23,7 +23,13 @@ describe('ListView', () => {
   it('applies gap', () => {
     const { container } = render(<ListView gap="0.5rem" child={() => <li />} />)
     const ul = container.querySelector('ul')
-    expect(ul).toHaveStyle({ gap: '0.5rem' })
+    expect(ul).toHaveStyle({ display: 'flex', flexDirection: 'column', gap: '0.5rem' })
+  })
+
+  it('renders an ordered list when requested', () => {
+    const { container } = render(<ListView ordered child={() => <li />} />)
+    expect(container.querySelector('ol')).toBeInTheDocument()
+    expect(container.querySelector('ul')).not.toBeInTheDocument()
   })
 
   it('applies custom className and style', () => {

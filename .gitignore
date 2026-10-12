@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+src/App.css
+src/App.tsx
+store
+cmp

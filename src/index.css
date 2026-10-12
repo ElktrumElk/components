@@ -1,5 +1,7 @@
+html {
+  min-height: 100%;
+}
 
-
-.v{
-    width: max-content;
+#root {
+  min-height: 100vh;
 }

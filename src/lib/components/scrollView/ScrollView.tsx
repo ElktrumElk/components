@@ -1,5 +1,6 @@
-import { useRef } from "react"
+import { useEffect, useRef } from "react"
 import { _ScrollView, type ScrollViewProp } from "./scrollViewClass"
+import "./__scrollView.css"
 
 /**
  * ScrollView component that provides a scrollable container with configurable direction and optional hidden scrollbar.
@@ -39,6 +40,9 @@ const InitializeScrollView = () => {
 
 export default function ScrollView({ ...a }: ScrollViewProp) {
   const { _scrollView } = InitializeScrollView()
-  a?.onFunc?.(_scrollView?.current as _ScrollView)
+  const onFunc = a.onFunc
+  useEffect(() => {
+    onFunc?.(_scrollView.current as _ScrollView)
+  }, [onFunc, _scrollView])
   return _scrollView.current?.build?.({ ...a })
 }

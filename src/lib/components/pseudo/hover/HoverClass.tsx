@@ -1,5 +1,5 @@
 import React from "react";
-import { createStore } from "../../../../components";
+import { createStore } from "../../../../hooks/createStore";
 
 export interface HoverProp {
   style: React.CSSProperties;
@@ -11,39 +11,50 @@ export interface HoverProp {
 export const __hoverStore = createStore({ isHover: false });
 
 export class _Hover {
-  savedStyle: any;
+  savedStyle: Array<string | null> = [];
 
   build? = ({ ...a }: HoverProp): React.JSX.Element => {
     const __key = Object.keys(a.style);
-
+    this.savedStyle = []
     return (
       <>
         <div
           key={a.key}
           style={{
+            display: 'flex',
+            pointerEvents: 'auto',
             height: "fit-content",
             width: "fit-content",
             padding: "0",
             margin: "0",
+            
           }}
           onMouseEnter={(e) => {
             const target = e.currentTarget as HTMLElement;
+            this.savedStyle = [];
+            Array.from(target.children).forEach((child) => {
 
-            this.savedStyle = target.children[0]?.getAttribute("style");
-            const __child = target.children[0] as HTMLDivElement;
-            if (a.transition !== null) {
-              __child.style.transition = a.transition ?? "";
-            }
-            __key.forEach((key) => {
-              (__child.style as unknown as Record<string, string>)[key] = (a.style as unknown as Record<string, string>)[key];
-            });
+              const __child = child as HTMLElement
+              this.savedStyle.push(__child?.getAttribute("style"))
+
+              if (a.transition !== null) {
+                __child.style.transition = a.transition ?? "";
+              }
+              __key.forEach((key) => {
+                (__child.style as unknown as Record<string, string>)[key] = (a.style as unknown as Record<string, string>)[key];
+              });
+            })
           }}
+
           onMouseLeave={(e) => {
             const target = e.currentTarget as HTMLElement;
-            const __child = target.children[0] as HTMLDivElement;
+            Array.from(target.children).forEach((child, idx) => {
+              const __child = child as HTMLElement
+              __child.setAttribute("style", this.savedStyle[idx] ?? "")
+              __child.style.transition = a.transition ?? "";
+            })
 
-            __child.setAttribute("style", this.savedStyle ?? "");
-            __child.style.transition = a.transition ?? "";
+
           }}
         >
           {a.child && <a.child />}

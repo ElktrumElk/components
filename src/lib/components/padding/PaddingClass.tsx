@@ -34,7 +34,19 @@ export class _Padding {
   build? = ({ ...a }: PaddingProp & _keypadding): React.JSX.Element => {
     return (
       <>
-        <div key={a.key} style={{ padding: "1rem", width: '100%', height: '100%', ...a }}>
+        <div key={a.key} style={{
+          padding: a.padding ?? "1rem",
+          ...(a.left !== undefined && { paddingLeft: a.left }),
+          ...(a.right !== undefined && { paddingRight: a.right }),
+          ...(a.top !== undefined && { paddingTop: a.top }),
+          ...(a.bottom !== undefined && { paddingBottom: a.bottom }),
+          ...(a.inline !== undefined && { paddingInline: a.inline }),
+          ...(a.block !== undefined && { paddingBlock: a.block }),
+          ...(a.blockStart !== undefined && { paddingBlockStart: a.blockStart }),
+          ...(a.blockEnd !== undefined && { paddingBlockEnd: a.blockEnd }),
+          width: '100%',
+          height: '100%',
+        }}>
             {a.child && <a.child />}
         </div>
       </>

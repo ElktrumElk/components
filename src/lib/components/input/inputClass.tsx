@@ -10,7 +10,7 @@ type InputType = 'text' | 'password' | 'email' | 'number' | 'tel' | 'url' | 'sea
  *
  * @property type - Input type: `"text"` (default) | `"password"` | `"email"` | `"number"` | `"tel"` | `"url"` | `"search"`.
  * @property placeholder - Placeholder text shown when the input is empty.
- * @property value - Default value of the input.
+ * @property value - Controlled value of the input.
  * @property disabled - Disables the input when `true`.
  * @property readOnly - Makes the input read-only when `true`.
  * @property prefix - Component rendered before (left of) the input.
@@ -89,7 +89,7 @@ export class _Input {
           <input
             type={a.type || 'text'}
             placeholder={a.placeholder}
-            defaultValue={a.value}
+            value={a.value}
             disabled={a.disabled}
             readOnly={a.readOnly}
             style={baseStyle}

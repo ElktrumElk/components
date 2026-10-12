@@ -2,6 +2,10 @@
 
 React animation, layout, and styling toolkit. Declarative motion, transitions, letter animations, and composable UI primitives with built-in icons.
 
+AI agents and code generators must follow the
+[strict Elk Components usage contract](./docs/AI_COMPONENT_RULES.md). A concise
+machine-readable version is available in [`llms.txt`](./llms.txt).
+
 ---
 
 ## Install
@@ -15,6 +19,92 @@ npx create-elk-component@latest
 ---
 
 ## Conventions
+
+### Class Controllers And Reactors
+
+Every stateful Elk component can keep its behavior in a plain TypeScript class
+that extends `Components<State>`. This is a controller class, not
+`React.Component`: React hooks remain in the small wrapper while the class owns
+an isolated reactor with `get`, `set`, `reset`, and `subscribe`.
+
+Use `useComponent` to create one controller per mounted component, subscribe to
+its state with `useSyncExternalStore`, and expose it through `onFunc` only after
+React commits the render.
+
+```tsx
+import { Components, useComponent } from "elk-components";
+
+class CounterController extends Components<{ count: number }> {
+  constructor() {
+    super({ count: 0 });
+  }
+
+  increment = () =>
+    this.set((state) => ({ count: state.count + 1 }));
+}
+
+function Counter() {
+  const [controller, state] = useComponent(
+    () => new CounterController(),
+  );
+
+  return (
+    <button type="button" onClick={controller.increment}>
+      {state.count}
+    </button>
+  );
+}
+```
+
+React hooks must not be called inside controller classes. Use the class reactor
+for component-local state, and `createStore` for deliberately shared state.
+
+### Typed Style Rules
+
+`Estyle` creates typed inline rules and stable generated classes from the same
+definition. Nested selectors begin with `&`, so hover, active, focus, attribute,
+and descendant states stay beside the component's base design. `defineMedia`
+adds responsive rules without manual stylesheet bookkeeping.
+
+It is available from either the main package or its dedicated entrypoint:
+
+```ts
+import { Estyle } from "elk-components";
+// or
+import { Estyle } from "elk-components/style-rule";
+```
+
+```tsx
+const styles = new Estyle()
+  .defineRules({
+    action: {
+      padding: ".75rem 1rem",
+      background: "#173f36",
+      color: "white",
+      "&:hover": { background: "#d75632" },
+      "&:active": { transform: "scale(.98)" },
+      "&:focus-visible": { outline: "3px solid #4668df" },
+      "& .icon": { marginRight: ".5rem" },
+    },
+  })
+  .defineMedia({
+    "(max-width: 600px)": {
+      action: { width: "100%" },
+    },
+  })
+  .mount("account-screen");
+
+<Button
+  className={styles.classes.action}
+  padding=".75rem 1rem"
+  child={() => <Text type="p" text="Continue" />}
+/>
+```
+
+Use `styles.rule.action()` when inline styles are needed. Nested selectors are
+automatically omitted from inline output. Call `styles.destroy()` when a
+dynamically-created sheet is no longer needed; module-level app sheets can stay
+mounted for the lifetime of the application.
 
 ### Render Props (`child`, `header`, `body`, etc.)
 
@@ -49,6 +139,41 @@ Components that expose imperative control accept `onFunc`, which receives the in
 ---
 
 ## Components
+
+### BottomNavigationBar
+
+A semantic, safe-area-aware app navigation bar. It supports fixed and floating
+Flutter-style placement, controlled or controller-owned selection, active
+indicators, links, buttons, disabled items, and custom content.
+
+| Prop | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `items` | `BottomNavigationBarItem[]` | No | `[]` | Navigation destinations |
+| `activeIndex` | `number` | No | - | Controlled active destination |
+| `defaultActiveIndex` | `number` | No | `0` | Initial uncontrolled destination |
+| `onChange` | `(index, item) => void` | No | - | Selection callback |
+| `mode` | `"fixed" \| "floating"` | No | `"fixed"` | Shell placement |
+| `isGlider` | `boolean` | No | `true` | Show the active pill |
+| `links` | `ReactNode` | No | - | Custom content when items are omitted |
+| `ariaLabel` | `string` | No | `"Primary navigation"` | Navigation label |
+
+```tsx
+<BottomNavigationBar
+  mode="floating"
+  items={[
+    { id: "home", label: "Home", icon: <Home /> },
+    { id: "library", label: "Library", icon: <Layers /> },
+  ]}
+  defaultActiveIndex={0}
+  onChange={(index) => console.log(index)}
+/>
+```
+
+Import the packaged component styles once in an application entrypoint:
+
+```tsx
+import "elk-components/styles.css";
+```
 
 ### Page
 
@@ -85,7 +210,7 @@ App bar with leading element, title/subtitle, and action slot.
 | `title` | `ElementType` | Yes | — | Title content |
 | `subTitle` | `ElementType` | No | — | Subtitle below title |
 | `action` | `ElementType` | No | — | Right-side actions |
-| `titleGap` | `string` | No | — | Gap between title and subtitle. Typed: `${string}rem` / `${string}px` / `${string}em` |
+| `titleGap` | `string` | No | — | Gap between title and subtitle |
 | `className` | `string` | No | — | CSS class |
 | `style` | `CSSProperties` | No | — | Override default flex layout |
 
@@ -151,6 +276,7 @@ Clickable button with content slot.
 | Prop | Type | Required | Default | Description |
 |------|------|----------|---------|-------------|
 | `child` | `ElementType` | No | — | Button content |
+| `backgroundColor` | `string` | No | — | Background color |
 | `border` | `string` | No | — | Border |
 | `borderRadius` | `string` | No | — | Border radius |
 | `color` | `string` | No | — | Text color |
@@ -180,6 +306,7 @@ Button that renders an icon instead of text content. Extends Button.
 | Prop | Type | Required | Default | Description |
 |------|------|----------|---------|-------------|
 | `icon` | `ElementType` | No | — | Icon component to render |
+| `backgroundColor` | `string` | No | `"transparent"` | Background color |
 | `borderRadius` | `string` | No | — | Border radius |
 | `width` | `string` | No | — | Width |
 | `height` | `string` | No | — | Height |
@@ -218,7 +345,7 @@ Flex container with full direction/alignment/gap control.
 |------|------|----------|---------|-------------|
 | `child` | `ElementType` | No | — | Stacked content |
 | `direction` | `'column'\|'row'\|'row-reverse'\|'column-reverse'` | No | `"column"` | Flex direction |
-| `gap` | `string` | No | `"0"` | Gap between items. Typed: `${string}rem` / `${string}px` / `${string}em` |
+| `gap` | `string` | No | `"0"` | Gap between items |
 | `align` | `'stretch'\|'flex-start'\|'flex-end'\|'center'\|'baseline'` | No | `"stretch"` | Cross-axis alignment |
 | `justify` | `'flex-start'\|'flex-end'\|'center'\|'space-between'\|'space-around'\|'space-evenly'` | No | `"flex-start"` | Main-axis alignment |
 | `wrap` | `boolean` | No | — | Enable flex-wrap |
@@ -553,8 +680,8 @@ When you pass any motion prop (`initial`, `animate`, `exit`, `whileHover`, `whil
 | `whileInView` | `Record<string, any>` | No | — | State when entering viewport |
 | `transition` | `MotionTransition` | No | spring | Spring or tween config |
 | `variants` | `Record<string, any>` | No | — | Named animation states |
-| `layout` | `boolean \| "position" \| "size"` | No | — | Layout animations |
-| `viewport` | `{ once?: boolean; amount?: number }` | No | — | Viewport config for `whileInView` |
+| `layout` | `boolean \| "position" \| "size" \| "preserve"` | No | — | Layout animations |
+| `viewport` | `{ once?: boolean; amount?: number \| "some" \| "all" }` | No | — | Viewport config for `whileInView` |
 | `className` | `string` | No | — | CSS class |
 | `style` | `CSSProperties` | No | — | Inline styles |
 
@@ -660,6 +787,8 @@ Uses CSS transitions with 13 built-in effect presets.
 | `isAutomatic` | `boolean` | No | false | Transition on mount |
 | `gesture` | `"click" \| "hover" \| "focus" \| "scroll" \| "none"` | No | "none" | Trigger gesture |
 | `origin` | `string` | No | "top left" | Transform origin |
+| `threshold` | `number` | No | — | Threshold for gesture timing calculations |
+| `onTransitionEnd` | `() => void` | No | — | Callback fired when the transition animation ends |
 | `className` | `string` | No | — | CSS class |
 | `style` | `CSSProperties` | No | — | Inline styles |
 
@@ -756,6 +885,7 @@ Animates individual letters or words of a text string with 20 built-in presets, 
 | `direction` | `PlaybackDirection` | No | "normal" | Play direction |
 | `fill` | `FillMode` | No | "forwards" | Style retention |
 | `easing` | `string` | No | "ease" | CSS timing function |
+| `isOpacity` | `boolean` | No | — | Force opacity to 1 (transform-only animation, no fade) |
 | `className` | `string` | No | — | CSS class |
 | `style` | `CSSProperties` | No | — | Inline styles |
 
@@ -1062,7 +1192,7 @@ Unordered `<ul>` list container with `listStyle: none`. Use with `List` children
 | `child` | `ElementType` | No | — | List items content |
 | `padding` | `string` | No | — | Padding |
 | `margin` | `string` | No | — | Margin |
-| `gap` | `string` | No | — | Gap between items. Typed: `${string}rem` / `${string}px` / `${string}em` |
+| `gap` | `string` | No | — | Gap between items |
 | `className` | `string` | No | — | CSS class |
 | `style` | `CSSProperties` | No | — | Inline styles |
 | `onFunc` | `(self: _ListView) => void` | No | — | Instance callback |
@@ -1085,7 +1215,7 @@ Vertical menu container. Delegates to `Stack` with `direction: "column"`.
 | Prop | Type | Required | Default | Description |
 |------|------|----------|---------|-------------|
 | `child` | `ElementType` | No | — | Menu content |
-| `gap` | `string` | No | `"0rem"` | Gap between items. Typed: `${string}rem` / `${string}px` / `${string}em` |
+| `gap` | `string` | No | `"0rem"` | Gap between items |
 | `className` | `string` | No | — | CSS class |
 | `style` | `CSSProperties` | No | — | Inline styles |
 | `gest` | `HTMLAttributes<HTMLDivElement>` | No | — | Native div attributes |
@@ -1349,14 +1479,14 @@ Lightweight placeholder `<span>` for prototyping. Renders HTML via `dangerouslyS
 
 ### SectionDivider
 
-SVG-based decorative divider between content sections. 12 built-in visual variants with continuous scroll animation and floating undulation.
+SVG-based decorative divider between content sections. 12 built-in visual variants with smooth path-morphing animation and vertical float undulation. Animations only run when explicitly enabled — component is static by default.
 
 | Prop | Type | Required | Default | Description |
 |------|------|----------|---------|-------------|
 | `variant` | `'wave'\|'curl'\|'zigzag'\|'dots'\|'tilde'\|'heart'\|'diamond'\|'leaf'\|'curve'\|'pulse'\|'loop'\|'scroll'` | No | `"wave"` | Visual style |
 | `color` | `string` | No | `"#e2e8f0"` | Stroke/fallback fill color |
-| `fillColor` | `string` | No | uses `color` | Fill color for filled variants |
-| `strokeWidth` | `number` | No | `2` | Stroke width in px |
+| `fillColor` | `string` | No | uses `color` | Fill color for filled variants (wave, curl, tilde, heart, leaf, curve, loop, scroll) |
+| `strokeWidth` | `number` | No | `2` | Stroke width in px for stroked variants (zigzag, diamond, pulse, dots) |
 | `height` | `number` | No | `80` | SVG height in px |
 | `width` | `string` | No | `"100%"` | CSS width |
 | `flip` | `boolean` | No | — | Mirror vertically |
@@ -1366,16 +1496,14 @@ SVG-based decorative divider between content sections. 12 built-in visual varian
 | `child` | `ElementType` | No | — | Child component |
 | `gest` | `SVGAttributes<SVGSVGElement>` | No | — | SVG attributes |
 | `onFunc` | `(self: _SectionDivider) => void` | No | — | Instance callback |
-| `animate` | `boolean` | No | — | Enable continuous scroll animation |
-| `duration` | `number` | No | variant-specific | Scroll animation duration per cycle in ms |
+| `animate` | `boolean` | No | — | Enable smooth path-morphing animation on the wave surface. Morphs the SVG path `d` attribute continuously. |
+| `duration` | `number` | No | `4000` | Animation duration per full cycle in ms |
 | `delay` | `number` | No | `0` | Delay before animation starts in ms |
-| `direction` | `'ltr'\|'rtl'\|'ttb'\|'btt'` | No | `"ltr"` | Scroll direction |
-| `easing` | `'linear'\|'ease'\|'ease-in'\|'ease-out'\|'ease-in-out'\|string` | No | `"linear"` | Scroll easing function |
-| `gesture` | `'click'\|'hover'\|'focus'\|'scroll'\|'none'` | No | — | Gesture that triggers the animation |
-| `listen` | `Store` | No | — | A store; when its state changes the animation replays |
-| `float` | `boolean` | No | — | Enable continuous vertical undulation (bobbing on water) |
-| `amplitude` | `number` | No | `15` | Float distance in px from center. Higher = more dramatic |
-| `frequency` | `number` | No | variant-specific | Float oscillation cycles per animation duration |
+| `easing` | `'linear'\|'ease'\|'ease-in'\|'ease-out'\|'ease-in-out'\|string` | No | `"linear"` | CSS easing function for path morphing |
+| `float` | `boolean` | No | — | Enable vertical undulation — the entire divider base moves up/down. Uses `amplitude` and `frequency`. |
+| `amplitude` | `number` | No | `15` | For `float`: vertical travel distance in px. For `life`: ripple energy intensity. |
+| `frequency` | `number` | No | `2` | For `float`: oscillation cycles per duration. For `life`: ripple density across the surface. |
+| `life` | `boolean` | No | — | Enable physics-based ripple animation. Simulates traveling wave packets with Gaussian envelopes, harmonic interference, and organic energy dispersal. Implies both `animate` + `float`. Uses elastic easing. |
 
 ```tsx
 static
@@ -1385,29 +1513,30 @@ static
 ```
 
 ```tsx
-continuous scroll animation
+continuous path-morphing animation (only when animate is true)
 <SectionDivider variant="wave" animate color="#6366f1" height={60} />
-<SectionDivider variant="curl" animate direction="rtl" easing="ease-in-out" />
-<SectionDivider variant="heart" fillColor="#ec4899" animate direction="ttb" />
+<SectionDivider variant="curl" animate easing="ease-in-out" />
+<SectionDivider variant="heart" fillColor="#ec4899" animate />
 ```
 
 ```tsx
-floating undulation (bobbing on water)
+floating undulation — entire base bobs up/down (only when float is true)
 <SectionDivider variant="wave" float color="#6366f1" height={60} />
 <SectionDivider variant="curl" float amplitude={25} frequency={6} />
 <SectionDivider variant="tilde" float amplitude={10} frequency={2} />
 ```
 
 ```tsx
-combine scroll + float
+combine animate + float
 <SectionDivider variant="wave" animate float color="#6366f1" />
-<SectionDivider variant="curl" animate float amplitude={20} frequency={4} direction="rtl" easing="ease-in-out" />
+<SectionDivider variant="curl" animate float amplitude={20} frequency={4} easing="ease-in-out" />
 ```
 
 ```tsx
-gesture-triggered
-<SectionDivider variant="dots" gesture="hover" animate float color="#6366f1" />
-<SectionDivider variant="wave" gesture="click" animate float />
+life — physics-based ripple animation (implies animate + float)
+<SectionDivider variant="wave" life color="#6366f1" />
+<SectionDivider variant="curl" life amplitude={25} frequency={6} />
+<SectionDivider variant="wave" life animate color="#22c55e" />
 ```
 
 ---
@@ -1775,16 +1904,9 @@ function Content() {
 
 ## Advanced Prop Patterns
 
-### Typed CSS Units
+### CSS Values
 
-Props like `gap`, `titleGap`, and `borderRadius` use template literal types for autocomplete on valid CSS length values:
-
-```tsx
-// TypeScript autocompletes these patterns:
-gap=".5rem"
-gap="10px"
-gap="1.5em"
-```
+All style props accept any valid CSS string. Gap, margin, padding, and dimension props are typed as `string` and accept any CSS length value (`rem`, `px`, `em`, `%`, etc.).
 
 ### Enum-based Sizing
 
@@ -1842,4 +1964,113 @@ Avatar supports three content sources with a clear priority chain:
 
 // All three together — src takes priority
 <Avatar src="/user.jpg" icon={Lock} fallback={() => <Text text="JD" type="p" />} />
+```
+
+---
+
+## AI Agent Guidelines
+
+Strict rules for AI coding assistants when using elk-components:
+
+### Render Prop Pattern (MANDATORY)
+
+ALL content slots (`child`, `header`, `body`, `footer`, `title`, `subtitle`, `leading`, `trailing`, `icon`, `trigger`, `label`, etc.) accept `React.JSX.ElementType` — pass an arrow function, NEVER raw JSX.
+
+```tsx
+// CORRECT
+<Button child={() => <Text text="Click" type="p" />} />
+<Card header={() => <Text text="Title" type="h2" />} body={() => <Text text="Body" type="p" />} />
+<Stack direction="row" gap="1rem" child={() => (
+  <>
+    <Button child={() => <Text text="A" type="p" />} />
+    <Button child={() => <Text text="B" type="p" />} />
+  </>
+)} />
+
+// WRONG — will break
+<Button child={<Text text="Click" type="p" />} />
+<Card header={<Text text="Title" type="h2" />} />
+```
+
+### Event Handlers via `gest`
+
+All native DOM events MUST be passed through the `gest` prop, NOT as direct props.
+
+```tsx
+// CORRECT
+<Button gest={{ onClick: () => handleClick() }} />
+<Input gest={{ onChange: (e) => setValue(e.target.value) }} />
+<Container gest={{ onMouseEnter: () => setHover(true) }} />
+
+// WRONG
+<Button onClick={() => handleClick()} />
+<Input onChange={(e) => setValue(e.target.value)} />
+```
+
+### State Management via elk-components Hooks
+
+Use `elk-components/hooks` for state — not React's `useState`, `useEffect`, `useRef`, or `useCallback`.
+
+```tsx
+// CORRECT — import from elk-components/hooks
+import { useState, useRef, useEffect, useCallback, createStore } from "elk-components/hooks";
+
+// WRONG — do not import from React
+import { useState, useEffect } from "react";
+```
+
+### Component Naming (Case-Sensitive)
+
+Components must be referenced by their exact PascalCase names. The auto-import plugin injects them at build time — no manual imports needed.
+
+```tsx
+// These are auto-imported — just use them:
+<Page>, <Header>, <Text>, <Container>, <Stack>, <Center>, <Divider>,
+<Panel>, <Span>, <ScrollView>, <Section>, <Article>, <Navigator>,
+<Button>, <IconButton>, <TextButton>, <Card>, <Badge>, <Avatar>,
+<Image>, <Input>, <Tiles>, <List>, <ListView>, <ListMenu>,
+<BottomModal>, <SidePanel>, <Reabon>, <Tab>, <TabView>,
+<Icon>, <IconNetwork>, <Gap>, <Example>, <Padding>, <GridView>,
+<Hover>, <Main>, <Animation>, <Transition>, <LetterAnimation>,
+<SectionDivider>, <PageScrollView>
+```
+
+### Icons Usage
+
+Import icon components from the `elk-components` package or use as arrow functions.
+
+```tsx
+// With the Icon wrapper (recommended):
+<Icon icon={() => <Lock />} size="lg" color="white" />
+
+// In IconButton:
+<IconButton icon={() => <Search />} gest={{ onClick: search }} />
+
+// Direct usage (size/color forwarded automatically):
+<Lock size={24} color="currentColor" />
+```
+
+### Gap Prop
+
+The `gap` prop accepts any valid CSS length string (`string` type). No type enforcement on units.
+
+```tsx
+// All valid:
+gap="1rem"
+gap="8px"
+gap="1.5em"
+gap="10%"
+gap="0"
+```
+
+### Do NOT Use Regular JSX Children
+
+elk-components does NOT support `children` prop. Always use named render props.
+
+```tsx
+// CORRECT
+<Panel child={() => <Text text="Content" type="p" />} />
+
+// WRONG
+<Panel><Text text="Content" type="p" /></Panel>
 ```

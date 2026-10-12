@@ -48,6 +48,7 @@ export class _SidePanel {
     return (
       <>
         <div
+          aria-hidden="true"
           style={{
             position: 'fixed',
             top: 0,
@@ -60,6 +61,8 @@ export class _SidePanel {
           onClick={a.onClose}
         />
         <aside
+          role="dialog"
+          aria-modal="true"
           className={a.className}
           style={{
             position: 'fixed',

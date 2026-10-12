@@ -1,4 +1,4 @@
-import { useRef } from "react"
+import { useEffect, useRef } from "react"
 import { _Card, type CardProp } from "./cardClass"
 
 const InitializeCard = () => {
@@ -28,10 +28,13 @@ const InitializeCard = () => {
  * />
  *
  * @see {@link CardProp} for all available props.
- *
+ * @param key     - React key
  * @param header  - Component rendered in the card header.
+ * @param headerStyle  - Component rendered in the card header.
  * @param body    - Component rendered in the card body.
+ * @param bodyStyle    - Component rendered in the card body.
  * @param footer  - Component rendered in the card footer.
+ * @param footerStyle  - Component rendered in the card footer.
  * @param padding - Inner padding size (`'none' | 'sm' | 'md' | 'lg'`).
  * @param radius  - Border radius size (`'none' | 'sm' | 'md' | 'lg' | 'xl'`).
  * @param backgroundColor - Background color of the card.
@@ -47,6 +50,9 @@ const InitializeCard = () => {
  */
 export default function Card({ ...a }: CardProp) {
   const { _card } = InitializeCard()
-  a?.onFunc?.(_card?.current as _Card)
+  const { onFunc } = a
+  useEffect(() => {
+    if (_card.current) onFunc?.(_card.current)
+  }, [onFunc, _card])
   return _card.current?.build?.({ ...a })
 }

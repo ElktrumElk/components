@@ -10,7 +10,7 @@ describe('TextButton', () => {
 
   it('renders as a button element', () => {
     render(<TextButton text="OK" />)
-    expect(screen.getByRole('button')).toBeInTheDocument()
+    expect(screen.getByRole('button')).toHaveAttribute('type', 'button')
   })
 
   it('renders child component instead of text when provided', () => {
