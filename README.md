@@ -2,6 +2,10 @@
 
 React animation, layout, and styling toolkit. Declarative motion, transitions, letter animations, and composable UI primitives with built-in icons.
 
+AI agents and code generators must follow the
+[strict Elk Components usage contract](./docs/AI_COMPONENT_RULES.md). A concise
+machine-readable version is available in [`llms.txt`](./llms.txt).
+
 ---
 
 ## Install

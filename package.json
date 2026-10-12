@@ -29,7 +29,10 @@
     "./styles.css": "./dist/elk-components.css"
   },
   "files": [
-    "dist"
+    "dist",
+    "docs",
+    "llms.txt",
+    "AIAgent.md"
   ],
   "scripts": {
     "dev": "vite",
